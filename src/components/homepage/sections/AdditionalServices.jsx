@@ -39,7 +39,6 @@ const AdditionalServices = () => {
   ];
 
   const handleServiceClick = (route) => {
-    // O si prefieres usar window.location
     window.location.href = route;
   };
 
@@ -59,10 +58,10 @@ const AdditionalServices = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1">
           {services.map((service, index) => (
             <div
-              key={index}
-              className="bg-white p-8 hover:bg-gray-50 transition-colors group cursor-pointer"
-              onClick={() => handleServiceClick(service.route)}
-            >
+            key={index}
+            className="bg-white p-8 hover:bg-gray-50 transition-colors group cursor-pointer"
+            onClick={() => handleServiceClick(service.route)}>
+              
               <div className="space-y-4">
                 <div className="text-xs font-light text-gray-400 tracking-widest">
                   {service.code}

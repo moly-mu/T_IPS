@@ -57,8 +57,7 @@ const MedicalProfiles = () => {
                   className="text-xs font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-widest uppercase group-hover:text-gray-700 transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleNavigation('/profiles');
-                  }}>
+                    handleNavigation('/medicos');}}>
                   EXPLORAR PERFILES
                 </button>
                 <div className="text-xs text-gray-400 font-light">
@@ -96,7 +95,7 @@ const MedicalProfiles = () => {
                   className="text-xs font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-widest uppercase group-hover:text-gray-700 transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleNavigation('/consulta-ahora');
+                    handleNavigation('/ya');
                   }}>
                   CONSULTA AHORA
                 </button>
@@ -107,87 +106,7 @@ const MedicalProfiles = () => {
             </div>
           </div>
         </div>
-
-        <div className="border-t border-gray-200 pt-16">
-          <div className="grid lg:grid-cols-2 gap-16 items-end mb-12">
-            <div>
-              <p className="text-xs font-light text-gray-400 tracking-widest uppercase mb-4">
-                ESPECIALIDADES MÉDICAS
-              </p>
-              <h2 className="text-3xl lg:text-4xl font-light text-gray-900">
-                CONSULTAS
-                <br />
-                <span className="font-semibold">ESPECIALIZADAS</span>
-              </h2>
-            </div>
-            
-            <div className="space-y-4">
-              <p className="text-gray-500 font-light leading-relaxed">
-                Atención médica profesional las 24 horas con especialistas certificados. 
-                Diagnósticos precisos y tratamientos personalizados desde tu hogar.
-              </p>
-              
-              <div className="flex space-x-8">
-                <button 
-                  className="text-xs font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-widest uppercase"
-                  onClick={() => handleNavigation('/medicos/perfiles')}>
-                  VER PERFILES
-                </button>
-                <button 
-                  className="text-xs font-light text-gray-400 tracking-widest uppercase hover:text-gray-900 transition-colors"
-                  onClick={() => handleNavigation('/buscar-medico')}>
-                  BUSCAR MÉDICO
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { id: 1, name: "Dra. María González", specialty: "Medicina General", years: "15" },
-              { id: 2, name: "Dr. Carlos Rodríguez", specialty: "Cardiología", years: "12" },
-              { id: 3, name: "Dra. Ana Martínez", specialty: "Pediatría", years: "10" },
-            ].map((doctor, index) => (
-              <div key={index} className="group cursor-pointer" onClick={() => handleNavigation(`/medico/${doctor.id}`)}>
-                <div className="aspect-[3/4] bg-gray-100 mb-6 overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                      <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-base font-medium text-gray-900">{doctor.name}</h3>
-                  <p className="text-sm text-gray-500 font-light">{doctor.specialty}</p>
-                  <p className="text-xs text-gray-400 font-light">{doctor.years} años de experiencia</p>
-                </div>
-                
-                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button 
-                    className="text-xs font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-widest uppercase"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNavigation(`/medico/${doctor.id}/perfil`);
-                    }}>
-                    VER PERFIL
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <button 
-              className="bg-gray-900 text-white px-8 py-3 text-xs font-medium tracking-widest uppercase hover:bg-gray-800 transition-colors"
-              onClick={() => handleNavigation('/Sreg')}>
-              AGENDAR CONSULTA
-            </button>
-          </div>
         </div>
-      </div>
     </section>
   );
 };

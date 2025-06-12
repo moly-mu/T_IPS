@@ -19,6 +19,7 @@ import Tofertas from "../admin/Tofertas";
 import Pago from "../user/desis/opcpago/Pago";
 import FAQSection from "../extrahome/FAQSection";
 import ViewProfiles from "../extrahome/ViewProfiles";
+import ListViewCard from "../extrahome/Mprofiles.jsx/ListViewCard ";
 
 
 const AppRoutes = () => {
@@ -56,6 +57,7 @@ const AppRoutes = () => {
         {/* Extrahome*/}
         <Route path="/quans" element={<FAQSection/>} />
         <Route path="/profiles" element={<ViewProfiles/>} />
+        <Route path="/Cards" element={<ListViewCard/>} />
       </Routes>
     </div>
   );
