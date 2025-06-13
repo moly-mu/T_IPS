@@ -55,7 +55,6 @@ const FAQSection = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para enviar la pregunta
     alert('¡Gracias por tu pregunta! Te responderemos pronto por email.');
     setFormData({ name: '', email: '', question: '' });
     setShowQuestionForm(false);
@@ -70,7 +69,6 @@ const FAQSection = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Navigation */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -88,7 +86,6 @@ const FAQSection = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Section Header */}
         <div className="text-center mb-12">
           <p className="text-sm text-gray-500 uppercase tracking-wider mb-2">SOPORTE Y AYUDA</p>
           <h2 className="text-4xl font-light text-gray-900 mb-4">
@@ -101,7 +98,6 @@ const FAQSection = () => {
           </p>
         </div>
 
-        {/* Search Bar with Question Button */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
             <div className="relative flex-1">
@@ -111,27 +107,23 @@ const FAQSection = () => {
                 placeholder="Buscar preguntas..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
             </div>
             <button
               onClick={() => setShowQuestionForm(true)}
-              className="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors flex items-center gap-2 whitespace-nowrap"
-            >
+              className="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors flex items-center gap-2 whitespace-nowrap">
               <MessageCircle className="w-5 h-5" />
               Hacer Pregunta
             </button>
           </div>
         </div>
 
-        {/* FAQ List */}
         <div className="max-w-4xl mx-auto space-y-4">
           {filteredFAQs.map((faq) => (
             <div key={faq.id} className="bg-white rounded-lg shadow-sm border border-gray-200">
               <button
                 onClick={() => toggleFAQ(faq.id)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
-              >
+                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
                 <h3 className="text-lg font-medium text-gray-900 pr-4">{faq.question}</h3>
                 {openFAQ === faq.id ? (
                   <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
@@ -154,7 +146,6 @@ const FAQSection = () => {
           </div>
         )}
 
-        {/* Question Form Modal */}
         {showQuestionForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -163,8 +154,7 @@ const FAQSection = () => {
                   <h3 className="text-xl font-semibold text-gray-900">Hacer una Pregunta</h3>
                   <button
                     onClick={() => setShowQuestionForm(false)}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
+                    className="text-gray-400 hover:text-gray-600">
                     ✕
                   </button>
                 </div>
@@ -180,8 +170,7 @@ const FAQSection = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                   </div>
                   
                   <div>
@@ -194,8 +183,7 @@ const FAQSection = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
                   </div>
                   
                   <div>
@@ -209,23 +197,20 @@ const FAQSection = () => {
                       required
                       rows={4}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      placeholder="Escribe tu pregunta aquí..."
-                    />
+                      placeholder="Escribe tu pregunta aquí..."/>
                   </div>
                   
                   <div className="flex gap-3 pt-4">
                     <button
                       type="button"
                       onClick={() => setShowQuestionForm(false)}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-                    >
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       onClick={handleFormSubmit}
-                      className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors flex items-center justify-center gap-2"
-                    >
+                      className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors flex items-center justify-center gap-2">
                       <Mail className="w-4 h-4" />
                       Enviar
                     </button>

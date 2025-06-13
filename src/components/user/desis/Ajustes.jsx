@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import Barral from './Barral'; 
+import NavbarI from "./NavbarI";
 
 const Ajustes = () => {
-  const location = useLocation(); // Hook para obtener la ruta actual
+  const location = useLocation(); 
 
-  // estado para el estado de la cuenta
   const [estadoCuenta, setEstadoCuenta] = useState('activa');
 
   // funciones de accion
@@ -19,6 +19,9 @@ const Ajustes = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       <Barral />
+
+      <div className="flex-1 p-6 bg-gray-50">
+        <NavbarI />
       <div className="container mx-auto p-6">
         {location.pathname === "/ajus" && (
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
@@ -89,6 +92,7 @@ const Ajustes = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };

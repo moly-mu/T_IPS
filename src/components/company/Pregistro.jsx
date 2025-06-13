@@ -44,8 +44,7 @@ const Pregistro = () => {
                 ¿Ya tienes cuenta?{" "}
                 <a
                   href="javascript:void(0);"
-                  className="text-[#99B3C6] font-semibold hover:underline ml-1"
-                >
+                  className="text-[#99B3C6] font-semibold hover:underline ml-1">
                   Iniciar sesión aquí
                 </a>
               </p>
@@ -187,7 +186,7 @@ const Pregistro = () => {
               </button>
               </Link>
 
-              <Link to="/pagempresa">
+              <Link to="/pagusuario">
               <button
                 type="submit"
                 className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#99B3C6] hover:bg-[#99B3C6] focus:outline-none">

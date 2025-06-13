@@ -136,7 +136,7 @@ const Sinsesion = () => {
   
                 {/* boton de inicio de sesion */}
                 <div className="mt-12">
-                  <Link to="/pagusuario">
+                  <Link to="/">
                   <button
                     type="submit"
                     className="w-full shadow-xl py-2.5 px-4 text-sm tracking-wide rounded-md text-white bg-[#003366] hover:bg-[#00102D] focus:outline-none">

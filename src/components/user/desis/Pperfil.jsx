@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import NavbarI from './NavbarI';
 
 const Pperfil = () => {
-  const location = useLocation(); // Hook para obtener la ruta actual
+  const location = useLocation(); 
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -16,8 +16,6 @@ const Pperfil = () => {
         {/* Si estamos en la ruta "/pagusuario" mostrar los detalles del perfil */}
         {location.pathname === "/pagusuario" && (
           <div className="max-w-8xl mx-auto bg-white shadow-lg rounded-lg p-6">
-
-            {/* imagen de fondo */}
             <div className="relative">
               <div className="w-full h-48 bg-gray-200 rounded-lg mb-12"></div>
 
@@ -36,7 +34,7 @@ const Pperfil = () => {
                 {/* informacion del usuario */}
                 <div className="mt-20">
                   <h2 className="text-3xl font-semibold text-gray-800">Juan Perez</h2>
-                  <p className="text-gray-600 mt-2">Desarrollador Web | Apasionado por la tecnología</p>
+                  <p className="text-gray-600 mt-2">Medico General | Especialista en Ortopedia</p>
                 </div>
               </div>
             </div>
@@ -62,7 +60,7 @@ const Pperfil = () => {
             <div className="flex justify-end mt-8">
               <Link to="/card">
                 <button className="px-6 py-2 bg-[#00102D] text-white font-semibold rounded-lg hover:bg-[#003366] shadow-md">
-                  Editar Perfil
+                  Realizar Solicitud
                 </button>
               </Link>
             </div>

@@ -1,7 +1,6 @@
 
 import { Route, Routes } from "react-router-dom";
 import Phome from "../homepage/Phome";
-import PerfilEmpresa from "../company/PerfilEmpresa";
 import Pins from "../company/Pins";
 import Sinsesion from "../user/desis/Sinsesion";
 import Sregistro from "../user/desis/Sregistro";
@@ -14,12 +13,12 @@ import Cards from "../user/desis/Cards";
 import Noti from "../user/desis/Noti";
 import Ofertas from "../user/desis/Ofertas";
 import Ajustes from "../user/desis/Ajustes";
-import Stablas from "../admin/Stablas";
-import Tofertas from "../admin/Tofertas";
-import Pago from "../user/desis/opcpago/Pago";
 import FAQSection from "../extrahome/FAQSection";
-import ViewProfiles from "../extrahome/ViewProfiles";
-import ListViewCard from "../extrahome/Mprofiles.jsx/ListViewCard ";
+import UserSection from "../admin/user/UserSection";
+import SpecialistsSection from "../admin/specialist/SpecialistsSection";
+import ServicesSection from "../homepage/sections/ServicesSection";
+import Calendar from "../user/desis/Calendar";
+import ScheduledDays from "../user/desis/ScheduledDays";
 
 
 const AppRoutes = () => {
@@ -37,27 +36,25 @@ const AppRoutes = () => {
         <Route path="/not" element={<Noti />} />
         <Route path="/oft" element={<Ofertas />} />
         <Route path="/ajus" element={<Ajustes />} />
-        <Route path="/pgo" element={<Pago />} />
+        <Route path="/calendar" element={<Calendar/>} />
+        <Route path="/listopc" element={<ScheduledDays/>} />
 
         
         {/* Empresa*/}
         <Route path="/Pins" element={<PinSesion />} />
         <Route path="/Preg" element={<Pregistro />} />
-        <Route path="/perfilempresa" element={<PerfilEmpresa />} />
-        {/* Ruta para la página de ofertas (Pins) */}
         <Route path="/pagempresa" element={<Pins />} />
 
 
         {/* Administrador*/}
         <Route path="/Tins" element={<Tinsesion/>} />
         <Route path="/pagadmin" element={<Pin />} />
-        <Route path="/gusu" element={<Stablas />} />
-        <Route path="/goft" element={<Tofertas />} />
+        <Route path="/userD" element={<UserSection />} />
+        <Route path="/specialistD" element={<SpecialistsSection/>} />
+        <Route path="/serviceD" element={<ServicesSection/>} />
 
         {/* Extrahome*/}
         <Route path="/quans" element={<FAQSection/>} />
-        <Route path="/profiles" element={<ViewProfiles/>} />
-        <Route path="/Cards" element={<ListViewCard/>} />
       </Routes>
     </div>
   );

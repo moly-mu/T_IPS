@@ -183,7 +183,7 @@ const Sregistro = () => {
                 </button>
                 </Link>
 
-                <Link to="/pagusuario">
+                <Link to="/">
                 <button
                   type="submit"
                   className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#FFCB00] hover:bg-[#FFC107] focus:outline-none">

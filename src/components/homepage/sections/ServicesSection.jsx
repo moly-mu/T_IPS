@@ -261,7 +261,7 @@ const ServicesSection = () => {
                         </div>
 
                         <button className="mt-auto w-full bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5"
-                        onClick={() => handleNavigation('/Sreg')}>
+                        onClick={() => handleNavigation('/Sins')}>
                           Agendar Consulta
                         </button>
                       </div>

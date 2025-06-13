@@ -4,6 +4,8 @@ import ServicesSection from './sections/ServicesSection';
 import AdditionalServices from './sections/AdditionalServices';
 import PaymentMethods from './sections/PaymentMethods';
 import MedicalProfiles from './sections/MedicalProfiles';
+import homeImage from '../../assets/homeI.png';
+;
 
 
 const Navbar = () => {
@@ -94,28 +96,20 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Image */}
           <div ref={imageRef} className="opacity-0 transform translate-y-8 transition-all duration-1000 delay-600">
-            <div
-              ref={imageRef}
-              className="opacity-0 transform translate-y-8 transition-all duration-1000 delay-600">
-              <div className="relative">
-                <img
-                  src="/src/assets/img_user/20250604_2206_Diseño Médico Creativo_remix_01jwz0sm22eqyr4r8vqw4dqybx.png" 
-                  alt="Descripción de la imagen"
-                  className="rounded-sm shadow-lg w-full h-auto object-cover"
-                />
-              </div>
-            </div>
+            <img
+              src={homeImage} 
+              alt="home"
+              className="rounded-sm  w-full h-auto object-cover"
+            />
 
-              
-              <div className="absolute -bottom-4 -right-4 bg-white p-6 shadow-lg rounded-sm">
-                <div className="text-center">
-                  <div className="text-2xl font-light text-gray-900">24/7</div>
-                  <div className="text-xs text-gray-500 tracking-wide">DISPONIBLE</div>
-                </div>
+            <div className="absolute -bottom-4 -right-4 bg-white p-6 shadow-lg rounded-sm">
+              <div className="text-center">
+                <div className="text-2xl font-light text-gray-900">24/7</div>
+                <div className="text-xs text-gray-500 tracking-wide">DISPONIBLE</div>
               </div>
             </div>
+          </div>
           </div>
       </div>
     </section>

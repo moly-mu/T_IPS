@@ -11,7 +11,6 @@ const MedicalProfiles = () => {
     <section className="py-24 bg-gray-50">
       <div className="max-w-6xl mx-auto px-8">
         
-        {/* Header Section */}
         <div className="mb-16 text-center">
           <p className="text-xs font-light text-gray-400 tracking-widest uppercase mb-4">
             NUESTRO EQUIPO
@@ -27,7 +26,6 @@ const MedicalProfiles = () => {
           </p>
         </div>
 
-        {/* Cards */}
         <div className="grid lg:grid-cols-2 gap-12 mb-20">
           
           <div className="group cursor-pointer" onClick={() => handleNavigation('/medicos')}>
@@ -67,7 +65,7 @@ const MedicalProfiles = () => {
             </div>
           </div>
 
-          {/* Médico Ya! Card */}
+          {/* medico Ya! Card */}
           <div className="group cursor-pointer" onClick={() => handleNavigation('/consulta-inmediata')}>
             <div className="bg-white rounded-none p-12 hover:bg-gray-50 transition-colors duration-300 border-b border-gray-100">
               <div className="flex items-start justify-between mb-8">
