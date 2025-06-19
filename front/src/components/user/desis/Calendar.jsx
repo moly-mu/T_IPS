@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, X, Edit3, Trash2 } from 'lucide-react';
-import Barral from 'src/components/user/desis/Barral';
+import Barral from '../desis/Barral';
 
 const Calendar = () => {
   const navigate = useNavigate();

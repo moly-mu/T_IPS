@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Barral from "src/components/user/desis/Barral";
+import Barral from "../desis/Barral";
 import { Link } from "react-router-dom";
 
 const Cards = () => {

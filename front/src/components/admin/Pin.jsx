@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { useState } from 'react';
 import { 
   Users, UserCheck, Calendar, Activity, TrendingUp, Star, Filter,Bell,Settings,ChevronDown,Eye,CheckCircle,XCircle,Clock,Home,User,FileText} from 'lucide-react';
-import UserSection from 'src/components/admin/user/UserSection';
-import SpecialistsSection from 'src/components/admin/specialist/SpecialistsSection';
-import ServicesSection from 'src/components/admin/service/ServicesSection';
+import UserSection from '../admin/user/UserSection';
+import SpecialistsSection from '../admin/specialist/SpecialistsSection';
+import ServicesSection from '../admin/service/ServicesSection';
 
 const Layout = ({ children, activeTab, setActiveTab }) => {
 

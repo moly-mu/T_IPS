@@ -1,4 +1,4 @@
-import Barral from 'src/components/user/desis/Barral';
+import Barral from '../desis/Barral';
 import { ChevronLeft, ChevronRight, Plus, Calendar, Clock, Eye, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';

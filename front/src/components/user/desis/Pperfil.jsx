@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
-import Barral from 'src/components/user/desis/Barral';
+import Barral from '../desis/Barral';
 import { Link } from "react-router-dom";
-import NavbarI from 'src/components/user/desis/NavbarI';
+import NavbarI from '../desis/NavbarI';
 
 const Pperfil = () => {
   const location = useLocation(); 

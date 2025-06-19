@@ -1,24 +1,24 @@
 
 import { Route, Routes } from "react-router-dom";
-import Phome from "src/components/homepage/Phome";
-import Pins from "src/components/company/Pins";
-import Sinsesion from "src/components/user/desis/Sinsesion";
-import Sregistro from "src/components/user/desis/Sregistro";
-import PinSesion from "src/components/company/Pinsesion";
-import Pregistro from "src/components/company/Pregistro";
-import Tinsesion from "src/components/admin/Tinsesion";
-import Pin from "src/components/admin/Pin";
-import Pperfil from "src/components/user/desis/Pperfil";
-import Cards from "src/components/user/desis/Cards";
-import Noti from "src/components/user/desis/Noti";
-import Ofertas from "src/components/user/desis/Ofertas";
-import Ajustes from "src/components/user/desis/Ajustes";
-import FAQSection from "src/components/extrahome/FAQSection";
-import UserSection from "src/components/admin/user/UserSection";
-import SpecialistsSection from "src/components/admin/specialist/SpecialistsSection";
-import ServicesSection from "src/components/homepage/sections/ServicesSection";
-import Calendar from "src/components/user/desis/Calendar";
-import ScheduledDays from "src/components/user/desis/ScheduledDays";
+import Phome from "../homepage/Phome";
+import Pins from "../company/Pins";
+import Sinsesion from "../user/desis/Sinsesion";
+import Sregistro from "../user/desis/Sregistro";
+import PinSesion from "../company/Pinsesion";
+import Pregistro from "../company/Pregistro";
+import Tinsesion from "../admin/Tinsesion";
+import Pin from "../admin/Pin";
+import Pperfil from "../user/desis/Pperfil";
+import Cards from "../user/desis/Cards";
+import Noti from "../user/desis/Noti";
+import Ofertas from "../user/desis/Ofertas";
+import Ajustes from "../user/desis/Ajustes";
+import FAQSection from "../extrahome/FAQSection";
+import UserSection from "../admin/user/UserSection";
+import SpecialistsSection from "../admin/specialist/SpecialistsSection";
+import ServicesSection from "../homepage/sections/ServicesSection";
+import Calendar from "../user/desis/Calendar";
+import ScheduledDays from "../user/desis/ScheduledDays";
 
 
 const AppRoutes = () => {

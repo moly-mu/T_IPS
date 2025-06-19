@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
-import Barral from 'src/components/user/desis/Barral'; 
-import NavbarI from "src/components/user/desis/NavbarI";
+import Barral from '../desis/Barral'; 
+import NavbarI from "../desis/NavbarI";
 
 const Ajustes = () => {
   const location = useLocation(); 
