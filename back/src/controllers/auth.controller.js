@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
 
-export const register = async (req, res) => {
+export const register = async (req, res) => { /**
+   * !Cambiarlo por los campos del Esquema de prisma */
   try {
     const {
       primerNombre,
@@ -60,5 +61,45 @@ export const login = async (req, res) => {
     res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ message: 'Error al iniciar sesión', error: error.message });
+  }
+};
+
+//Agendar citas, cambiar a partir del front
+export const agendarCita = async (req, res) => {
+  try {
+    const { fecha, motivo, especialistaId, pacienteId } = req.body; //Cambiar campos a partir de el prisma
+
+    const cita = await prisma.cita.create({ 
+      data: {
+        fecha,
+        motivo,
+        especialista: { connect: { id: especialistaId } },
+        paciente: { connect: { id: pacienteId } },
+      },
+      include: {
+        especialista: true,
+        paciente: true,
+      },
+    });
+
+    res.status(201).json({ message: 'Cita agendada con éxito', cita });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al agendar cita', error: error.message });
+  }
+};
+
+// Listar citas y cambiar a partir de la parselación de JSON del back 
+export const listarCitas = async (req, res) => { 
+  try {
+    const citas = await prisma.cita.findMany({ 
+      include: {
+        especialista: true,
+        paciente: true,
+      },
+    });
+
+    res.status(200).json({ citas });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener citas', error: error.message });
   }
 };
