@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement()) @map("idadmin")
+  username String @unique @db.VarChar(45)
+  password String @db.VarChar(45)
+
+  @@map("admin")
+}
+
+model CredentialUser {
+  id       Int    @id @default(autoincrement()) @map("idcredential_users")
+  document String @unique @db.VarChar(45)
+  email    String @unique @db.VarChar(45)
+  password String @db.VarChar(45)
+  User     User[]
+
+  @@map("credential_users")
+}
+
+model Rol {
+  id       Int    @id @default(autoincrement()) @map("idrol")
+  rol_name String @unique @db.VarChar(45)
+  User     User[]
+
+  @@map("rol")
+}
+
+model User {
+  id                                  Int    @id @default(autoincrement()) @map("idUser")
+  firstname                           String @db.VarChar(45)
+  lastname                            String @db.VarChar(45)
+  age                                 Int
+  gender                              String @db.VarChar(45)
+  sex                                 String @db.VarChar(10)
+  languaje                            String @db.VarChar(45)
+  document                            Int    @unique
+  document_type                       String @db.VarChar(45)
+  credential_users_idcredential_users Int
+  rol_idrol                           Int
+
+  credential_users CredentialUser @relation(fields: [credential_users_idcredential_users], references: [id])
+  rol              Rol            @relation(fields: [rol_idrol], references: [id])
+  Paciente         Paciente[]
+  Profesional      Profesional[]
+
+  @@unique([id, credential_users_idcredential_users, rol_idrol])
+  @@map("user")
+}
+
+model PacData {
+  id              Int        @id @default(autoincrement()) @map("idpac_data")
+  medical_history Bytes
+  Paciente        Paciente[]
+
+  @@map("pac_data")
+}
+
+model Paciente {
+  id                                       Int @default(autoincrement()) @map("idPaciente")
+  pac_data_idpac_data                      Int
+  User_idUser                              Int
+  User_credential_users_idcredential_users Int
+  User_rol_idrol                           Int
+
+  pac_data     PacData       @relation(fields: [pac_data_idpac_data], references: [id])
+  User         User          @relation(fields: [User_idUser, User_credential_users_idcredential_users, User_rol_idrol], references: [id, credential_users_idcredential_users, rol_idrol])
+  Appointments Appointment[]
+
+  @@id([id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+  @@map("paciente")
+}
+
+model ProfData {
+  id                       Int           @id @default(autoincrement()) @map("idprof_data")
+  biography                String        @db.Text
+  picture                  Bytes
+  cv                       Bytes         @map("CV")
+  mppc                     Float         @db.Real
+  exp_lab                  String        @db.VarChar(45)
+  educational_certificates Bytes         @map("educational certificates")
+  degrees                  Bytes
+  working_experience       String        @db.VarChar(45)
+  Profesional              Profesional[]
+
+  @@map("prof_data")
+}
+
+model Profesional {
+  id                                       Int    @default(autoincrement()) @map("idProfesional")
+  prof_data_idprof_data                    Int
+  status                                   String @db.VarChar(15)
+  User_idUser                              Int
+  User_credential_users_idcredential_users Int
+  User_rol_idrol                           Int
+
+  prof_data               ProfData                  @relation(fields: [prof_data_idprof_data], references: [id])
+  User                    User                      @relation(fields: [User_idUser, User_credential_users_idcredential_users, User_rol_idrol], references: [id, credential_users_idcredential_users, rol_idrol])
+  ProfesionalHasSpecialty ProfesionalHasSpecialty[]
+  Request                 Request[]
+  Appointments            Appointment[]
+
+  @@id([id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+  @@map("profesional")
+}
+
+model Specialty {
+  id                      Int                       @id @default(autoincrement()) @map("idspecialty")
+  name                    String                    @unique @db.VarChar(45)
+  ProfesionalHasSpecialty ProfesionalHasSpecialty[]
+
+  @@map("specialty")
+}
+
+model ProfesionalHasSpecialty {
+  Profesional_idProfesional                            Int
+  Profesional_prof_data_idprof_data                    Int
+  Profesional_User_idUser                              Int
+  Profesional_User_credential_users_idcredential_users Int
+  Profesional_User_rol_idrol                           Int
+  specialty_idspecialty                                Int
+
+  Profesional Profesional @relation(fields: [Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol], references: [id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+
+  Specialty Specialty @relation(fields: [specialty_idspecialty], references: [id])
+
+  @@id([Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol, specialty_idspecialty])
+  @@map("profesional_has_specialty")
+}
+
+model Request {
+  id                                                   Int @default(autoincrement()) @map("idrequest")
+  Profesional_idProfesional                            Int
+  Profesional_prof_data_idprof_data                    Int
+  Profesional_User_idUser                              Int
+  Profesional_User_credential_users_idcredential_users Int
+  Profesional_User_rol_idrol                           Int
+
+  Profesional Profesional @relation(fields: [Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol], references: [id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+
+  @@id([id, Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol])
+  @@map("request")
+}
+
+model Appointment {
+  id                                                   Int      @id @default(autoincrement()) @map("idappointments")
+  state                                                String   @db.VarChar(20)
+  Paciente_idPaciente                                  Int
+  Paciente_pac_data_idpac_data                         Int
+  Paciente_User_idUser                                 Int
+  Paciente_User_credential_users_idcredential_users    Int      @map("Paciente_User_credential_users_idcredential_users")
+  Paciente_User_rol_idrol                              Int
+  Profesional_idProfesional                            Int
+  Profesional_prof_data_idprof_data                    Int
+  Profesional_User_idUser                              Int
+  Profesional_User_credential_users_idcredential_users Int      @map("Profesional_User_credential_users_idcredential_users")
+  Profesional_User_rol_idrol                           Int
+  appoint_init                                         DateTime @db.Timestamp
+  appoint_finish                                       DateTime @db.Timestamp
+
+  Paciente    Paciente    @relation(fields: [Paciente_idPaciente, Paciente_pac_data_idpac_data, Paciente_User_idUser, Paciente_User_credential_users_idcredential_users, Paciente_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+  Profesional Profesional @relation(fields: [Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol], references: [id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+
+  @@map("appointments")
+}
