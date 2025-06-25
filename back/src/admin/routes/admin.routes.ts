@@ -5,17 +5,18 @@ import {
   getSpecialties,
   getSpecialtyById,
   updateSpecialty,
-  deleteSpecialty
+  deleteSpecialty,
+  checkSpecialtyByName,
 } from "../controller/admin.controller";
- // 👈 Importa todo como objeto
 
 const router = Router();
 
-router.post("/specialty", createSpecialty);
-router.get("/specialty", getSpecialties);
-router.get("/specialty/:id", getSpecialtyById);
-router.put("/specialty/:id", updateSpecialty);
-router.delete("/specialty/:id", deleteSpecialty);
+router.post("/specialty", createSpecialty); // Crear especialidad
+router.get("/specialty", getSpecialties); // Obtener especialidades
+router.get("/specialty/check", checkSpecialtyByName); // Obtener especialidades por nombre
+router.get("/specialty/:id", getSpecialtyById); // Obtener especialidades por ID
+router.put("/specialty/:id", updateSpecialty); // Actualizar una especialidad
+router.delete("/specialty/:id", deleteSpecialty); // Eliminar una especialidad
 
 export default router;
 

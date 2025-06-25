@@ -88,6 +88,9 @@ model ProfData {
   educational_certificates Bytes         @map("educational certificates")
   degrees                  Bytes
   working_experience       String        @db.VarChar(45)
+  consultations            Int           @default(0)
+  joinDate                 DateTime      @default(now()) @db.Timestamp(6)
+
   Profesional              Profesional[]
 
   @@map("prof_data")
@@ -108,6 +111,7 @@ model Profesional {
   Appointments            Appointment[]
 
   @@id([id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+  @@unique([id])
   @@map("profesional")
 }
 
