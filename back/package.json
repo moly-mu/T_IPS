@@ -1,34 +1,14 @@
 {
-  "name": "back",
-  "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
-  "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
-    "@types/bun": "latest",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.0.4",
-    "nodemon": "^3.1.10",
-    "prisma": "^6.10.1",
-    "tsx": "^4.20.3"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.10.1",
+    "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "prisma": "^6.10.1"
   },
-  "private": true,
-  "peerDependencies": {
-    "typescript": "^5.8.3"
+  "dependencies": {
+    "@prisma/client": "^6.10.1"
   }
 }

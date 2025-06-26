@@ -1,6 +1,49 @@
+import { useState } from "react";
 import { Link } from "react-router-dom"; 
+import React from "react";
+import axios from "axios"
+
+const inputs = [
+  {id: 0, label: "Primer Nombre", name:"primerNombre", placeholder: "Introduce tu primer nombre", value: "priemerNombre", type: "text"},
+  {id: 1, label: "Segundo Nombre (Opcional)", name:"segundoNombre", placeholder: "Introduce tu segundo nombre", value: "segundoNombre", type: "text"},
+  {id: 2, label: "Primer Apellido", name:"primerApellido", placeholder: "Introduce tu primer apellido", value: "primerApellido", type:"text"},
+  {id: 3, label: "Segundo Apellido (Opcional)", name:"segundoApellido", placeholder: "Introduce tu segundo apellido", value: "segundoApellido", type:"text"},
+  {id: 4, label: "Número de Documento", name:"numeroDocumento", placeholder: "Introduce tu número de documento", value: "numeroDocumento", type:"text"},
+  {id: 5, label: "Correo electrónico", name:"correo", placeholder: "Introduce tu correo electrónico", value: "correo", type:"email"},
+  {id: 6, label: "Contraseña", name:"contraseña", placeholder: "Introduce tu contraseña", value: "contraseña", type:"password"},
+]
 
 const Sregistro = () => {
+  const [result, setResult] = useState()
+  const [formData, setFormData] = useState({
+    primerNombre: "",
+    segundoNombre: "",
+    primerApellido: "",
+    segundoApellido: "",
+    tipoDocumento: "",
+    numeroDocumento: "",
+    correo:  "",
+    contraseña: "",
+  })
+
+  const handleInputChange = (e) =>{
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("✔ Enviando formulario...");
+
+    try {
+      console.log("esto tambien se envio")
+      const result = await axios.post("http://localhost:3000/api/saveUser", formData);
+
+
+      setResult(result)
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
       const Navbar = () => {
     return (
@@ -35,7 +78,7 @@ const Sregistro = () => {
         <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100">
           <div className="w-full max-w-4xl shadow-lg rounded-md bg-[#00102D] p-8">
             {/* formulario registro */}
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-6 text-center">
                 <h3 className="text-white text-3xl font-extrabold">Registrarse</h3>
                 <p className="text-sm mt-4 text-gray-300">
@@ -47,131 +90,63 @@ const Sregistro = () => {
                   </Link>
                 </p>
               </div>
-  
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* primer nombre */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Primer Nombre
-                  </label>
-                  <input
-                    name="primerNombre"
-                    type="text"
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu primer nombre"
-                  />
-                </div>
-  
-                {/* segundo nombre */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Segundo Nombre (Opcional)
-                  </label>
-                  <input
-                    name="segundoNombre"
-                    type="text"
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu segundo nombre"
-                  />
-                </div>
-  
-                {/* primer apellido */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Primer Apellido
-                  </label>
-                  <input
-                    name="primerApellido"
-                    type="text"
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu primer apellido"
-                  />
-                </div>
-  
-                {/* segundo apellido */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Segundo Apellido (Opcional)
-                  </label>
-                  <input
-                    name="segundoApellido"
-                    type="text"
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu segundo apellido"
-                  />
-                </div>
-  
-                {/* tipo de documento */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Tipo de Documento
-                  </label>
-                  <select
-                    name="tipoDocumento"
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
-                    <option value="" disabled selected>
-                    Selecciona un tipo de documento
-                    </option>
-                    <option value="cc" className="text-black bg-white">
-                    Cédula de Ciudadanía
-                    </option>
-                    <option value="ti" className="text-black bg-white">
-                    Tarjeta de Identidad
-                    </option>
-                    <option value="ce" className="text-black bg-white">
-                    Cédula de Extranjería
-                    </option>
-                    <option value="pasaporte" className="text-black bg-white">
-                    Pasaporte
-                    </option>
-                  </select>
-                </div>
-  
-                {/* numero de documento */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Número de Documento
-                  </label>
-                  <input
-                    name="numeroDocumento"
-                    type="text"
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu número de documento"
-                  />
-                </div>
-  
-                {/* correo */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Correo electrónico
-                  </label>
-                  <input
-                    name="correo"
-                    type="email"
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu correo electrónico"
-                  />
-                </div>
-  
-                {/* contraseña */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Contraseña
-                  </label>
-                  <input
-                    name="contraseña"
-                    type="password"
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu contraseña"
-                  />
-                </div>
+                {inputs.map((input) => (
+                  <React.Fragment key={input.id}>
+                    {input.id === 4 && (
+                      <div>
+                        <label className="text-gray-300 text-sm block mb-2">
+                          Tipo de Documento
+                        </label>
+                        <select
+                          name="tipoDocumento"
+                          required
+                          className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                          value={formData.tipoDocumento}
+                          onChange={handleInputChange}
+                        >
+                          <option value="" disabled>
+                            Selecciona un tipo de documento
+                          </option>
+                          <option value="cc" className="text-black bg-white">
+                            Cédula de Ciudadanía
+                          </option>
+                          <option value="ti" className="text-black bg-white">
+                            Tarjeta de Identidad
+                          </option>
+                          <option value="ce" className="text-black bg-white">
+                            Cédula de Extranjería
+                          </option>
+                          <option value="pasaporte" className="text-black bg-white">
+                            Pasaporte
+                          </option>
+                        </select>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="text-gray-300 text-sm block mb-2">
+                        {input.label}
+                      </label>
+                      <input
+                        name={input.name}
+                        type={input.type}
+                        required
+                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                        placeholder={input.placeholder}
+                        value={formData[input.name]}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </React.Fragment>
+                  
+                ))}
               </div>
+
+              {
+                result && <p className={`w-full h-auto text-center ${result.data.color} text-white mb-2 rounded-xl`}>{result.data.message}</p>
+              }
   
               {/* botones de accion */}
               <div className="mt-8 flex gap-4">
@@ -183,13 +158,14 @@ const Sregistro = () => {
                 </button>
                 </Link>
 
-                <Link to="/">
+                {/* <Link to="/"> */}
                 <button
                   type="submit"
-                  className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#FFCB00] hover:bg-[#FFC107] focus:outline-none">
+                  className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#FFCB00] hover:bg-[#FFC107] focus:outline-none"
+                  >
                   Registrarme
                 </button>
-                </Link>
+                {/* </Link> */}
               </div>
             </form>
           </div>

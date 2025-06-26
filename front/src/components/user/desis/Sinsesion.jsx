@@ -1,7 +1,29 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Sinsesion = () => {
+  const [result, setResult] = useState()
+  const [formData, setFormData] = useState({
+    correo: "",
+    contraseña: ""
+  })
 
+  const handleInputChange = (e) =>{
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  const handleSubmit = async(e)=>{
+    e.preventDefault()
+
+    try{
+      const result = await axios.post("http://localhost:3000/api/requestUser", formData)
+      
+      setResult(result)
+    }catch(err){
+      console.log(err)
+    }
+  }
   const Navbar = () => {
     return (
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
@@ -44,7 +66,7 @@ const Sinsesion = () => {
   
             {/* formulario  */}
             <div className="md:max-w-md w-full px-4 py-4">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-12">
                   <h3 className="text-gray-800 text-3xl font-extrabold">Iniciar Sesión - Paciente</h3>
                   <p className="text-sm mt-4 text-gray-800">
@@ -62,11 +84,13 @@ const Sinsesion = () => {
                   <label className="text-gray-800 text-xs block mb-2">Correo electrónico</label>
                   <div className="relative flex items-center">
                     <input
-                      name="email"
+                      name="correo"
                       type="email"
                       required
                       className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-[#003366] px-2 py-3 outline-none"
-                      placeholder="Introduce tu correo"/>
+                      placeholder="Introduce tu correo"
+                      value={formData.correo}
+                      onChange={handleInputChange}/>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="#bbb"
@@ -96,11 +120,13 @@ const Sinsesion = () => {
                   <label className="text-gray-800 text-xs block mb-2">Contraseña</label>
                   <div className="relative flex items-center">
                     <input
-                      name="password"
+                      name="contraseña"
                       type="password"
                       required
                       className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-[#003366] px-2 py-3 outline-none"
-                      placeholder="Introduce tu contraseña"/>
+                      placeholder="Introduce tu contraseña"
+                      value={formData.contraseña}
+                      onChange={handleInputChange}/>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="#bbb"
@@ -133,16 +159,20 @@ const Sinsesion = () => {
                     </a>
                   </div>
                 </div>
+
+                {
+                  result && <p className={`w-full h-auto text-center ${result.data.color} text-white mb-2 rounded-xl`}>{result.data.message}</p>
+                }
   
                 {/* boton de inicio de sesion */}
                 <div className="mt-12">
-                  <Link to="/">
+                  {/* <Link to="/"> */}
                   <button
                     type="submit"
                     className="w-full shadow-xl py-2.5 px-4 text-sm tracking-wide rounded-md text-white bg-[#003366] hover:bg-[#00102D] focus:outline-none">
                     Iniciar sesión
                   </button>
-                  </Link>
+                  {/* </Link> */}
                 </div>
   
                 <div className="space-x-6 flex justify-center mt-6">
