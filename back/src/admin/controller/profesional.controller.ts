@@ -80,7 +80,7 @@ export const createProfessional = async (req: Request, res: Response) => {
 };
 
 // Actualizar un profesional
-export const updateProfessional = async (req: Request, res: Response) => {
+export const updateProfessionalStatus = async (req: Request, res: Response) => {
 	const id = Number(req.params.id);
 	const { status } = req.body;
 

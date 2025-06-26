@@ -1,4 +1,8 @@
 // src/scripts/seed.ts
+
+// !EJECUTAR EL SCRIPT UNANICAMENTE EN UN ENTORNO DE PRUEBAS
+
+
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -17,7 +21,7 @@ type SpecialistSeed = {
 // SCRIPT DE PRUEBA
 
 async function main() {
-  // // Borrar datos existentes (solo en entorno de prueba)
+  // Borrar datos existentes (solo en entorno de prueba)
   // await prisma.profesionalHasSpecialty.deleteMany();
   // await prisma.profesional.deleteMany();
   // await prisma.profData.deleteMany();
@@ -26,7 +30,7 @@ async function main() {
   // await prisma.credentialUser.deleteMany();
   // await prisma.specialty.deleteMany();
 
-  // Crear especialidades
+  //Crear especialidades
   const specialtiesData = [
     "Pediatría",
     "Cardiología",

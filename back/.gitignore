@@ -1,1 +1,32 @@
-node_modules*/
+# Node/Bun dependencies
+node_modules/
+bun.lock
+
+# Prisma
+prisma/migrations/
+*.db
+
+# Environment variables
+.env
+.env.*
+
+# Build outputs (por si usas TypeScript o herramientas de compilación)
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# IDE/editor configs
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Archivos innecesarios para el control de versiones
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

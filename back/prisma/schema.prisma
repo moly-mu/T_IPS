@@ -45,6 +45,7 @@ model User {
   document_type                       String @db.VarChar(45)
   credential_users_idcredential_users Int
   rol_idrol                           Int
+  status                              UserStatus @default(Pendiente)
 
   credential_users CredentialUser @relation(fields: [credential_users_idcredential_users], references: [id])
   rol              Rol            @relation(fields: [rol_idrol], references: [id])
@@ -99,7 +100,6 @@ model ProfData {
 model Profesional {
   id                                       Int    @default(autoincrement()) @map("idProfesional")
   prof_data_idprof_data                    Int
-  status                                   String @db.VarChar(15)
   User_idUser                              Int
   User_credential_users_idcredential_users Int
   User_rol_idrol                           Int
@@ -118,6 +118,9 @@ model Profesional {
 model Specialty {
   id                      Int                       @id @default(autoincrement()) @map("idspecialty")
   name                    String                    @unique @db.VarChar(45)
+  status                  SpecialtyStatus           @default(Inactivo)
+  price                   Int
+  service                 String                    @db.VarChar(45)
   ProfesionalHasSpecialty ProfesionalHasSpecialty[]
 
   @@map("specialty")
@@ -173,4 +176,15 @@ model Appointment {
   Profesional Profesional @relation(fields: [Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol], references: [id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
 
   @@map("appointments")
+}
+
+enum SpecialtyStatus {
+  Activo
+  Inactivo
+}
+
+enum UserStatus {
+  Activo
+  Inactivo
+  Pendiente
 }
