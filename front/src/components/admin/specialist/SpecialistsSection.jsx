@@ -1,25 +1,115 @@
-import  { useState, useEffect,} from 'react';
+import  { useState } from 'react';
 import { Star, User, Calendar, Award, CheckCircle, XCircle, Eye, Filter } from 'lucide-react';
-import axios from "axios";
 
 const SpecialistsSection = () => {
-const [specialists, setSpecialists] = useState([]);
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState("");
+const [specialists, setSpecialists] = useState([
+  {
+    id: 1,
+    name: "Dr. Miguel Rodríguez",
+    specialty: "Cardiología",
+    experience: "8 años experiencia",
+    rating: 4.8,
+    status: "pending",
+    profileImage: null,
+    education: "Universidad Nacional",
+    certifications: ["Cardiología Intervencionista", "Ecocardiografía"],
+    consultations: 234,
+    joinDate: "2024-06-10"
+  },
+  {
+    id: 2,
+    name: "Dra. Sofía Martínez",
+    specialty: "Pediatría",
+    experience: "12 años experiencia",
+    rating: 4.9,
+    status: "approved",
+    profileImage: null,
+    education: "Universidad de los Andes",
+    certifications: ["Pediatría General", "Neonatología"],
+    consultations: 456,
+    joinDate: "2024-06-08"
+  },
+  {
+    id: 3,
+    name: "Dr. Luis García",
+    specialty: "Medicina General",
+    experience: "6 años experiencia",
+    rating: 4.6,
+    status: "rejected",
+    profileImage: null,
+    education: "Universidad Javeriana",
+    certifications: ["Medicina Familiar"],
+    consultations: 189,
+    joinDate: "2024-06-12"
+  },
+  {
+    id: 4,
+    name: "Dra. Camila Ortega",
+    specialty: "Dermatología",
+    experience: "10 años experiencia",
+    rating: 4.7,
+    status: "pending",
+    profileImage: null,
+    education: "Universidad del Rosario",
+    certifications: ["Dermatología Clínica", "Tratamientos Estéticos"],
+    consultations: 315,
+    joinDate: "2024-06-11"
+  },
+  {
+    id: 5,
+    name: "Dr. Sebastián Herrera",
+    specialty: "Neurología",
+    experience: "15 años experiencia",
+    rating: 5.0,
+    status: "approved",
+    profileImage: null,
+    education: "Universidad de Antioquia",
+    certifications: ["Neurociencia Clínica", "Electroencefalografía"],
+    consultations: 510,
+    joinDate: "2024-06-05"
+  },
+  {
+    id: 6,
+    name: "Dra. Laura Pérez",
+    specialty: "Ginecología",
+    experience: "9 años experiencia",
+    rating: 4.5,
+    status: "rejected",
+    profileImage: null,
+    education: "Universidad CES",
+    certifications: ["Ginecología Oncológica", "Obstetricia"],
+    consultations: 270,
+    joinDate: "2024-06-09"
+  },
+  {
+    id: 7,
+    name: "Dr. Andrés Ramírez",
+    specialty: "Psiquiatría",
+    experience: "7 años experiencia",
+    rating: 4.3,
+    status: "approved",
+    profileImage: null,
+    education: "Universidad del Valle",
+    certifications: ["Terapia Cognitivo Conductual", "Psicofarmacología"],
+    consultations: 198,
+    joinDate: "2024-06-06"
+  },
+  {
+    id: 8,
+    name: "Dra. Natalia Torres",
+    specialty: "Endocrinología",
+    experience: "11 años experiencia",
+    rating: 4.9,
+    status: "pending",
+    profileImage: null,
+    education: "Universidad de Caldas",
+    certifications: ["Diabetes y Metabolismo", "Trastornos Tiroideos"],
+    consultations: 342,
+    joinDate: "2024-06-07"
+  },
+]);
 
-useEffect(() => {
-    axios
-      .get("http://localhost:3000/admin/specialty/2/") 
-      .then((res) => {
-        setSpecialists(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Error al obtener especialistas");
-        setLoading(false);
-      });
-  }, []);
+
   const [selectedSpecialist, setSelectedSpecialist] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
 
