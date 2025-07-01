@@ -10,14 +10,22 @@ import {
 
 const router = Router();
 
+// ✅ Obtener todos los profesionales (opcional para admin)
+router.get("/", getAllProfessionals);
 
-router.get("/especialidad/:specialtyId", getProfessionalsBySpecialty); // Obtener por ID de especialidad
-router.get("/", getAllProfessionals); // Obtener todos los profesionales
-router.post("/", createProfessional); // Crear un profesional
-router.put("/:id", updateProfessionalStatus); // Actualizar estado
-router.delete("/:id", deleteProfessional); // Eliminar profesional
+// ✅ Obtener profesionales por ID de especialidad (para mostrar en frontend)
+router.get("/especialidad/:specialtyId", getProfessionalsBySpecialty);
 
+// ✅ Obtener un profesional por su ID
+router.get("/:id", getProfessionalById);
 
-router.get("/:id", getProfessionalById); // Obtener por ID
+// ✅ Crear un nuevo profesional
+router.post("/", createProfessional);
+
+// ✅ Actualizar el estado del profesional (tabla USER)
+router.put("/:id", updateProfessionalStatus);
+
+// ✅ Eliminar un profesional
+router.delete("/:id", deleteProfessional);
 
 export default router;
