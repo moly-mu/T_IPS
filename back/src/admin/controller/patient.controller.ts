@@ -80,7 +80,7 @@ export const getPacienteById = async (req: Request, res: Response) => {
     });
 
     if (!paciente) {
-      return res.status(404).json({ error: "Paciente no encontrado" });
+      return ;
     }
 
     const response = {
@@ -146,7 +146,7 @@ export const createPaciente = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!rol_idrol || isNaN(Number(rol_idrol))) {
-      return res.status(400).json({ error: "rol_idrol inválido o ausente" });
+      return ;
     }
 
     const result = await prisma.$transaction(async (tx) => {
