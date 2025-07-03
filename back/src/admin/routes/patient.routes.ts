@@ -9,7 +9,12 @@ import {
   deletePaciente,
 } from "../controller/patient.controller";
 
+import { verifyToken } from "../middleware/auth.middleware";
+
 const router = Router();
+
+// Aplica el middleware a todas las rutas
+router.use(verifyToken)
 
 router.get("/", getAllPacientes);
 router.get("/:id", getPacienteById);
