@@ -8,11 +8,16 @@ export const requestSpecialist = async (req: Request, res: Response) => {
     const userId = req.userId;
     const { message } = req.body;
 
-    if (!userId) return res.status(401).json({ message: "No autenticado" });
+    if (!userId){
+       res.status(401).json({ message: "No autenticado" });
+      return;
+    } 
 
     const existing = await prisma.specialistRequest.findFirst({ where: { userId } });
-    if (existing) return res.status(400).json({ message: "Ya has enviado una solicitud" });
-
+    if (existing){
+      res.status(400).json({ message: "Ya has enviado una solicitud" });
+      return;
+    } 
     const request = await prisma.specialistRequest.create({
       data: { userId, message }
     });

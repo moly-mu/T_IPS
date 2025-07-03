@@ -11,10 +11,16 @@ export const loginUser = async (req: Request, res: Response) => {
 
   try {
     const cred = await prisma.credentialUser.findUnique({ where: { email } });
-    if (!cred) return res.status(404).json({ message: "Credenciales no encontradas" });
+    if (!cred){
+      res.status(404).json({ message: "Credenciales no encontradas" });
+      return;
+    }  
 
     const isMatch = await bcrypt.compare(password, cred.password);
-    if (!isMatch) return res.status(401).json({ message: "Contraseña incorrecta" });
+    if (!isMatch){
+      res.status(401).json({ message: "Contraseña incorrecta" });
+      return; 
+    } 
 
     const user = await prisma.user.findFirst({
       where: { credential_users_idcredential_users: cred.id },

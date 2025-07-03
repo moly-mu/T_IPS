@@ -16,7 +16,10 @@ export const registerUser = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const existingEmail = await prisma.credentialUser.findUnique({ where: { email } });
-    if (existingEmail) return res.status(400).json({ message: "Email ya registrado" });
+    if (existingEmail){
+      res.status(400).json({ message: "Email ya registrado" });
+      return;
+    }  
 
     const credentials = await prisma.credentialUser.create({
       data: { email, password: hashedPassword, document }
