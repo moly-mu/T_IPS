@@ -54,6 +54,7 @@ model User {
   userReviewsGiven    UserReview[]      @relation("UserReviewReviewer")
   userReviewsReceived UserReview[]      @relation("UserReviewReviewed")
   specialtyReviews    SpecialtyReview[]
+  specialistRequests SpecialistRequest[]
 
   @@unique([id, credential_users_idcredential_users, rol_idrol])
   @@map("user")
@@ -218,6 +219,17 @@ model SpecialtyReview {
   @@unique([user_id, user_cred_id, user_rol_id, specialty_id])
   @@map("specialty_review")
 }
+
+model SpecialistRequest {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String   @db.Text
+  status    String   @default("pendiente") // pendiente, aprobado, rechazado
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
 
 enum SpecialtyStatus {
   Activo
