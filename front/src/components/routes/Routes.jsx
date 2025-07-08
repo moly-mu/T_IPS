@@ -19,6 +19,11 @@ import SpecialistsSection from "../admin/specialist/SpecialistsSection";
 import ServicesSection from "../homepage/sections/ServicesSection";
 import Calendar from "../user/desis/Calendar";
 import ScheduledDays from "../user/desis/ScheduledDays";
+import DoctorProfile from "../company/DoctorProfile";
+import DoctorProfileAfterLogin from "../company/DoctorProfileAfterLogin";
+import MedicalCalendar from "../company/MedicalCalendar";
+import DoctorSearchPage from "../company/DoctorSearchPage";
+import PatientDashboard from "../company/PatientDashboard ";
 
 
 const AppRoutes = () => {
@@ -30,7 +35,7 @@ const AppRoutes = () => {
         <Route path="/Sins" element={<Sinsesion />} />
         <Route path="/Sreg" element={<Sregistro />} />
 
-        {/* Usuario */}
+        {/* medico */}
         <Route path="/pagusuario" element={<Pperfil />} />
         <Route path="/card" element={<Cards/>} />
         <Route path="/not" element={<Noti />} />
@@ -40,10 +45,15 @@ const AppRoutes = () => {
         <Route path="/listopc" element={<ScheduledDays/>} />
 
         
-        {/* Empresa*/}
+        {/* usuario*/}
         <Route path="/Pins" element={<PinSesion />} />
         <Route path="/Preg" element={<Pregistro />} />
         <Route path="/pagempresa" element={<Pins />} />
+        <Route path="/perfilPaciente" element={<PatientDashboard/>} />
+        <Route path="/perfilDoctor" element={<DoctorProfile/>} />
+        <Route path="/perfilDoctorDes" element={<DoctorProfileAfterLogin/>} />
+        <Route path="/calendarQuotes" element={<MedicalCalendar/>} />
+        <Route path="/buscarMedico" element={<DoctorSearchPage/>} />
 
 
         {/* Administrador*/}
