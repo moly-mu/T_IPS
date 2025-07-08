@@ -17,7 +17,7 @@ model Admin {
 
 model CredentialUser {
   id       Int    @id @default(autoincrement()) @map("idcredential_users")
-  document Int    @unique 
+  document Int    @unique
   email    String @unique @db.VarChar(45)
   password String @db.VarChar(45)
   User     User[]
@@ -42,7 +42,7 @@ model User {
   sex                                 String     @db.VarChar(10)
   languaje                            String     @db.VarChar(45)
   document_type                       String     @db.VarChar(45)
-  phone                               String     @db.VarChar(20)               @default("0000000000")
+  phone                               String     @default("0000000000") @db.VarChar(20)
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(0)
   status                              UserStatus @default(Pendiente)
@@ -68,7 +68,8 @@ model PacData {
 }
 
 model Paciente {
-  id                                       Int @default(autoincrement()) @map("idPaciente")
+  id                                       Int      @default(autoincrement()) @map("idPaciente")
+  consultations                            Int      @default(0)
   pac_data_idpac_data                      Int
   User_idUser                              Int
   User_credential_users_idcredential_users Int

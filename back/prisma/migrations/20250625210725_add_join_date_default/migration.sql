@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "prof_data" ALTER COLUMN "joinDate" SET DEFAULT CURRENT_TIMESTAMP;

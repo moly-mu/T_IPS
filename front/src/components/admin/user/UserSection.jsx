@@ -12,6 +12,7 @@ import {
 	Calendar,
 	Star,
 } from "lucide-react";
+import dayjs from "dayjs";
 
 const UserSection = () => {
 	const [users, setUsers] = useState([]);
@@ -87,16 +88,31 @@ const UserSection = () => {
 	const handleView = async (id) => {
 		try {
 			const response = await axios.get(`http://localhost:3000/admin/patient/${id}`);
+			const user = response.data;
+
+			let firstname = "";
+			let lastname = "";
+
+			if (typeof user.name === "string" && user.name.trim() !== "") {
+				const nameParts = user.name.trim().split(" ");
+				if (nameParts.length === 1) {
+					firstname = nameParts[0];
+				} else {
+					firstname = nameParts.slice(0, -1).join(" ");
+					lastname = nameParts.slice(-1).join(" ");
+				}
+			}
+
 			setModalType("ver");
-			setSelectedUser(response.data);
+			setSelectedUser(user);
 			setFormData({
-				firstname: response.data.firstname,
-				lastname: response.data.lastname,
-				email: response.data.email,
-				phone: response.data.phone,
-				age: response.data.age,
-				gender: response.data.gender,
-				status: response.data.status,
+				firstname,
+				lastname,
+				email: user.email || "",
+				phone: user.phone || "",
+				age: user.age || "",
+				gender: user.gender || "",
+				status: user.status || "Activo",
 			});
 			setModalOpen(true);
 		} catch (error) {
@@ -110,9 +126,22 @@ const UserSection = () => {
 			const response = await axios.get(`http://localhost:3000/admin/patient/${id}`);
 			const fetchedUser = response.data;
 
-			const nameParts = fetchedUser.name.split(" ");
-			const firstname = nameParts.slice(0, -1).join(" "); // Todo menos el último
-			const lastname = nameParts.slice(-1).join(""); // Solo el último
+			console.log("Paciente recibido:", fetchedUser);
+
+			let firstname = "";
+			let lastname = "";
+
+			if (typeof fetchedUser.name === "string" && fetchedUser.name.trim() !== "") {
+				const nameParts = fetchedUser.name.trim().split(" ");
+				if (nameParts.length === 1) {
+					firstname = nameParts[0];
+				} else {
+					firstname = nameParts.slice(0, -1).join(" ");
+					lastname = nameParts.slice(-1).join(" ");
+				}
+			} else {
+				console.warn("El campo 'name' no es válido o está vacío");
+			}
 
 			setModalType("editar");
 			setSelectedUser(fetchedUser);
@@ -124,6 +153,7 @@ const UserSection = () => {
 				age: fetchedUser.age || "",
 				gender: fetchedUser.gender || "",
 				status: fetchedUser.status || "Activo",
+				joinDate: fetchedUser.joinDate || "",
 			});
 			setModalOpen(true);
 		} catch (error) {
@@ -155,6 +185,19 @@ const UserSection = () => {
 		} catch (error) {
 			console.error("Error al eliminar paciente:", error);
 			alert("Error al eliminar paciente");
+		}
+	};
+
+	const toggleStatus = async (id, currentStatus) => {
+		try {
+			const newStatus = currentStatus === "Activo" ? "Inactivo" : "Activo";
+			await axios.put(`http://localhost:3000/admin/patient/${id}`, {
+				status: newStatus,
+			});
+			fetchUsers(); // Actualiza la tabla
+		} catch (error) {
+			console.error("Error al cambiar el estado:", error);
+			alert("No se pudo cambiar el estado del paciente.");
 		}
 	};
 
@@ -330,7 +373,7 @@ const UserSection = () => {
 												</div>
 												<div className="text-sm text-gray-500">
 													Miembro desde{" "}
-													{new Date(user.joinDate).toLocaleDateString()}
+													{dayjs(user.joinDate).format("DD/MM/YYYY")}
 												</div>
 											</div>
 										</div>
@@ -365,13 +408,15 @@ const UserSection = () => {
 										</div>
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
-										<span
-											className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+										<button
+											onClick={() => toggleStatus(user.id, user.status)}
+											className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full transition-colors duration-200 ${getStatusColor(
 												user.status
-											)}`}
+											)} hover:opacity-80`}
+											title="Cambiar estado"
 										>
 											{user.status}
-										</span>
+										</button>
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
 										<div className="flex items-center gap-2">

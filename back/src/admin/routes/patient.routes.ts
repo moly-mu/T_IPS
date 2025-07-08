@@ -14,7 +14,7 @@ import { verifyToken } from "../middleware/auth.middleware";
 const router = Router();
 
 // Aplica el middleware a todas las rutas
-router.use(verifyToken)
+// router.use(verifyToken)
 
 router.get("/", getAllPacientes);
 router.get("/:id", getPacienteById);

@@ -97,7 +97,7 @@ export const updateProfessionalStatus = async (req: Request, res: Response) => {
 
 		if (!professional) {
 			res.status(404).json({ error: "Profesional no encontrado" });
-      return;
+			return;
 		}
 
 		const updatedUser = await prisma.user.update({
@@ -193,5 +193,26 @@ export const getProfessionalsBySpecialty = async (req: Request, res: Response) =
 			error: "Error al obtener profesionales por especialidad",
 			details: error,
 		});
+	}
+};
+
+// Obtener el ratig promedio de los profesionales
+export const getProfessionalRating = async (req: Request, res: Response) => {
+	const id = Number(req.params.id);
+	try {
+		const reviews = await prisma.specialtyReview.findMany({
+			where: {
+				user_id: id,
+			},
+		});
+
+		const avg =
+			reviews.length > 0
+				? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+				: "0.0";
+
+		res.json({ avg });
+	} catch (err) {
+		res.status(500).json({ error: "Error al obtener el rating" });
 	}
 };
