@@ -18,8 +18,8 @@ model Admin {
 model CredentialUser {
   id       Int    @id @default(autoincrement()) @map("idcredential_users")
   document Int    @unique 
-  email    String @unique @db.VarChar(45)
-  password String @db.VarChar(45)
+  email    String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
   User     User[]
 
   @@map("credential_users")
