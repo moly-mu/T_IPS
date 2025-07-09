@@ -24,6 +24,10 @@ import DoctorProfileAfterLogin from "../company/DoctorProfileAfterLogin";
 import MedicalCalendar from "../company/MedicalCalendar";
 import DoctorSearchPage from "../company/DoctorSearchPage";
 import PatientDashboard from "../company/PatientDashboard ";
+import MedicalPaymentSystem from "../company/paymentService/MedicalPaymentSystem";
+import MedicalProfilesSection from "../homepage/sections/MedicalProfilesSection";
+import SymptomQuestionnaire from "../company/AssistanceConsultation/SymptomQuestionnaire ";
+import MedicalAppointmentSection from "../company/AssistanceConsultation/MedicalAppointmentSection";
 
 
 const AppRoutes = () => {
@@ -34,6 +38,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Phome />} />
         <Route path="/Sins" element={<Sinsesion />} />
         <Route path="/Sreg" element={<Sregistro />} />
+        <Route path="/PrePerfiles" element={<MedicalProfilesSection />} />
 
         {/* medico */}
         <Route path="/pagusuario" element={<Pperfil />} />
@@ -54,6 +59,9 @@ const AppRoutes = () => {
         <Route path="/perfilDoctorDes" element={<DoctorProfileAfterLogin/>} />
         <Route path="/calendarQuotes" element={<MedicalCalendar/>} />
         <Route path="/buscarMedico" element={<DoctorSearchPage/>} />
+        <Route path="/pago" element={<MedicalPaymentSystem/>} />
+        <Route path="/DiagnosticoPrevio" element={<SymptomQuestionnaire/>} />
+        <Route path="/AsistirAConsulta" element={<MedicalAppointmentSection/>} />
 
 
         {/* Administrador*/}
