@@ -9,8 +9,8 @@ datasource db {
 
 model Admin {
   id       Int    @id @default(autoincrement()) @map("idadmin")
-  username String @unique @db.VarChar(45)
-  password String @db.VarChar(45)
+  username String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
 
   @@map("admin")
 }
@@ -18,8 +18,8 @@ model Admin {
 model CredentialUser {
   id       Int    @id @default(autoincrement()) @map("idcredential_users")
   document Int    @unique 
-  email    String @unique @db.VarChar(45)
-  password String @db.VarChar(45)
+  email    String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
   User     User[]
 
   @@map("credential_users")
@@ -35,27 +35,27 @@ model Rol {
 
 model User {
   id                                  Int        @id @default(autoincrement()) @map("idUser")
-  firstname                           String     @db.VarChar(45)
-  lastname                            String     @db.VarChar(45)
+  firstname                           String     @db.VarChar(100)
+  lastname                            String     @db.VarChar(100)
   age                                 Int
-  gender                              String     @db.VarChar(45)
-  sex                                 String     @db.VarChar(10)
-  languaje                            String     @db.VarChar(45)
-  document_type                       String     @db.VarChar(45)
-  phone                               String     @db.VarChar(20)               @default("0000000000")
+  gender                              String     @db.VarChar(100)
+  sex                                 String     @db.VarChar(100)
+  languaje                            String     @db.VarChar(100)
+  document_type                       String     @db.VarChar(100)
+  phone                               String     @db.VarChar(100)               @default("0000000000")
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(0)
   status                              UserStatus @default(Pendiente)
 
   credential_users    CredentialUser    @relation(fields: [credential_users_idcredential_users], references: [id])
+  Profesional         Profesional[]
   rol                 Rol               @relation(fields: [rol_idrol], references: [id])
   Paciente            Paciente[]
-  Profesional         Profesional[]
   userReviewsGiven    UserReview[]      @relation("UserReviewReviewer")
   userReviewsReceived UserReview[]      @relation("UserReviewReviewed")
+  @@unique([id, credential_users_idcredential_users, rol_idrol])
   specialtyReviews    SpecialtyReview[]
 
-  @@unique([id, credential_users_idcredential_users, rol_idrol])
   @@map("user")
 }
 
@@ -88,10 +88,10 @@ model ProfData {
   biography                String   @db.Text
   picture                  Bytes
   cv                       Bytes    @map("CV")
-  exp_lab                  String   @db.VarChar(45)
+  exp_lab                  String   @db.VarChar(100)
   educational_certificates Bytes    @map("educational certificates")
   degrees                  Bytes
-  working_experience       String   @db.VarChar(45)
+  working_experience       String   @db.VarChar(100)
   consultations            Int      @default(0)
   joinDate                 DateTime @default(now()) @db.Timestamp(6)
 
@@ -120,11 +120,11 @@ model Profesional {
 
 model Specialty {
   id                      Int                       @id @default(autoincrement()) @map("idspecialty")
-  name                    String                    @unique @db.VarChar(45)
+  name                    String                    @unique @db.VarChar(100)
   status                  SpecialtyStatus           @default(Inactivo)
   price                   Int                       @default(0)
-  service                 String                    @db.VarChar(45)
-  duration                Int                       @default(30) // duración promedio en minutos
+  service                 String                    @db.VarChar(100)
+  duration                Int                       @default(100) // duración promedio en minutos
   ProfesionalHasSpecialty ProfesionalHasSpecialty[]
   SpecialtyReview         SpecialtyReview[]
 
