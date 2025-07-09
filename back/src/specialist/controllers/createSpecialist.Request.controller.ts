@@ -28,7 +28,8 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
     });
 
     if (existing) {
-      return res.status(400).json({ message: "Ya existe una solicitud pendiente" });
+      res.status(400).json({ message: "Ya existe una solicitud pendiente" });
+      return;
     }
 
     const newRequest = await prisma.specialistRequest.create({
@@ -51,8 +52,10 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(201).json({ message: "Solicitud enviada", newRequest });
-  } catch (error) {
-    return res.status(500).json({ message: "Error al crear solicitud", error });
-  }
+     res.status(201).json({ message: "Solicitud enviada", newRequest });
+      return;
+    } catch (error) {
+     res.status(500).json({ message: "Error al crear solicitud", error });
+    return;
+    }
 };
