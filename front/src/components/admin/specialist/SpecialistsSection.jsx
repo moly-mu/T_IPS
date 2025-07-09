@@ -9,6 +9,7 @@ import {
   XCircle,
   Eye,
   Filter,
+  Search,
 } from "lucide-react";
 
 const API_BASE = "http://localhost:3000/admin/profesional";
@@ -43,6 +44,7 @@ const SpecialistsSection = () => {
   const [specialists, setSpecialists] = useState([]);
   const [selectedSpecialist, setSelectedSpecialist] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   function decodeByteObject(obj) {
     if (!obj || typeof obj !== "object") return null;
@@ -105,9 +107,15 @@ const SpecialistsSection = () => {
   const handleApprove = (id) => handleUpdateStatus(id, "Activo");
   const handleReject = (id) => handleUpdateStatus(id, "Inactivo");
 
-  const filteredSpecialists = specialists.filter((s) =>
-    filterStatus === "all" ? true : s.status === filterStatus
-  );
+  const filteredSpecialists = specialists.filter((s) => {
+    const matchesStatus = filterStatus === "all" ? true : s.status === filterStatus;
+    const matchesSearch = searchTerm === "" || 
+        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.education.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesStatus && matchesSearch;
+  });
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -123,7 +131,17 @@ const SpecialistsSection = () => {
 
       {/* Filtros */}
       <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2 flex-1 min-w-64">
+            <Search className="w-5 h-5 text-gray-500" />
+            <input
+              type="text"
+              placeholder="Buscar por nombre, especialidad o educación"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
           <Filter className="w-5 h-5 text-gray-500" />
           <span className="text-sm font-medium text-gray-700">
             Filtrar por estado:
@@ -146,6 +164,56 @@ const SpecialistsSection = () => {
               {getStatusText(status)}
             </button>
           ))}
+        </div>
+      </div>
+
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Solicitudes Pendientes
+              </p>
+              <p className="text-2xl font-bold text-yellow-600">
+                {specialists.filter((s) => s.status === "Pendiente").length}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-yellow-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Especialistas Aprobados
+              </p>
+              <p className="text-2xl font-bold text-green-600">
+                {specialists.filter((s) => s.status === "Activo").length}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Total Especialistas
+              </p>
+              <p className="text-2xl font-bold text-blue-600">
+                {specialists.length}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <User className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -369,56 +437,6 @@ const SpecialistsSection = () => {
           </div>
         </div>
       )}
-
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">
-                Solicitudes Pendientes
-              </p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {specialists.filter((s) => s.status === "Pendiente").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-yellow-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">
-                Especialistas Aprobados
-              </p>
-              <p className="text-2xl font-bold text-green-600">
-                {specialists.filter((s) => s.status === "Activo").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">
-                Total Especialistas
-              </p>
-              <p className="text-2xl font-bold text-blue-600">
-                {specialists.length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <User className="w-6 h-6 text-blue-600" />
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

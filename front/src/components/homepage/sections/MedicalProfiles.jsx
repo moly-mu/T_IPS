@@ -28,7 +28,7 @@ const MedicalProfiles = () => {
 
         <div className="grid lg:grid-cols-2 gap-12 mb-20">
           
-          <div className="group cursor-pointer" onClick={() => handleNavigation('/medicos')}>
+          <div className="group cursor-pointer" onClick={() => handleNavigation('/buscarMedico')}>
             <div className="bg-white rounded-none p-12 hover:bg-gray-50 transition-colors duration-300 border-b border-gray-100">
               <div className="flex items-start justify-between mb-8">
                 <div className="flex-1">
@@ -55,7 +55,7 @@ const MedicalProfiles = () => {
                   className="text-xs font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-widest uppercase group-hover:text-gray-700 transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleNavigation('/medicos');}}>
+                    handleNavigation('/buscarMedico');}}>
                   EXPLORAR PERFILES
                 </button>
                 <div className="text-xs text-gray-400 font-light">
@@ -66,7 +66,7 @@ const MedicalProfiles = () => {
           </div>
 
           {/* medico Ya! Card */}
-          <div className="group cursor-pointer" onClick={() => handleNavigation('/consulta-inmediata')}>
+          <div className="group cursor-pointer" onClick={() => handleNavigation('/buscarMedico')}>
             <div className="bg-white rounded-none p-12 hover:bg-gray-50 transition-colors duration-300 border-b border-gray-100">
               <div className="flex items-start justify-between mb-8">
                 <div className="flex-1">
@@ -93,7 +93,7 @@ const MedicalProfiles = () => {
                   className="text-xs font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-widest uppercase group-hover:text-gray-700 transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleNavigation('/ya');
+                    handleNavigation('/buscarMedico');
                   }}>
                   CONSULTA AHORA
                 </button>
