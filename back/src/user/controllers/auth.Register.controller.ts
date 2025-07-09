@@ -14,9 +14,10 @@ export const registerUser = async (req: Request, res: Response) => {
 
   // Validación de campos requeridos
     if (!email  || !document || !firstname || !lastname) {
-      return res.status(400).json({ 
+      res.status(400).json({ 
         error: "Campos requeridos: email, document, firstname, lastname" 
       });
+      return;
     }
 
   try {
@@ -43,7 +44,8 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const rol = await prisma.rol.findFirst({ where: { rol_name: "usuario" } }); // o "paciente"
     if (!rol) {
-      return res.status(500).json({ error: "Rol 'usuario' no encontrado. Crea el rol en la base de datos." });
+      res.status(500).json({ error: "Rol 'usuario' no encontrado. Crea el rol en la base de datos." });
+      return;
     }
 
     const user = await prisma.user.create({
