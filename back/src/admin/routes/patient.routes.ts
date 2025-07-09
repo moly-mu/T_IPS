@@ -24,3 +24,4 @@ router.put("/:id", updatePaciente);
 router.delete("/:id", deletePaciente);
 
 export default router;
+
