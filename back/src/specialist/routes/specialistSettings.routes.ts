@@ -7,9 +7,9 @@ import {validateToken  } from "../middleware/authMiddleware";
 const router = express.Router();
 
 
-router.post("/changePassword", validateToken, changePassword);
-router.get("/deactivateSpecialist", validateToken,deactivateAccount);
-router.put("/deleteSpecialist",validateToken, deleteAccount);
-router.put("/settingSpecialist",validateToken, getSettings);
+router.put("/changePassword", validateToken, changePassword);
+router.put("/deactivateSpecialist", validateToken,deactivateAccount);
+router.delete("/deleteSpecialist",validateToken, deleteAccount);
+router.get("/settingSpecialist",validateToken, getSettings);
 
 export default router;
