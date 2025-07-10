@@ -223,11 +223,24 @@ model SpecialtyReview {
 }
 
 model SpecialistRequest {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  message   String   @db.Text
-  status    String   @default("pendiente") // pendiente, aprobado, rechazado
-  createdAt DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  biography      String?   @db.Text
+  picture        Bytes?
+  specialty      String
+  price          Int
+  graduationYear Int
+  workExperience String   @db.Text
+  languages      String   @db.Text // Ej: "Inglés - Avanzado, Español - Nativo"
+  education      String   @db.Text
+  skills         String   @db.Text
+  references     String   @db.Text // JSON stringificado
+  certificates   Bytes?
+  documentInfo   String   @db.Text // JSON stringificado con archivos: ID, tarjeta profesional, etc.
+  personalInfo   String   @db.Text // JSON stringificado: ciudad, teléfono, EPS, etc.
+  personalRefs   String   @db.Text // JSON stringificado: nombre, teléfono, relación
+  status         String   @default("pendiente")
+  createdAt      DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 }

@@ -10,7 +10,7 @@ const router = express.Router()
 router.get("/getAppointments",validateToken, getAppointments);
 router.get("/listSpecialist",validateToken,listSpecialistRequests);
 router.get("/getProfile",validateToken,getProfile);
-router.post("/editProfile",validateToken,updateProfile);
+router.put("/editProfile",validateToken,updateProfile);
 
 
 

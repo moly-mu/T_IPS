@@ -5,11 +5,15 @@ import adminProfRoutes from "./admin/routes/profesional.routes";
 import adminSpecialRoutes from "./admin/routes/specialty.routes";
 import adminPatientRoutes from "./admin/routes/patient.routes";
 import specialistRequest from "./specialist/routes/specialistRequest.routes";
+import specialistSettings from "./specialist/routes/specialistSettings.routes";
+import specialistAppointments from './specialist/routes/specialistAppointments.routes'
+import dotenv from 'dotenv';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+dotenv.config();
 
 // *Rutas de usuario
 app.use("/api", userRoutes); // /api/register, /api/login, /api/request-specialist
@@ -21,7 +25,9 @@ app.use("/admin/specialty", adminSpecialRoutes);
 app.use("/admin/patient", adminPatientRoutes);
 
 //*Rutas de especialista
-app.use("/specialist", specialistRequest)
+app.use("/specialist", specialistRequest);
+app.use("/specialist/settings", specialistSettings);
+app.use("/specialist/appointments",specialistAppointments);
 
 
 export default app;

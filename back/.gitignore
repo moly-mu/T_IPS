@@ -5,11 +5,9 @@ bun.lock
 # Prisma
 prisma/migrations/
 *.db
-
+migration_lock.toml
 # Environment variables
 .env
-.env.*
-
 # Build outputs (por si usas TypeScript o herramientas de compilación)
 dist/
 build/
