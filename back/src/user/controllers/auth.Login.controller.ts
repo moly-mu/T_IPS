@@ -27,7 +27,7 @@ export const loginUser = async (req: Request, res: Response) => {
       include: { rol: true }
     });
 
-    const token = jwt.sign({ id: user?.id }, process.env.JWT_SECRET || "secret", { expiresIn: "1d" });
+    const token = jwt.sign({ id: user?.id }, process.env.JWT_SECRET || "secret", { expiresIn: "1h" });
 
     res.json({ token, user });
   } catch (err) {

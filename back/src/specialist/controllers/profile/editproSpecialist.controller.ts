@@ -5,11 +5,6 @@ const prisma= new PrismaClient;
 
 export const updateProfile = async (req: Request, res: Response) => {
   const userId = req.userId;
-  console.log("📌 userId recibido en el controlador:", userId); //! Eliminar log
-  if (!userId) { //! Eliminar control de flujo 
-    res.status(400).json({ message: "Falta userId, posible error en token o middleware" });
-    return;
-  }
   const {
     firstname,
     lastname,
