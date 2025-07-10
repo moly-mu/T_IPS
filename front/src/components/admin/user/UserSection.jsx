@@ -71,7 +71,18 @@ const UserSection = () => {
 					: 0,
 		};
 
-		
+		const now = new Date();
+		const currentMonth = now.getMonth(); //Devuelve el numero del mes actual, 0 = enero, 1 = febrero, etc.
+		const currentYear = now.getFullYear(); //Devuelve el año actual (2025)
+
+		const newUserThisMonth = filteredUsers.filter((u) => {
+			const joinedDate = new Date(u.joinDate);
+			return (
+				joinedDate.getMonth() == currentMonth && joinedDate.getFullYear() == currentYear
+			)
+		}).length;
+
+
 
 	const getStatusColor = (status) =>
 		status === "Activo" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
@@ -226,7 +237,7 @@ const UserSection = () => {
 						<div>
 							<p className="text-sm font-medium text-gray-600">TOTAL USUARIOS</p>
 							<p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
-							<p className="text-sm text-blue-600">+2 nuevos este mes</p>
+							<p className="text-sm text-blue-600">+{newUserThisMonth} nuevos este mes</p>
 						</div>
 						<div className="p-3 bg-blue-50 rounded-lg">
 							<Users className="h-6 w-6 text-blue-600" />
