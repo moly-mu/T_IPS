@@ -37,7 +37,7 @@ export const getAllPacientes = async (req: Request, res: Response) => {
           p.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] || null,
         status: p.User.status,
         rating: 4.5,
-        joinDate: p.joinDate.toISOString().split("T")[0],
+        joinDate: p.User.joinDate.toISOString().split("T")[0],
       }))
       .filter((u) => {
         const matchesStatus = !status || u.status === status;
@@ -97,7 +97,7 @@ export const getPacienteById = async (req: Request, res: Response) => {
         paciente.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] || null,
       status: paciente.User.status,
       rating: 4.5,
-      joinDate: paciente.joinDate.toISOString().split("T")[0],
+      joinDate: paciente.User.joinDate.toISOString().split("T")[0],
     };
 
     res.json(response);

@@ -215,6 +215,7 @@ async function main() {
 				credential_users_idcredential_users: credentialUser.id,
 				rol_idrol: rol.id,
 				status: specialist.status as any,
+				joinDate: new Date(specialist.joinDate)
 			},
 		});
 
@@ -227,8 +228,7 @@ async function main() {
 				educational_certificates: Buffer.from(specialist.certifications.join(", ")),
 				degrees: Buffer.from(specialist.education),
 				working_experience: specialist.experience,
-				consultations: specialist.consultations,
-				joinDate: new Date(specialist.joinDate),
+				consultations: specialist.consultations
 			},
 		});
 
@@ -333,9 +333,9 @@ async function main() {
 				credential_users_idcredential_users: credential.id,
 				rol_idrol: rolPaciente.id,
 				status: patient.status as any,
+				joinDate: new Date(patient.joinDate),
 				Paciente: {
 					create: {
-						joinDate: new Date(patient.joinDate),
 						pac_data: {
 							create: {
 								medical_history: Buffer.from("Sin antecedentes importantes"),

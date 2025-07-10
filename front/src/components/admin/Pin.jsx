@@ -329,7 +329,7 @@ useEffect(() => {
             experience: pro.prof_data.working_experience,
             rating: parseFloat(ratingRes.data.avg).toFixed(1),
             status: pro.User.status.toLowerCase(),
-            date: new Date(pro.prof_data.joinDate).toISOString().split("T")[0],
+            date: new Date(pro.User.joinDate).toISOString().split("T")[0],
           };
         })
       );

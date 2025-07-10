@@ -272,7 +272,7 @@ const SpecialistsSection = () => {
 											<div className="col-span-2">
 												<span className="text-gray-500">
 													Certificaciones:
-												</span>
+												</span> 
 												<div className="flex flex-wrap gap-2 mt-1">
 													{Array.isArray(s.certifications) &&
 														s.certifications.map((c, i) => (

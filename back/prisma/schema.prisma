@@ -46,6 +46,7 @@ model User {
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(0)
   status                              UserStatus @default(Pendiente)
+  joinDate                            DateTime   @default(now()) @db.Timestamp(0)
 
   credential_users    CredentialUser    @relation(fields: [credential_users_idcredential_users], references: [id])
   rol                 Rol               @relation(fields: [rol_idrol], references: [id])
@@ -68,13 +69,12 @@ model PacData {
 }
 
 model Paciente {
-  id                                       Int      @default(autoincrement()) @map("idPaciente")
-  consultations                            Int      @default(0)
+  id                                       Int @default(autoincrement()) @map("idPaciente")
+  consultations                            Int @default(0)
   pac_data_idpac_data                      Int
   User_idUser                              Int
   User_credential_users_idcredential_users Int
   User_rol_idrol                           Int
-  joinDate                                 DateTime @default(now()) @db.Timestamp(6)
 
   pac_data     PacData       @relation(fields: [pac_data_idpac_data], references: [id])
   User         User          @relation(fields: [User_idUser, User_credential_users_idcredential_users, User_rol_idrol], references: [id, credential_users_idcredential_users, rol_idrol])
@@ -85,16 +85,15 @@ model Paciente {
 }
 
 model ProfData {
-  id                       Int      @id @default(autoincrement()) @map("idprof_data")
-  biography                String   @db.Text
+  id                       Int    @id @default(autoincrement()) @map("idprof_data")
+  biography                String @db.Text
   picture                  Bytes
-  cv                       Bytes    @map("CV")
-  exp_lab                  String   @db.VarChar(45)
-  educational_certificates Bytes    @map("educational certificates")
+  cv                       Bytes  @map("CV")
+  exp_lab                  String @db.VarChar(45)
+  educational_certificates Bytes  @map("educational certificates")
   degrees                  Bytes
-  working_experience       String   @db.VarChar(45)
-  consultations            Int      @default(0)
-  joinDate                 DateTime @default(now()) @db.Timestamp(6)
+  working_experience       String @db.VarChar(45)
+  consultations            Int    @default(0)
 
   Profesional Profesional[]
 
@@ -126,8 +125,10 @@ model Specialty {
   price                   Int                       @default(0)
   service                 String                    @db.VarChar(45)
   duration                Int                       @default(30) // duración promedio en minutos
+  joinDate                DateTime                  @default(now()) @db.Timestamp(0)
   ProfesionalHasSpecialty ProfesionalHasSpecialty[]
   SpecialtyReview         SpecialtyReview[]
+  Appointment             Appointment[]
 
   @@map("specialty")
 }
@@ -165,6 +166,7 @@ model Request {
 model Appointment {
   id                                                   Int      @id @default(autoincrement()) @map("idappointments")
   state                                                String   @db.VarChar(20)
+  appoint_specialtyId                                  Int
   Paciente_idPaciente                                  Int
   Paciente_pac_data_idpac_data                         Int
   Paciente_User_idUser                                 Int
@@ -180,6 +182,7 @@ model Appointment {
 
   Paciente    Paciente    @relation(fields: [Paciente_idPaciente, Paciente_pac_data_idpac_data, Paciente_User_idUser, Paciente_User_credential_users_idcredential_users, Paciente_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
   Profesional Profesional @relation(fields: [Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol], references: [id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+  Specialty   Specialty   @relation(fields: [appoint_specialtyId], references: [id])
 
   @@map("appointments")
 }

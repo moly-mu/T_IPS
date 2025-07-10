@@ -50,26 +50,28 @@ const UserSection = () => {
 		fetchUsers();
 	}, []);
 
-	const filteredUsers = users.filter((user) => {
-		const matchesSearch =
-			user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			user.email.toLowerCase().includes(searchTerm.toLowerCase());
-		const matchesStatus = filterStatus === "Todos los estados" || user.status === filterStatus;
-		const matchesGender = filterGender === "Todos los géneros" || user.gender === filterGender;
-		return matchesSearch && matchesStatus && matchesGender;
-	});
+		const filteredUsers = users.filter((user) => {
+			const matchesSearch =
+				user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				user.email.toLowerCase().includes(searchTerm.toLowerCase());
+			const matchesStatus = filterStatus === "Todos los estados" || user.status === filterStatus;
+			const matchesGender = filterGender === "Todos los géneros" || user.gender === filterGender;
+			return matchesSearch && matchesStatus && matchesGender;
+		});
 
-	const stats = {
-		totalUsers: filteredUsers.length,
-		activeUsers: filteredUsers.filter((u) => u.status === "Activo").length,
-		totalConsultations: filteredUsers.reduce((acc, u) => acc + u.consultations, 0),
-		avgRating:
-			filteredUsers.length > 0
-				? (
-						filteredUsers.reduce((acc, u) => acc + u.rating, 0) / filteredUsers.length
-				  ).toFixed(1)
-				: 0,
-	};
+		const stats = {
+			totalUsers: filteredUsers.length,
+			activeUsers: filteredUsers.filter((u) => u.status === "Activo").length,
+			totalConsultations: filteredUsers.reduce((acc, u) => acc + u.consultations, 0),
+			avgRating:
+				filteredUsers.length > 0
+					? (
+							filteredUsers.reduce((acc, u) => acc + u.rating, 0) / filteredUsers.length
+					).toFixed(1)
+					: 0,
+		};
+
+		
 
 	const getStatusColor = (status) =>
 		status === "Activo" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
@@ -153,7 +155,7 @@ const UserSection = () => {
 				age: fetchedUser.age || "",
 				gender: fetchedUser.gender || "",
 				status: fetchedUser.status || "Activo",
-				joinDate: fetchedUser.joinDate || "",
+				joinDate: fetchedUser.User.joinDate || "",
 			});
 			setModalOpen(true);
 		} catch (error) {
@@ -404,7 +406,7 @@ const UserSection = () => {
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
 										<div className="text-sm text-gray-900">
-											{new Date(user.lastConsultation).toLocaleDateString()}
+											{new Date(user.joinDate).toLocaleDateString()}
 										</div>
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
