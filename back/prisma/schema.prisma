@@ -233,8 +233,8 @@ model SpecialistRequest {
   biography      String?
   picture        Bytes?
   specialty      String?
-  price          Float?
-  graduationYear Int?
+  price          Float
+  graduationYear Int
   workExperience String?
   languages      String?
   education      String?
