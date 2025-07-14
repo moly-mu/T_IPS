@@ -1,31 +1,26 @@
 import { Router } from "express";
 import {
-  getAllProfessionals,
-  getProfessionalById,
-  getProfessionalsBySpecialty,
-  createProfessional,
-  updateProfessionalStatus,
-  deleteProfessional,
+	getAllProfessionals,
+	getProfessionalById,
+	getProfessionalsBySpecialty,
+	createProfessional,
+	updateProfessionalStatus,
+	deleteProfessional,
+	getProfessionalRating,
 } from "../controller/profesional.controller";
 
 const router = Router();
 
-// ✅ Obtener todos los profesionales (opcional para admin)
-router.get("/", getAllProfessionals);
-
-// ✅ Obtener profesionales por ID de especialidad (para mostrar en frontend)
+// Rutas específicas primero
 router.get("/especialidad/:specialtyId", getProfessionalsBySpecialty);
+router.get("/:id/rating", getProfessionalRating);
 
-// ✅ Obtener un profesional por su ID
+// Rutas generales
+router.get("/", getAllProfessionals);
 router.get("/:id", getProfessionalById);
 
-// ✅ Crear un nuevo profesional
 router.post("/", createProfessional);
-
-// ✅ Actualizar el estado del profesional (tabla USER)
 router.put("/:id", updateProfessionalStatus);
-
-// ✅ Eliminar un profesional
 router.delete("/:id", deleteProfessional);
 
 export default router;

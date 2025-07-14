@@ -37,7 +37,7 @@ export const getAllPacientes = async (req: Request, res: Response) => {
           p.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] || null,
         status: p.User.status,
         rating: 4.5,
-        joinDate: p.joinDate.toISOString().split("T")[0],
+        joinDate: p.User.joinDate.toISOString().split("T")[0],
       }))
       .filter((u) => {
         const matchesStatus = !status || u.status === status;
@@ -80,7 +80,8 @@ export const getPacienteById = async (req: Request, res: Response) => {
     });
 
     if (!paciente) {
-      return ;
+      res.status(404).json({ error: "Paciente no encontrado" });
+      return;
     }
 
     const response = {
@@ -96,7 +97,7 @@ export const getPacienteById = async (req: Request, res: Response) => {
         paciente.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] || null,
       status: paciente.User.status,
       rating: 4.5,
-      joinDate: paciente.joinDate.toISOString().split("T")[0],
+      joinDate: paciente.User.joinDate.toISOString().split("T")[0],
     };
 
     res.json(response);
@@ -146,7 +147,8 @@ export const createPaciente = async (req: Request, res: Response) => {
     } = req.body;
 
     if (!rol_idrol || isNaN(Number(rol_idrol))) {
-      return ;
+      res.status(400).json({ error: "rol_idrol inválido o ausente" });
+      return;
     }
 
     const result = await prisma.$transaction(async (tx) => {
