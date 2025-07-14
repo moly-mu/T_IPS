@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "useUnknownInCatchVariables": false,
     "typeRoots": ["./node_modules/@types", "./types"],
     "target": "es2020",
     "module": "esnext",

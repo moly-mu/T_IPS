@@ -17,7 +17,7 @@ model Admin {
 
 model CredentialUser {
   id       Int    @id @default(autoincrement()) @map("idcredential_users")
-  document Int    @unique 
+  document Int    @unique
   email    String @unique @db.VarChar(100)
   password String @db.VarChar(100)
   User     User[]
@@ -42,7 +42,7 @@ model User {
   sex                                 String     @db.VarChar(10)
   languaje                            String     @db.VarChar(45)
   document_type                       String     @db.VarChar(45)
-  phone                               String     @db.VarChar(20)               @default("0000000000")
+  phone                               String     @default("0000000000") @db.VarChar(20)
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(0)
   status                              UserStatus @default(Pendiente)
@@ -54,11 +54,8 @@ model User {
   userReviewsGiven    UserReview[]      @relation("UserReviewReviewer")
   userReviewsReceived UserReview[]      @relation("UserReviewReviewed")
   specialtyReviews    SpecialtyReview[]
-<<<<<<< HEAD
-  specialistRequests SpecialistRequest[]
-=======
+
   specialistRequests SpecialistRequest[] @relation("UserToSpecialistRequests")
->>>>>>> 7dacd2b22b3aa2f5d3805ea608890126d0ef296a
 
   @@unique([id, credential_users_idcredential_users, rol_idrol])
   @@map("user")
@@ -73,7 +70,7 @@ model PacData {
 }
 
 model Paciente {
-  id                                       Int @default(autoincrement()) @map("idPaciente")
+  id                                       Int      @default(autoincrement()) @map("idPaciente")
   pac_data_idpac_data                      Int
   User_idUser                              Int
   User_credential_users_idcredential_users Int
@@ -107,7 +104,7 @@ model ProfData {
 }
 
 model Profesional {
-  id                                       Int @default(autoincrement()) @map("idProfesional")
+  id                                       Int        @default(autoincrement()) @map("idProfesional")
   prof_data_idprof_data                    Int
   User_idUser                              Int
   User_credential_users_idcredential_users Int
@@ -227,41 +224,29 @@ model SpecialtyReview {
 }
 
 model SpecialistRequest {
-<<<<<<< HEAD
   id             Int      @id @default(autoincrement())
   userId         Int
-  biography      String?   @db.Text
+  biography      String?
   picture        Bytes?
-  specialty      String
-  price          Int
-  graduationYear Int
-  workExperience String   @db.Text
-  languages      String   @db.Text // Ej: "Inglés - Avanzado, Español - Nativo"
-  education      String   @db.Text
-  skills         String   @db.Text
-  references     String   @db.Text // JSON stringificado
+  specialty      String?
+  price          Float?
+  graduationYear Int?
+  workExperience String?
+  languages      String?
+  education      String?
+  skills         String?
+  references     String? // JSON string
   certificates   Bytes?
-  documentInfo   String   @db.Text // JSON stringificado con archivos: ID, tarjeta profesional, etc.
-  personalInfo   String   @db.Text // JSON stringificado: ciudad, teléfono, EPS, etc.
-  personalRefs   String   @db.Text // JSON stringificado: nombre, teléfono, relación
+  documentInfo   String? // JSON string
+  personalInfo   String? // JSON string
+  personalRefs   String? // JSON string
   status         String   @default("pendiente")
   createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation("UserToSpecialistRequests", fields: [userId], references: [id])
 }
 
-
-=======
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  message   String   @db.Text
-  status    String   @default("pendiente") // pendiente, aprobado, rechazado
-  createdAt DateTime @default(now())
-
-   user User @relation("UserToSpecialistRequests", fields: [userId], references: [id])
-}
-
->>>>>>> 7dacd2b22b3aa2f5d3805ea608890126d0ef296a
 enum SpecialtyStatus {
   Activo
   Inactivo

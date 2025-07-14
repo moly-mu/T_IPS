@@ -6,7 +6,8 @@ import {validateToken} from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.post("/specialist/specialist-request", validateToken, createSpecialistRequest);
+router.post("/specialistRequest", validateToken, createSpecialistRequest);//! Borrar este log cuando se haga el commit
+console.log("🛠️ Ruta /specialist-request creada y protegida con validateToken middleware");
 router.get("/specialist/specialist-requests", validateToken,listSpecialistRequests);
 router.put("/specialist/specialist-requests/:id/approve",validateToken, approveSpecialistRequest);
 

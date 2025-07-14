@@ -27,8 +27,14 @@ export const loginUser = async (req: Request, res: Response) => {
       include: { rol: true }
     });
 
-    const token = jwt.sign({ id: user?.id }, process.env.JWT_SECRET || "secret", { expiresIn: "1h" });
-
+    if (!user) {
+      throw new Error("Usuario no encontrado o inválido");
+    }
+    
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "secret", {
+      expiresIn: "1h",
+    });
+    
     res.json({ token, user });
   } catch (err) {
     res.status(500).json({ error: "Error al iniciar sesión", details: err });
