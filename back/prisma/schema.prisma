@@ -36,7 +36,9 @@ model Rol {
 model User {
   id                                  Int        @id @default(autoincrement()) @map("idUser")
   firstname                           String     @db.VarChar(45)
+  second_firstname                    String?     @db.VarChar(45)
   lastname                            String     @db.VarChar(45)
+  second_lastname                    String?     @db.VarChar(45)
   age                                 Int
   gender                              String     @db.VarChar(45)
   sex                                 String     @db.VarChar(10)
