@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "useUnknownInCatchVariables": false,
+    "typeRoots": ["./node_modules/@types", "./types"],
     "target": "es2020",
     "module": "esnext",
     "moduleResolution": "node",
@@ -11,6 +13,6 @@
     "rootDir": "src",
     "resolveJsonModule": true
   },
-  "include": ["src"],
+  "include": ["src","prisma"],
   "exclude": ["node_modules"]
 }
