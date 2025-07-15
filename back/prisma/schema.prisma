@@ -17,7 +17,7 @@ model Admin {
 
 model CredentialUser {
   id       Int    @id @default(autoincrement()) @map("idcredential_users")
-  document Int    @unique 
+  document Int    @unique
   email    String @unique @db.VarChar(100)
   password String @db.VarChar(100)
   User     User[]
@@ -35,30 +35,26 @@ model Rol {
 
 model User {
   id                                  Int        @id @default(autoincrement()) @map("idUser")
-  firstname                           String     @db.VarChar(45)
-  lastname                            String     @db.VarChar(45)
+  firstname                           String     @db.VarChar(255)
+  lastname                            String     @db.VarChar(255)
   age                                 Int
-  gender                              String     @db.VarChar(45)
-  sex                                 String     @db.VarChar(10)
-  languaje                            String     @db.VarChar(45)
-  document_type                       String     @db.VarChar(45)
-  phone                               String     @db.VarChar(20)               @default("0000000000")
+  gender                              String     @db.VarChar(255)
+  sex                                 String     @db.VarChar(255)
+  language                            String     @db.VarChar(255)
+  document_type                       String     @db.VarChar(255)              
+  phone                               String     @default("0000000000") @db.VarChar(20)
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(0)
   status                              UserStatus @default(Pendiente)
 
-  credential_users    CredentialUser    @relation(fields: [credential_users_idcredential_users], references: [id])
-  rol                 Rol               @relation(fields: [rol_idrol], references: [id])
+  credential_users    CredentialUser      @relation(fields: [credential_users_idcredential_users], references: [id])
+  rol                 Rol                 @relation(fields: [rol_idrol], references: [id])
   Paciente            Paciente[]
   Profesional         Profesional[]
-  userReviewsGiven    UserReview[]      @relation("UserReviewReviewer")
-  userReviewsReceived UserReview[]      @relation("UserReviewReviewed")
+  userReviewsGiven    UserReview[]        @relation("UserReviewReviewer")
+  userReviewsReceived UserReview[]        @relation("UserReviewReviewed")
   specialtyReviews    SpecialtyReview[]
-<<<<<<< HEAD
-  specialistRequests SpecialistRequest[]
-=======
-  specialistRequests SpecialistRequest[] @relation("UserToSpecialistRequests")
->>>>>>> 7dacd2b22b3aa2f5d3805ea608890126d0ef296a
+  specialistRequests  SpecialistRequest[] @relation("UserToSpecialistRequests")
 
   @@unique([id, credential_users_idcredential_users, rol_idrol])
   @@map("user")
@@ -73,7 +69,7 @@ model PacData {
 }
 
 model Paciente {
-  id                                       Int @default(autoincrement()) @map("idPaciente")
+  id                                       Int      @default(autoincrement()) @map("idPaciente")
   pac_data_idpac_data                      Int
   User_idUser                              Int
   User_credential_users_idcredential_users Int
@@ -107,7 +103,7 @@ model ProfData {
 }
 
 model Profesional {
-  id                                       Int @default(autoincrement()) @map("idProfesional")
+  id                                       Int        @default(autoincrement()) @map("idProfesional")
   prof_data_idprof_data                    Int
   User_idUser                              Int
   User_credential_users_idcredential_users Int
@@ -227,41 +223,28 @@ model SpecialtyReview {
 }
 
 model SpecialistRequest {
-<<<<<<< HEAD
   id             Int      @id @default(autoincrement())
   userId         Int
-  biography      String?   @db.Text
+  biography      String?  @db.Text
   picture        Bytes?
   specialty      String
   price          Int
   graduationYear Int
   workExperience String   @db.Text
-  languages      String   @db.Text // Ej: "Inglés - Avanzado, Español - Nativo"
+  languages      String   @db.Text
   education      String   @db.Text
   skills         String   @db.Text
-  references     String   @db.Text // JSON stringificado
+  references     String   @db.Text
   certificates   Bytes?
-  documentInfo   String   @db.Text // JSON stringificado con archivos: ID, tarjeta profesional, etc.
-  personalInfo   String   @db.Text // JSON stringificado: ciudad, teléfono, EPS, etc.
-  personalRefs   String   @db.Text // JSON stringificado: nombre, teléfono, relación
+  documentInfo   String   @db.Text
+  personalInfo   String   @db.Text
+  personalRefs   String   @db.Text
   status         String   @default("pendiente")
   createdAt      DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation("UserToSpecialistRequests", fields: [userId], references: [id])
 }
 
-
-=======
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  message   String   @db.Text
-  status    String   @default("pendiente") // pendiente, aprobado, rechazado
-  createdAt DateTime @default(now())
-
-   user User @relation("UserToSpecialistRequests", fields: [userId], references: [id])
-}
-
->>>>>>> 7dacd2b22b3aa2f5d3805ea608890126d0ef296a
 enum SpecialtyStatus {
   Activo
   Inactivo
