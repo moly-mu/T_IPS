@@ -1,3 +1,11 @@
+//* Agregar tabla de historia clinica
+//* Hashear contraseñas
+//* Agregar campos de consentimiento de la persona
+//* Agregar tabla receta medica
+//* Agregar tabla de ordenes médicas
+//* Agregar tabla cuestionario de sintomas 
+//* Agregar tabla de comprobante de cita
+//* Agregar tabla de facturas
 generator client {
   provider = "prisma-client-js"
 }
@@ -68,7 +76,10 @@ model PacData {
   id              Int        @id @default(autoincrement()) @map("idpac_data")
   medical_history Bytes
   Paciente        Paciente[]
-
+ //* Agregar dirección
+ //* Agregar Tipo de sangre
+ //* Agregar alergias
+ //* Agregar contacto de emergencia
   @@map("pac_data")
 }
 
@@ -185,6 +196,7 @@ model Appointment {
   Profesional_User_rol_idrol                           Int
   appoint_init                                         DateTime @db.Timestamp
   appoint_finish                                       DateTime @db.Timestamp
+  //* Agregar link de la grabación de zoom
 
   Paciente    Paciente    @relation(fields: [Paciente_idPaciente, Paciente_pac_data_idpac_data, Paciente_User_idUser, Paciente_User_credential_users_idcredential_users, Paciente_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
   Profesional Profesional @relation(fields: [Profesional_idProfesional, Profesional_prof_data_idprof_data, Profesional_User_idUser, Profesional_User_credential_users_idcredential_users, Profesional_User_rol_idrol], references: [id, prof_data_idprof_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])

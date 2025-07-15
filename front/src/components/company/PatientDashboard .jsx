@@ -261,7 +261,7 @@
     const renderHistoriaClinica = () => (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-light text-gray-900">Historia Clínica</h2>
+          <h2 className="text-2xl font-light text-gray-900">Historial Clínico</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             <input

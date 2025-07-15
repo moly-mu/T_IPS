@@ -7,7 +7,7 @@ const Sregistro = () => {
 
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({ //! Falta agregar campos del prisma
   primerNombre: "",
   segundoNombre: "",
   primerApellido: "",
