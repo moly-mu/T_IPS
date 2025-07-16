@@ -11,7 +11,8 @@ To run db:
 ```
 bunx prisma migrate dev          //             bunx prisma db push
 
-bun run src/scripts/seed.ts
+bun run src/script/seed.ts
+bun run src/seed.ts
 
 
 ```
