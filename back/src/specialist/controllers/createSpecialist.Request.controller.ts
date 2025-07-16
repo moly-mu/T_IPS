@@ -3,11 +3,13 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+
 export const createSpecialistRequest = async (req: Request, res: Response) => {
   const userId = req.userId;
 
   if (!userId) {
-    return res.status(401).json({ message: "Usuario no autenticado" });
+     res.status(401).json({ message: "Usuario no autenticado" });
+    return;
   }
 
   const {
@@ -27,6 +29,14 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
     personalRefs,
   } = req.body;
 
+  if (!specialty || !price || !graduationYear || !workExperience) {
+   res.status(400).json({ 
+    message: "Faltan campos obligatorios",
+    missing: { specialty: !specialty, price: !price, graduationYear: !graduationYear, workExperience: !workExperience }
+    });
+  return;
+  }
+  
   try {
     // Verifica que no exista una solicitud pendiente
     const existing = await prisma.specialistRequest.findFirst({
@@ -34,7 +44,8 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
     });
 
     if (existing) {
-      return res.status(400).json({ message: "Ya existe una solicitud pendiente" });
+       res.status(400).json({ message: "Ya existe una solicitud pendiente" });
+      return;
     }
 
     // Procesar campos base64 (imagen y PDF)
@@ -61,18 +72,18 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
         price,
         graduationYear,
         workExperience,
-        languages: stringifyIfNeeded(languages),
-        education: stringifyIfNeeded(education),
-        skills: stringifyIfNeeded(skills),
-        references: stringifyIfNeeded(references),
+        languages: stringifyIfNeeded(languages)|| "",
+        education: stringifyIfNeeded(education)|| "",
+        skills: stringifyIfNeeded(skills)|| "",
+        references: stringifyIfNeeded(references)|| "",
         certificates: certificatesBuffer,
-        documentInfo: stringifyIfNeeded(documentInfo),
-        personalInfo: stringifyIfNeeded(personalInfo),
-        personalRefs: stringifyIfNeeded(personalRefs),
+        documentInfo: stringifyIfNeeded(documentInfo)|| "",
+        personalInfo: stringifyIfNeeded(personalInfo)|| "",
+        personalRefs: stringifyIfNeeded(personalRefs)|| "",
       },
     });
 
-    return res.status(201).json({
+     res.status(201).json({
       message: "Solicitud enviada exitosamente",
       newRequest: {
         id: newRequest.id,
@@ -81,15 +92,17 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
         price: newRequest.price,
         status: newRequest.status,
         createdAt: newRequest.createdAt,
+        
       },
     });
   } catch (error: any) {
     console.error("❌ Error al crear solicitud:", error);
 
-    return res.status(500).json({
+     res.status(500).json({
       message: "Error al crear solicitud",
       error: error.message,
       ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
     });
+    return;
   }
 };

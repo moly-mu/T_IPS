@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const registerUser = async (req: Request, res: Response) => {
   const {
     email,document,
-    firstname, lastname, age, gender,password,
+    firstname,second_firstname, lastname,second_lastname, age, gender,password,
     sex, languaje, document_type, phone
   } = req.body || {};
 
@@ -51,7 +51,9 @@ export const registerUser = async (req: Request, res: Response) => {
     const user = await prisma.user.create({
       data: {
         firstname,
+        second_firstname,
         lastname,
+        second_lastname,
         age,
         gender,
         sex,
