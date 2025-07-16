@@ -19,7 +19,15 @@ export const UserProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
-    return res.status(200).json({ user });
+    // Eliminar la contraseña del credential_users si existe
+    const sanitizedUser = {
+      ...user,
+      credential_users: user.credential_users
+        ? { ...user.credential_users, password: undefined }
+        : null
+    };
+
+    return res.status(200).json({ user: sanitizedUser });
 
   } catch (err: any) {
     console.error("ERROR AL OBTENER USUARIO:", err);
