@@ -50,39 +50,35 @@ const UserSection = () => {
 		fetchUsers();
 	}, []);
 
-		const filteredUsers = users.filter((user) => {
-			const matchesSearch =
-				user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				user.email.toLowerCase().includes(searchTerm.toLowerCase());
-			const matchesStatus = filterStatus === "Todos los estados" || user.status === filterStatus;
-			const matchesGender = filterGender === "Todos los géneros" || user.gender === filterGender;
-			return matchesSearch && matchesStatus && matchesGender;
-		});
+	const filteredUsers = users.filter((user) => {
+		const matchesSearch =
+			user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			user.email.toLowerCase().includes(searchTerm.toLowerCase());
+		const matchesStatus = filterStatus === "Todos los estados" || user.status === filterStatus;
+		const matchesGender = filterGender === "Todos los géneros" || user.gender === filterGender;
+		return matchesSearch && matchesStatus && matchesGender;
+	});
 
-		const stats = {
-			totalUsers: filteredUsers.length,
-			activeUsers: filteredUsers.filter((u) => u.status === "Activo").length,
-			totalConsultations: filteredUsers.reduce((acc, u) => acc + u.consultations, 0),
-			avgRating:
-				filteredUsers.length > 0
-					? (
-							filteredUsers.reduce((acc, u) => acc + u.rating, 0) / filteredUsers.length
-					).toFixed(1)
-					: 0,
-		};
+	const stats = {
+		totalUsers: filteredUsers.length,
+		activeUsers: filteredUsers.filter((u) => u.status === "Activo").length,
+		totalConsultations: filteredUsers.reduce((acc, u) => acc + u.consultations, 0),
+		avgRating:
+			filteredUsers.length > 0
+				? (
+						filteredUsers.reduce((acc, u) => acc + u.rating, 0) / filteredUsers.length
+				  ).toFixed(1)
+				: 0,
+	};
 
-		const now = new Date();
-		const currentMonth = now.getMonth(); //Devuelve el numero del mes actual, 0 = enero, 1 = febrero, etc.
-		const currentYear = now.getFullYear(); //Devuelve el año actual (2025)
+	const now = new Date();
+	const currentMonth = now.getMonth(); //Devuelve el numero del mes actual, 0 = enero, 1 = febrero, etc.
+	const currentYear = now.getFullYear(); //Devuelve el año actual (2025)
 
-		const newUserThisMonth = filteredUsers.filter((u) => {
-			const joinedDate = new Date(u.joinDate);
-			return (
-				joinedDate.getMonth() == currentMonth && joinedDate.getFullYear() == currentYear
-			)
-		}).length;
-
-
+	const newUserThisMonth = filteredUsers.filter((u) => {
+		const joinedDate = new Date(u.joinDate);
+		return joinedDate.getMonth() == currentMonth && joinedDate.getFullYear() == currentYear;
+	}).length;
 
 	const getStatusColor = (status) =>
 		status === "Activo" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
@@ -126,6 +122,7 @@ const UserSection = () => {
 				age: user.age || "",
 				gender: user.gender || "",
 				status: user.status || "Activo",
+				joinDate: user.joinDate || "",
 			});
 			setModalOpen(true);
 		} catch (error) {
@@ -166,7 +163,7 @@ const UserSection = () => {
 				age: fetchedUser.age || "",
 				gender: fetchedUser.gender || "",
 				status: fetchedUser.status || "Activo",
-				joinDate: fetchedUser.User.joinDate || "",
+				joinDate: fetchedUser.joinDate || "",
 			});
 			setModalOpen(true);
 		} catch (error) {
@@ -237,7 +234,9 @@ const UserSection = () => {
 						<div>
 							<p className="text-sm font-medium text-gray-600">TOTAL USUARIOS</p>
 							<p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
-							<p className="text-sm text-blue-600">+{newUserThisMonth} nuevos este mes</p>
+							<p className="text-sm text-blue-600">
+								+{newUserThisMonth} nuevos este mes
+							</p>
 						</div>
 						<div className="p-3 bg-blue-50 rounded-lg">
 							<Users className="h-6 w-6 text-blue-600" />
@@ -547,6 +546,16 @@ const UserSection = () => {
 								<option value="Activo">Activo</option>
 								<option value="Inactivo">Inactivo</option>
 							</select>
+							<input
+								type="text"
+								placeholder="Fecha de registro"
+								value={formData.joinDate}
+								disabled={modalType === "ver"}
+								onChange={(e) =>
+									setFormData({ ...formData, joinDate: e.target.value })
+								}
+								className="w-full border px-3 py-2 rounded-lg"
+							/>
 						</div>
 						<div className="mt-6 flex justify-end space-x-3">
 							<button

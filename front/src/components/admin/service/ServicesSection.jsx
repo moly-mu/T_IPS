@@ -59,6 +59,7 @@ const ServicesSection = () => {
 				price: servicio.price.toString(),
 				duration: servicio.duration.toString(),
 				status: servicio.status,
+				joinDate: new Date(servicio.joinDate).toISOString().split("T")[0],
 			});
 		} else {
 			setFormData({ name: "", service: "", price: "", duration: "", status: "Activo" });
@@ -106,6 +107,15 @@ const ServicesSection = () => {
 			.then(() => setServicios(servicios.filter((s) => s.id !== id)))
 			.catch((err) => console.error("Error al eliminar especialidad:", err));
 	};
+
+	const now = new Date();
+	const currentMonth = now.getMonth();
+	const currentYear = now.getFullYear();
+
+	const newSpecialtyThisMonth = serviciosFiltrados.filter((s) => {
+		const joinedDate = new Date(s.joinDate);
+		return joinedDate.getMonth() === currentMonth && joinedDate.getFullYear() === currentYear;
+	});
 
 	const cambiarEstado = (id) => {
 		const servicio = servicios.find((s) => s.id === id);
@@ -159,7 +169,9 @@ const ServicesSection = () => {
 						<div>
 							<p className="text-sm font-medium text-gray-600">TOTAL SERVICIOS</p>
 							<p className="text-2xl font-bold text-gray-900">{totalServicios}</p>
-							<p className="text-xs text-green-600 mt-1">+2 nuevos este mes</p>
+							<p className="text-xs text-green-600 mt-1">
+								+{newSpecialtyThisMonth.length} nuevos este mes
+							</p>
 						</div>
 						<div className="p-3 bg-blue-50 rounded-lg">
 							<Activity className="h-6 w-6 text-blue-600" />
@@ -256,12 +268,27 @@ const ServicesSection = () => {
 				<table className="min-w-full bg-white rounded-md overflow-hidden">
 					<thead>
 						<tr className="bg-gray-100">
-							<th className="px-4 py-2 text-left">Nombre</th>
-							<th className="px-4 py-2 text-left">Servicio</th>
-							<th className="px-4 py-2 text-left">Duración</th>
-							<th className="px-4 py-2 text-left">Precio</th>
-							<th className="px-4 py-2 text-left">Estado</th>
-							<th className="px-4 py-2 text-left">Acciones</th>
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Nombre
+							</th>
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Servicio
+							</th>
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Duración
+							</th>
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								CONSULTAS
+							</th>
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Precio
+							</th>
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Estado
+							</th>
+							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								Acciones
+							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -272,6 +299,7 @@ const ServicesSection = () => {
 								<td className="px-4 py-2 flex items-center gap-1">
 									<Clock className="w-4 h-4 text-gray-500" /> {s.duration} min
 								</td>
+								<td className="px-4 py-2">a</td>
 								<td className="px-4 py-2">${s.price.toLocaleString()}</td>
 								<td className="px-4 py-2">
 									<button
@@ -373,6 +401,13 @@ const ServicesSection = () => {
 								<option value="Activo">Activo</option>
 								<option value="Inactivo">Inactivo</option>
 							</select>
+							<input
+								type="text"
+								placeholder="Fecha de registro"
+								disabled
+								value={formData.joinDate}
+								className="w-full border px-3 py-2 rounded-lg"
+							/>
 						</div>
 
 						<div className="mt-6 flex justify-end space-x-3">
