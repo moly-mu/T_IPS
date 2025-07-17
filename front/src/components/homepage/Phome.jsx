@@ -5,6 +5,8 @@ import AdditionalServices from './sections/AdditionalServices';
 import PaymentMethods from './sections/PaymentMethods';
 import MedicalProfiles from './sections/MedicalProfiles';
 import homeImage from '../../assets/homeI.png';
+import MedicalProfilesSection from './sections/MedicalProfilesSection';
+import { Link } from 'react-router-dom';
 ;
 
 
@@ -84,9 +86,11 @@ const Hero = () => {
             </div>
 
             <div className="flex items-center space-x-8 pt-8">
+              <Link to="/calendarQuotes">
               <button className="bg-gray-900 text-white px-8 py-4 text-sm font-medium tracking-wide hover:bg-gray-800 transition-colors">
                 AGENDAR CONSULTA
               </button>
+              </Link>
               <div className="flex items-center space-x-4">
                 <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
@@ -122,6 +126,7 @@ const Phome = () => {
     <div className="font-sans bg-white text-gray-900 antialiased">
       <Navbar />
       <Hero />
+      <MedicalProfilesSection/>
       <MedicalProfiles/>
       <PaymentMethods/>
       <ServicesSection/>

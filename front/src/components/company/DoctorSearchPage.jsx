@@ -37,7 +37,7 @@ const DoctorSearchPage = () => {
             rating: 4.5,
             reviews: 128,
             modality: 'videollamada',
-            availability: '24horas',
+            availability: 'Segun agenda',
             price: 80000,
             photo: 'https://www.future-doctor.de/wp-content/uploads/2024/08/shutterstock_2480850611.jpg'
           },
@@ -49,7 +49,7 @@ const DoctorSearchPage = () => {
             rating: 4.8,
             reviews: 95,
             modality: 'llamada',
-            availability: '8horas',
+            availability: 'Atención inmediata',
             price: 120000,
             photo: 'https://www.scripps.org/sparkle-assets/images/new_doctor_fb-32abb9ba141c8223aadebce90782ac68.jpeg'
           }
