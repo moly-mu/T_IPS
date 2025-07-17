@@ -22,7 +22,7 @@ export const approveSpecialistRequest = async (req: Request, res: Response) => {
         return;
     }
 
-    const profData = await prisma.profData.create({
+    const profData = await prisma.specData.create({
       data: {
         biography: "",
         picture: Buffer.from(""),
@@ -34,10 +34,10 @@ export const approveSpecialistRequest = async (req: Request, res: Response) => {
       },
     });
 
-    await prisma.profesional.create({
+    await prisma.specialist.create({
       data: {
-        prof_data_idprof_data: profData.id,
-        status: "activo",
+        spec_data_idspec_data: profData.id,
+        status: "Activo",
         User_idUser: request.user.id,
         User_credential_users_idcredential_users: request.user.credential_users_idcredential_users,
         User_rol_idrol: request.user.rol_idrol,

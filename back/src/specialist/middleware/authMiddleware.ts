@@ -16,10 +16,10 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
   const token = authHeader.split(' ')[1];
   
   try {
-    const decoded = jwt.verify(token, SECRET_KEY) as { userId: number };
+    const decoded = jwt.verify(token, SECRET_KEY) as { id: number };
     // Puedes guardar el payload en req.user para usarlo luego
     req.user = decoded;
-    req.userId = decoded.userId;
+    req.userId = decoded.id; // Asumiendo que el ID del usuario está en el payload
     
     next();
   } catch (err) {
