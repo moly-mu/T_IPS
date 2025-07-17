@@ -7,21 +7,9 @@ const prisma = new PrismaClient();
 
 export const registerUser = async (req: Request, res: Response) => {
   const {
-<<<<<<< HEAD
     email,document,
     firstname,second_firstname, lastname,second_lastname, age, gender,password,
     sex, languaje, document_type, phone
-=======
-    firstname,
-    lastname,
-    document_type,
-    document,
-    email,
-    password,
-    age,
-    gender,
-    phone
->>>>>>> 3330d1433069eb06f87ccddcc66f91a0ee9ede86
   } = req.body || {};
 
   if (!firstname || !lastname || !document_type || !document || !email || !password || !age || !gender || !phone) {

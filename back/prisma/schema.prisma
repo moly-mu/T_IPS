@@ -52,22 +52,22 @@ model User {
   age                                 Int
   gender                              String     @db.VarChar(45)
   sex                                 String     @db.VarChar(10)
-  languaje                            String     @db.VarChar(45)
+  language                            String     @db.VarChar(45)
   document_type                       String     @db.VarChar(45)
   phone                               String     @default("0000000000") @db.VarChar(20)
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(1)
   status                              UserStatus @default(Pendiente)
   joinDate                            DateTime   @default(now()) @db.Timestamp(0)
-  
-  credential_users                    CredentialUser      @relation(fields: [credential_users_idcredential_users], references: [id])
-  rol                                 Rol                 @relation(fields: [rol_idrol], references: [id])
-  Paciente                            Patient[]
-  Especialista                        Specialist[]
-  userReviewsGiven                    UserReview[]        @relation("UserReviewReviewer")
-  userReviewsReceived                 UserReview[]        @relation("UserReviewReviewed")
-  specialtyReviews                    SpecialtyReview[]
-  specialistRequests                  SpecialistRequest[] @relation("UserToSpecialistRequests")
+
+  credential_users    CredentialUser      @relation(fields: [credential_users_idcredential_users], references: [id])
+  rol                 Rol                 @relation(fields: [rol_idrol], references: [id])
+  Paciente            Patient[]
+  Especialista        Specialist[]
+  userReviewsGiven    UserReview[]        @relation("UserReviewReviewer")
+  userReviewsReceived UserReview[]        @relation("UserReviewReviewed")
+  specialtyReviews    SpecialtyReview[]
+  specialistRequests  SpecialistRequest[] @relation("UserToSpecialistRequests")
 
   @@unique([id, credential_users_idcredential_users, rol_idrol])
   @@map("user")
@@ -86,7 +86,7 @@ model PacData {
 }
 
 model Patient {
-  id                                       Int      @id @default(autoincrement()) @map("idpaciente")
+  id                                       Int @id @default(autoincrement()) @map("idpaciente")
   pac_data_idpac_data                      Int
   User_idUser                              Int
   User_credential_users_idcredential_users Int
@@ -100,7 +100,6 @@ model Patient {
   Consents           Consent[]
   Invoices           Invoice[]
   MedicalOrders      MedicalOrder[]
-
 
   @@unique([id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
   @@map("paciente")
@@ -117,7 +116,6 @@ model SpecData {
   working_experience       String   @db.VarChar(45)
   consultations            Int      @default(0)
   joinDate                 DateTime @default(now()) @db.Timestamp(6)
-  status                   String
 
   Specialist Specialist[]
 
@@ -132,12 +130,12 @@ model Specialist {
   User_rol_idrol                           Int
   status                                   UserStatus @default(Pendiente)
 
-  spec_data               SpecData                  @relation(fields: [spec_data_idspec_data], references: [id])
-  User                    User                      @relation(fields: [User_idUser, User_credential_users_idcredential_users, User_rol_idrol], references: [id, credential_users_idcredential_users, rol_idrol])
-  SpecialistHasSpecialty  SpecialistHasSpecialty[]
-  Request                 Request[]
-  Appointments            Appointment[]
-  MedicalOrders           MedicalOrder[]
+  spec_data              SpecData                 @relation(fields: [spec_data_idspec_data], references: [id])
+  User                   User                     @relation(fields: [User_idUser, User_credential_users_idcredential_users, User_rol_idrol], references: [id, credential_users_idcredential_users, rol_idrol])
+  SpecialistHasSpecialty SpecialistHasSpecialty[]
+  Request                Request[]
+  Appointments           Appointment[]            @relation("AppointmentToSpecialist")
+  MedicalOrders          MedicalOrder[]
 
   @@id([id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
   @@unique([id])
@@ -161,12 +159,12 @@ model Specialty {
 }
 
 model SpecialistHasSpecialty {
-  Specialist_idEspecialista                            Int
-  Specialist_spec_data_idspec_data                     Int
-  Specialist_User_idUser                               Int
-  Specialist_User_credential_users_idcredential_users  Int
-  Specialist_User_rol_idrol                            Int
-  specialty_idspecialty                                Int
+  Specialist_idEspecialista                           Int
+  Specialist_spec_data_idspec_data                    Int
+  Specialist_User_idUser                              Int
+  Specialist_User_credential_users_idcredential_users Int
+  Specialist_User_rol_idrol                           Int
+  specialty_idspecialty                               Int
 
   Specialist Specialist @relation(fields: [Specialist_idEspecialista, Specialist_spec_data_idspec_data, Specialist_User_idUser, Specialist_User_credential_users_idcredential_users, Specialist_User_rol_idrol], references: [id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
   Specialty  Specialty  @relation(fields: [specialty_idspecialty], references: [id])
@@ -176,12 +174,12 @@ model SpecialistHasSpecialty {
 }
 
 model Request {
-  id                                                   Int @default(autoincrement()) @map("idrequest")
-  Specialist_idEspecialista                            Int
-  Specialist_spec_data_idspec_data                     Int
-  Specialist_User_idUser                               Int
-  Specialist_User_credential_users_idcredential_users  Int
-  Specialist_User_rol_idrol                            Int
+  id                                                  Int @default(autoincrement()) @map("idrequest")
+  Specialist_idEspecialista                           Int
+  Specialist_spec_data_idspec_data                    Int
+  Specialist_User_idUser                              Int
+  Specialist_User_credential_users_idcredential_users Int
+  Specialist_User_rol_idrol                           Int
 
   Specialist Specialist @relation(fields: [Specialist_idEspecialista, Specialist_spec_data_idspec_data, Specialist_User_idUser, Specialist_User_credential_users_idcredential_users, Specialist_User_rol_idrol], references: [id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
 
@@ -190,25 +188,25 @@ model Request {
 }
 
 model Appointment {
-  id                                                   Int      @id @default(autoincrement()) @map("idappointments")
-  state                                                String   @db.VarChar(20)
-  appoint_specialtyId                                  Int
-  Paciente_idPaciente                                  Int
-  Paciente_pac_data_idpac_data                         Int
-  Paciente_User_idUser                                 Int
-  Paciente_User_credential_users_idcredential_users    Int      @map("Paciente_User_credential_users_idcredential_users")
-  Paciente_User_rol_idrol                              Int
-  Specialist_idEspecialista                            Int
-  Specialist_spec_data_idspec_data                     Int
-  Specialist_User_idUser                               Int
-  Specialist_User_credential_users_idcredential_users  Int      @map("Specialist_User_credential_users_idcredential_users")
-  Specialist_User_rol_idrol                            Int
-  appoint_init                                         DateTime @db.Timestamp
-  appoint_finish                                       DateTime @db.Timestamp
-  linkZoom                                             String?  @db.VarChar(100)
+  id                                                  Int      @id @default(autoincrement()) @map("idappointments")
+  state                                               String   @db.VarChar(20)
+  appoint_specialtyId                                 Int
+  Paciente_idPaciente                                 Int
+  Paciente_pac_data_idpac_data                        Int
+  Paciente_User_idUser                                Int
+  Paciente_User_credential_users_idcredential_users   Int      @map("Paciente_User_credential_users_idcredential_users")
+  Paciente_User_rol_idrol                             Int
+  Specialist_idEspecialista                           Int
+  Specialist_spec_data_idspec_data                    Int
+  Specialist_User_idUser                              Int
+  Specialist_User_credential_users_idcredential_users Int      @map("Specialist_User_credential_users_idcredential_users")
+  Specialist_User_rol_idrol                           Int
+  appoint_init                                        DateTime @db.Timestamp
+  appoint_finish                                      DateTime @db.Timestamp
+  linkZoom                                            String?  @db.VarChar(100)
 
   Paciente           Patient              @relation(fields: [Paciente_idPaciente, Paciente_pac_data_idpac_data, Paciente_User_idUser, Paciente_User_credential_users_idcredential_users, Paciente_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
-  Specialist         Specialist           @relation(fields: [Specialist_idEspecialista, Specialist_spec_data_idspec_data, Specialist_User_idUser, Specialist_User_credential_users_idcredential_users, Specialist_User_rol_idrol], references: [id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
+  Specialist         Specialist           @relation(name: "AppointmentToSpecialist", fields: [Specialist_idEspecialista, Specialist_spec_data_idspec_data, Specialist_User_idUser, Specialist_User_credential_users_idcredential_users, Specialist_User_rol_idrol], references: [id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
   Specialty          Specialty            @relation(fields: [appoint_specialtyId], references: [id])
   Invoice            Invoice[]
   MedicalOrder       MedicalOrder[]
@@ -281,16 +279,16 @@ model SpecialistRequest {
 
 // Tabla de historia clinica - apunta a Patient
 model MedicalHistory {
-  id                                       Int       @id @default(autoincrement()) @map("idhistoria_medica")
-  patient_idPaciente                       Int
-  patient_pac_data_idpac_data              Int
-  patient_User_idUser                      Int
-  patient_User_credential_users_idcred     Int
-  patient_User_rol_idrol                   Int
-  email                                    String    @db.VarChar(100)
-  eps_type                                 String    @db.VarChar(45)
-  emergency_contact                        String    @db.VarChar(100)
-  contact_phone                            String    @db.VarChar(20)
+  id                                   Int    @id @default(autoincrement()) @map("idhistoria_medica")
+  patient_idPaciente                   Int
+  patient_pac_data_idpac_data          Int
+  patient_User_idUser                  Int
+  patient_User_credential_users_idcred Int
+  patient_User_rol_idrol               Int
+  email                                String @db.VarChar(100)
+  eps_type                             String @db.VarChar(45)
+  emergency_contact                    String @db.VarChar(100)
+  contact_phone                        String @db.VarChar(20)
 
   consultations   MedicalConsultation[]
   diagnoses       Diagnosis[]
@@ -380,23 +378,23 @@ model Prescription {
 
 // Consent apunta a Patient y Specialty
 model Consent {
-  id                    Int      @id @default(autoincrement()) @map("idconsentimiento")
-  patient_idPaciente    Int
-  patient_pac_data_idpac_data              Int
-  patient_User_idUser                      Int
-  patient_User_credential_users_idcred     Int
-  patient_User_rol_idrol                   Int
-  especialidad_id       Int
-  fecha_firma           DateTime @db.Date
-  firmado_por           String   @db.VarChar(255)
-  relacion_con_paciente String   @db.VarChar(100)
-  documento_identidad   String   @db.VarChar(50)
-  consentimiento_texto  String   @db.Text
-  firmado               Boolean
-  firma_digital         Bytes?
-  observaciones         String?  @db.Text
-  fecha_creacion        DateTime @default(now())
-  fecha_actualizacion   DateTime @updatedAt
+  id                                   Int      @id @default(autoincrement()) @map("idconsentimiento")
+  patient_idPaciente                   Int
+  patient_pac_data_idpac_data          Int
+  patient_User_idUser                  Int
+  patient_User_credential_users_idcred Int
+  patient_User_rol_idrol               Int
+  especialidad_id                      Int
+  fecha_firma                          DateTime @db.Date
+  firmado_por                          String   @db.VarChar(255)
+  relacion_con_paciente                String   @db.VarChar(100)
+  documento_identidad                  String   @db.VarChar(50)
+  consentimiento_texto                 String   @db.Text
+  firmado                              Boolean
+  firma_digital                        Bytes?
+  observaciones                        String?  @db.Text
+  fecha_creacion                       DateTime @default(now())
+  fecha_actualizacion                  DateTime @updatedAt
 
   Patient   Patient   @relation(fields: [patient_idPaciente, patient_pac_data_idpac_data, patient_User_idUser, patient_User_credential_users_idcred, patient_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
   Specialty Specialty @relation(fields: [especialidad_id], references: [id])
@@ -406,18 +404,18 @@ model Consent {
 
 // Invoice apunta a Patient
 model Invoice {
-  id                                      Int       @id @default(autoincrement()) @map("idfactura")
-  appointmentId                           Int
-  patient_idPaciente                      Int
-  patient_pac_data_idpac_data             Int
-  patient_User_idUser                     Int
-  patient_User_credential_users_idcred    Int
-  patient_User_rol_idrol                  Int
-  amount                                  Float
-  paymentMethod                           String    @db.VarChar(45)
-  paymentStatus                           String    @default("pendiente") @db.VarChar(45)
-  issuedDate                              DateTime  @default(now()) @db.Timestamp(0)
-  paidDate                                DateTime?
+  id                                   Int       @id @default(autoincrement()) @map("idfactura")
+  appointmentId                        Int
+  patient_idPaciente                   Int
+  patient_pac_data_idpac_data          Int
+  patient_User_idUser                  Int
+  patient_User_credential_users_idcred Int
+  patient_User_rol_idrol               Int
+  amount                               Float
+  paymentMethod                        String    @db.VarChar(45)
+  paymentStatus                        String    @default("pendiente") @db.VarChar(45)
+  issuedDate                           DateTime  @default(now()) @db.Timestamp(0)
+  paidDate                             DateTime?
 
   Appointment Appointment @relation(fields: [appointmentId], references: [id])
   Patient     Patient     @relation(fields: [patient_idPaciente, patient_pac_data_idpac_data, patient_User_idUser, patient_User_credential_users_idcred, patient_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
@@ -427,16 +425,16 @@ model Invoice {
 
 // AppointmentReceipt apunta a Patient
 model AppointmentReceipt {
-  id                                      Int      @id @default(autoincrement()) @map("idcomprobante")
-  appointmentId                           Int
-  patient_idPaciente                      Int
-  patient_pac_data_idpac_data             Int
-  patient_User_idUser                     Int
-  patient_User_credential_users_idcred    Int
-  patient_User_rol_idrol                  Int
-  issuedAt                                DateTime @default(now()) @db.Timestamp
-  receiptUrl                              String   @db.VarChar(255)
-  notes                                   String?  @db.Text
+  id                                   Int      @id @default(autoincrement()) @map("idcomprobante")
+  appointmentId                        Int
+  patient_idPaciente                   Int
+  patient_pac_data_idpac_data          Int
+  patient_User_idUser                  Int
+  patient_User_credential_users_idcred Int
+  patient_User_rol_idrol               Int
+  issuedAt                             DateTime @default(now()) @db.Timestamp
+  receiptUrl                           String   @db.VarChar(255)
+  notes                                String?  @db.Text
 
   Appointment Appointment @relation(fields: [appointmentId], references: [id])
   Patient     Patient     @relation(fields: [patient_idPaciente, patient_pac_data_idpac_data, patient_User_idUser, patient_User_credential_users_idcred, patient_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
@@ -446,22 +444,22 @@ model AppointmentReceipt {
 
 // MedicalOrder apunta a Specialist y Patient
 model MedicalOrder {
-  id                                       Int      @id @default(autoincrement()) @map("idorden_medica")
-  appointmentId                            Int
-  specialist_idEspecialista                Int
-  specialist_spec_data_idspec_data         Int
-  specialist_User_idUser                   Int
-  specialist_User_credential_users_idcred  Int
-  specialist_User_rol_idrol                Int
-  patient_idPaciente                       Int
-  patient_pac_data_idpac_data              Int
-  patient_User_idUser                      Int
-  patient_User_credential_users_idcred     Int
-  patient_User_rol_idrol                   Int
-  issuedAt                                 DateTime @default(now()) @db.Timestamp
-  description                              String   @db.Text
-  instructions                             String?  @db.Text
-  status                                   String   @default("pendiente") @db.VarChar(45)
+  id                                      Int      @id @default(autoincrement()) @map("idorden_medica")
+  appointmentId                           Int
+  specialist_idEspecialista               Int
+  specialist_spec_data_idspec_data        Int
+  specialist_User_idUser                  Int
+  specialist_User_credential_users_idcred Int
+  specialist_User_rol_idrol               Int
+  patient_idPaciente                      Int
+  patient_pac_data_idpac_data             Int
+  patient_User_idUser                     Int
+  patient_User_credential_users_idcred    Int
+  patient_User_rol_idrol                  Int
+  issuedAt                                DateTime @default(now()) @db.Timestamp
+  description                             String   @db.Text
+  instructions                            String?  @db.Text
+  status                                  String   @default("pendiente") @db.VarChar(45)
 
   Appointment Appointment @relation(fields: [appointmentId], references: [id])
   Specialist  Specialist  @relation(fields: [specialist_idEspecialista, specialist_spec_data_idspec_data, specialist_User_idUser, specialist_User_credential_users_idcred, specialist_User_rol_idrol], references: [id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
