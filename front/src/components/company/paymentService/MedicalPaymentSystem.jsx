@@ -20,7 +20,7 @@ export default function MedicalPaymentSystem() {
     navigate('/');
   };
 
-  // Datos del servicio seleccionado
+  // datos del servicio seleccionado
   const selectedService = {
     id: 'medicina-general',
     title: 'Medicina General',
@@ -114,7 +114,6 @@ export default function MedicalPaymentSystem() {
       );
     };
 
-  // Componente reutilizable para el resumen de reserva
   const BookingSummary = ({ showOrderTitle = false }) => (
     <div className="sticky top-6 space-y-6">
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -203,13 +202,12 @@ export default function MedicalPaymentSystem() {
   showOrderTitle: PropTypes.bool,
 };
 
-  // Pantalla de selección de método de pago
+  // Pantalla de metodo de pago
   if (currentStep === 'payment') {
     return (
       <div className="min-h-screen bg-gray-50 pt-24">
         <Navbar/>
         <div className="max-w-6xl mx-auto p-6">
-          {/* Header */}
           <div className="flex items-center mb-8">
             <button onClick={handleBackToServices} className="mr-4 p-2 hover:bg-gray-100 rounded-lg">
               <ArrowLeft className="w-5 h-5" />
@@ -221,7 +219,7 @@ export default function MedicalPaymentSystem() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Payment Methods */}
+            {/* metodos de pago */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-xl font-medium text-gray-900 mb-6">Selecciona tu método de pago</h2>
@@ -247,8 +245,6 @@ export default function MedicalPaymentSystem() {
                 </div>
               </div>
             </div>
-
-            {/* Booking Summary - Fixed */}
             <div>
               <BookingSummary />
             </div>
@@ -258,7 +254,6 @@ export default function MedicalPaymentSystem() {
     );
   }
 
-  // Pantalla de checkout
   if (currentStep === 'checkout') {
     return (
       <div className="min-h-screen bg-gray-50 pt-24">
@@ -272,7 +267,7 @@ export default function MedicalPaymentSystem() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Payment formulario */}
+            {/* formulario */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="mb-6">
@@ -357,7 +352,6 @@ export default function MedicalPaymentSystem() {
               </div>
             </div>
 
-            {/* Order Summary - Fixed */}
             <div>
               <BookingSummary showOrderTitle={true} />
             </div>
@@ -367,7 +361,7 @@ export default function MedicalPaymentSystem() {
     );
   }
 
-  // Pantalla de confirmación
+  // Pantalla de confirmacion
   if (currentStep === 'confirmation') {
     return (
       <div className="min-h-screen bg-gray-50 pt-24">

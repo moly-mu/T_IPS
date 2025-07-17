@@ -128,9 +128,11 @@ const Sinsesion = () => {
                     </label>
                   </div>
                   <div>
+                    <Link to="/RecuperarContraseña">
                     <a href="javascript:void(0);" className="text-[#003366] font-semibold text-sm hover:underline">
                       ¿Olvidaste tu contraseña?
                     </a>
+                    </Link>
                   </div>
                 </div>
   

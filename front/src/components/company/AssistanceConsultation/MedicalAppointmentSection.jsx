@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Clock, CheckCircle, Calendar, MapPin, User, FileText, AlertCircle, ArrowRight, Lock } from 'lucide-react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
+
 
 const MedicalAppointmentSection = () => {
   const [isReady, setIsReady] = useState(false);
@@ -13,10 +14,12 @@ const MedicalAppointmentSection = () => {
     location: "Colombia",
   });
 
+
   useEffect(() => {
     const appointmentDateTime = new Date(`${appointmentData.date} ${appointmentData.time}`);
     const now = new Date();
     const timeDiff = appointmentDateTime - now;
+
 
     if (timeDiff > 0) {
       const hours = Math.floor(timeDiff / (1000 * 60 * 60));
@@ -27,17 +30,27 @@ const MedicalAppointmentSection = () => {
     }
   }, [appointmentData.date, appointmentData.time]);
 
+
   const handleReadyCheck = () => {
     setIsReady(!isReady);
   };
+
 
   const handleDiagnosticRedirect = () => {
     window.location.href = '/DiagnosticoPrevio';
   };
 
+
+  const navigate = useNavigate();
+
+
   const handleViewLocation = () => {
     alert('Dirigiendo a consulta...');
+    setTimeout(() => {
+    navigate('/EncuestaSatisfaccion');
+  }, 1000);
   };
+
 
   const Navbar = () => {
       return (
@@ -62,17 +75,19 @@ const MedicalAppointmentSection = () => {
       );
     };
 
+
   return (
     <>
       <Navbar />
     <div className="w-3/4 mx-auto p-6 bg-white pt-28">
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
-        
+       
         <div className="flex-1">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Asistir a mi cita médica</h1>
             <p className="text-gray-600">Prepárate para tu próxima cita médica</p>
           </div>
+
 
           {/* info de la cita */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-10">
@@ -121,6 +136,7 @@ const MedicalAppointmentSection = () => {
             </div>
           </div>
 
+
           <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-9">
             <h2 className="text- xl font-semibold text-green-900 mb-4">Lista de verificación</h2>
             <div className="space-y-4">
@@ -128,8 +144,8 @@ const MedicalAppointmentSection = () => {
                 <button
                   onClick={handleReadyCheck}
                   className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all duration-200 w-full ${
-                    isReady 
-                      ? 'bg-green-100 border-green-300 text-green-800' 
+                    isReady
+                      ? 'bg-green-100 border-green-300 text-green-800'
                       : 'bg-white border-gray-300 text-gray-700 hover:border-green-300'
                   }`}
                 >
@@ -146,6 +162,7 @@ const MedicalAppointmentSection = () => {
                   </div>
                 </button>
               </div>
+
 
               {isReady && (
                 <div className="ml-9 space-y-2 text-sm text-green-700">
@@ -170,6 +187,7 @@ const MedicalAppointmentSection = () => {
             </div>
           </div>
 
+
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             <button
               onClick={handleDiagnosticRedirect}
@@ -178,6 +196,7 @@ const MedicalAppointmentSection = () => {
               <FileText className="w-5 h-5" />
               <span>Realizar diagnóstico previo</span>
             </button>
+
 
             <button
               onClick={handleViewLocation}
@@ -188,6 +207,7 @@ const MedicalAppointmentSection = () => {
             </button>
           </div>
         </div>
+
 
         <div className="w-full md:w-1/3 bg-gray-50 border border-gray-200 rounded-lg p-6 mt-24">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Información importante</h3>
@@ -230,6 +250,7 @@ const MedicalAppointmentSection = () => {
             </div>
           </div>
 
+
           <div className="mt-6 pt-4 border-t border-gray-200">
             <button
               className="flex items-center text-blue-600 hover:text-blue-700 font-medium">
@@ -244,6 +265,5 @@ const MedicalAppointmentSection = () => {
   );
 };
 
+
 export default MedicalAppointmentSection;
-
-
