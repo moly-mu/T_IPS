@@ -7,7 +7,7 @@
     "dev": "bun --watch src/index.ts"
   },
   "prisma": {
-    "seed": "node --loader ts-node/esm prisma/seed.ts"
+    "seed": "tsx src/scripts/roles/seed.ts"
   },
   "keywords": [],
   "author": "",

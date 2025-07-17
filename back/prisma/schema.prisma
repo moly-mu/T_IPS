@@ -19,7 +19,7 @@ datasource db {
 model Admin {
   id       Int    @id @default(autoincrement()) @map("idadmin")
   username String @unique @db.VarChar(45)
-  password String @db.VarChar(45)
+  password String @db.VarChar(100)
 
   @@map("admin")
 }
@@ -43,6 +43,7 @@ model Rol {
 }
 
 // Usuario base - puede ser paciente o especialista según el rol
+//* Añadir fecha de nacimiento 
 model User {
   id                                  Int        @id @default(autoincrement()) @map("idUser")
   firstname                           String     @db.VarChar(45)
@@ -128,7 +129,7 @@ model Specialist {
   User_idUser                              Int
   User_credential_users_idcredential_users Int
   User_rol_idrol                           Int
-  status                                   UserStatus @default(Pendiente)
+  
 
   spec_data              SpecData                 @relation(fields: [spec_data_idspec_data], references: [id])
   User                   User                     @relation(fields: [User_idUser, User_credential_users_idcredential_users, User_rol_idrol], references: [id, credential_users_idcredential_users, rol_idrol])
