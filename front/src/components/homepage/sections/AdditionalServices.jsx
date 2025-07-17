@@ -4,31 +4,31 @@ const AdditionalServices = () => {
       title: "Agendamiento",
       subtitle: "Sistema inteligente de citas",
       code: "01",
-      route: "/agendamiento"
+      route: "/calendarQuotes"
     },
     {
       title: "Videollamadas",
       subtitle: "Consultas en tiempo real",
       code: "02",
-      route: "/videollamadas"
+      route: "/Page404"
     },
     {
       title: "Diagnóstico Previo",
       subtitle: "Evaluación automatizada",
       code: "03",
-      route: "/diagnostico"
+      route: "/Page404"
     },
     {
       title: "Historia Clínica",
       subtitle: "Registro digital completo",
       code: "04",
-      route: "/historia-clinica"
+      route: "/Page404"
     },
     {
       title: "Satisfacción",
       subtitle: "Evaluación de experiencia",
       code: "05",
-      route: "/satisfaccion"
+      route: "/Page404"
     },
     {
       title: "Soporte",

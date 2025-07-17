@@ -1,4 +1,3 @@
-
   import { Link } from "react-router-dom";
   import { useState } from 'react';
   import { 
@@ -21,7 +20,9 @@
     const [selectedRating, setSelectedRating] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
 
-    
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [selectedCita, setSelectedCita] = useState(null);
+    const [cancelReason, setCancelReason] = useState('');
     
     // Estados para el perfil
     const [profile, setProfile] = useState({
@@ -54,7 +55,7 @@
       }
     ]);
 
-    const [citas] = useState([
+    const [citas, setCitas] = useState([
       {
         id: 1,
         fecha: '15 ENE 2025',
@@ -78,7 +79,8 @@
         id: 1,
         doctor: 'Dr. Carlos Rodríguez',
         fecha: '15 DIC 2024',
-        completada: false
+        completada: false,
+        calificacion: 0
       },
       {
         id: 2,
@@ -98,6 +100,26 @@
       setSelectedRating(0);
     };
 
+    const openCancelModal = (cita) => {
+      setSelectedCita(cita);
+      setIsCancelModalOpen(true);
+    };
+
+    const closeCancelModal = () => {
+      setIsCancelModalOpen(false);
+      setSelectedCita(null);
+      setCancelReason('');
+    };
+
+    const handleCancelAppointment = () => {
+      if (selectedCita) {
+        const updatedCitas = citas.filter((cita) => cita.id !== selectedCita.id);
+        setCitas(updatedCitas);
+        console.log('Cita cancelada:', selectedCita, 'Motivo:', cancelReason);
+        closeCancelModal();
+      }
+    };
+    
     const renderPerfil = () => (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
         <div className="flex justify-between items-center mb-8">
@@ -258,65 +280,83 @@
       </div>
     );
 
-    const renderHistoriaClinica = () => (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-light text-gray-900">Historial Clínico</h2>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="text"
-              placeholder="Buscar..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
-            />
-          </div>
-        </div>
+    const renderHistoriaClinica = () => {
+      // Filtrar la lista
+      const filteredConsultas = historiaClinica.filter((consulta) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          consulta.fecha.toLowerCase().includes(query) ||
+          consulta.doctor.toLowerCase().includes(query) ||
+          consulta.especialidad.toLowerCase().includes(query) ||
+          consulta.diagnostico.toLowerCase().includes(query) ||
+          consulta.tratamiento.toLowerCase().includes(query)
+        );
+      });
 
-        <div className="space-y-6">
-          {historiaClinica.map((consulta) => (
-            <div key={consulta.id} className="border-b border-gray-100 pb-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                      {consulta.fecha}
-                    </span>
-                  </div>
-                  <h3 className="font-medium text-gray-900 mb-1">{consulta.doctor}</h3>
-                  <p className="text-sm text-gray-500">{consulta.especialidad}</p>
-                </div>
-                <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
-                  <Download size={16} />
-                  <span className="text-sm">Descargar</span>
-                </button>
-              </div>
-              <div className="space-y-3">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm font-medium text-gray-600 mb-1">Diagnóstico</p>
-                  <p className="text-gray-900">{consulta.diagnostico}</p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm font-medium text-gray-600 mb-1">Tratamiento</p>
-                  <p className="text-gray-900">{consulta.tratamiento}</p>
-                </div>
-              </div>
+      return (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-light text-gray-900">Historial de consultas</h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              <input
+                type="text"
+                placeholder="Buscar..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
             </div>
-          ))}
-        </div>
-      </div>
-    );
+          </div>
 
-    const renderCitas = () => (
+          {filteredConsultas.length === 0 ? (
+            <p className="text-gray-500">No se encontraron resultados.</p>
+          ) : (
+            <div className="space-y-6">
+              {filteredConsultas.map((consulta) => (
+                <div key={consulta.id} className="border-b border-gray-100 pb-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                          {consulta.fecha}
+                        </span>
+                      </div>
+                      <h3 className="font-medium text-gray-900 mb-1">{consulta.doctor}</h3>
+                      <p className="text-sm text-gray-500">{consulta.especialidad}</p>
+                    </div>
+                    <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
+                      <Download size={16} />
+                      <span className="text-sm">Descargar</span>
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-sm font-medium text-gray-600 mb-1">Diagnóstico</p>
+                      <p className="text-gray-900">{consulta.diagnostico}</p>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <p className="text-sm font-medium text-gray-600 mb-1">Tratamiento</p>
+                      <p className="text-gray-900">{consulta.tratamiento}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+  const renderCitas = () => (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-light text-gray-900">Mis Citas</h2>
-            <Link to="/calendarQuotes">
-              <button className="bg-gray-900 text-white px-6 py-2 text-sm hover:bg-gray-800 transition-colors">
-                AGENDAR CITA
-              </button>
-            </Link>
+          <Link to="/calendarQuotes">
+            <button className="bg-gray-900 text-white px-6 py-2 text-sm hover:bg-gray-800 transition-colors">
+              AGENDAR CITA
+            </button>
+          </Link>
         </div>
 
         <div className="space-y-4">
@@ -333,11 +373,13 @@
                       <Clock className="text-gray-400" size={16} />
                       <span className="text-gray-600">{cita.hora}</span>
                     </div>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      cita.estado === 'confirmada' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        cita.estado === 'confirmada'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
                       {cita.estado === 'confirmada' ? 'CONFIRMADA' : 'PENDIENTE'}
                     </span>
                   </div>
@@ -348,23 +390,119 @@
                   <button className="block text-sm text-gray-600 hover:text-gray-900 transition-colors">
                     Reagendar
                   </button>
-                  <Link to="/cancelarCita">
-                  <button className="block text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                  <button
+                    onClick={() => openCancelModal(cita)}
+                    className="block text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
                     Cancelar
                   </button>
-                  </Link>
                   <Link to="/AsistirAConsulta">
-                  <button className="block text-lg font-bold text-[#00102D] hover:text-[#003366] transition-colors">
-                    Asistir a Consulta
-                  </button>
+                    <button className="block text-lg font-bold text-[#00102D] hover:text-[#003366] transition-colors">
+                      Asistir a Consulta
+                    </button>
                   </Link>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </div>
-    );
+
+      {isCancelModalOpen && selectedCita && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
+            <div className="px-8 py-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-800">¿Cancelar esta cita?</h2>
+              <p className="text-gray-600 mt-2">
+                ¿Estás seguro de que deseas cancelar esta teleconsulta? Esta acción no se puede deshacer.
+              </p>
+            </div>
+
+            <div className="px-8 py-6">
+              <p className="text-sm text-gray-600 mb-4">
+                Para confirmar que se está cancelando la cita correcta:
+              </p>
+              
+              {/* Card de información de la cita */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Doctor:</span>
+                        <p className="text-gray-900 font-semibold">{selectedCita.doctor}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Especialidad:</span>
+                        <p className="text-gray-900 font-semibold">{selectedCita.especialidad}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Fecha:</span>
+                        <p className="text-gray-900 font-semibold">{selectedCita.fecha}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">Hora:</span>
+                        <p className="text-gray-900 font-semibold">{selectedCita.hora}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Motivo de cancelacion */}
+              <div className="mb-6">
+                <label className="block mb-3 font-semibold text-gray-700">
+                  Motivo de la cancelación (opcional)
+                </label>
+                <textarea
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                  rows={4}
+                  placeholder="Describe el motivo de la cancelación para ayudarnos a mejorar nuestro servicio"
+                />
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-yellow-800">
+                  <span className="font-semibold">Nota:</span> Recibirás un correo electrónico confirmando la cancelación de tu cita.
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-8 py-6 bg-gray-50 rounded-b-xl border-t border-gray-200">
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={closeCancelModal}
+                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors duration-200"
+                >
+                  Volver
+                </button>
+                <button
+                  onClick={handleCancelAppointment}
+                  className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Cancelar cita
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
     const renderEncuestas = () => (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
@@ -463,7 +601,7 @@
           <div className="border-b border-gray-200 mb-12">
             <div className="flex gap-12">
               {[{ key: 'perfil', label: 'Mi Perfil', icon: User },
-                { key: 'historia', label: 'Historia Clínica', icon: FileText },
+                { key: 'historia', label: 'Historial de consultas', icon: FileText },
                 { key: 'citas', label: 'Mis Citas', icon: Calendar },
                 { key: 'encuestas', label: 'Encuestas', icon: Star }
               ].map(({ key, label, icon: Icon }) => (
