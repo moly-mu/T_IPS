@@ -1,11 +1,38 @@
 import { useLocation } from "react-router-dom";
+import { useState,useEffect } from "react";
+import { useUserData,} from "../../../context/UserDataContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Barral from '../desis/Barral';
 import { Link } from "react-router-dom";
 import NavbarI from '../desis/NavbarI';
+import {useAuth} from "../../../context/AuthContext";
 
 const Pperfil = () => {
-  const location = useLocation(); 
+  const { token } = useAuth(); 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { userData, setUserData, clearUserData } = useUserData();
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/getUser/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserData(response.data);
+        navigate("/pagusuario");
+      } catch (error) {
+        console.error("❌ Error al obtener datos:", error);
+      }
+    }; 
+    
+    if (token) {
+      fetchUserData();
+    }
+},[token]);
   return (
     <div className="flex h-screen bg-gray-100">
       <Barral />
