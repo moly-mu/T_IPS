@@ -12,7 +12,7 @@ const Pperfil = () => {
   const { token } = useAuth(); 
   const location = useLocation();
   const navigate = useNavigate();
-  const { userData, setUserData, clearUserData } = useUserData();
+  const { userData, setUserData, clearUserData } = useUserData(); //! importar el contexto de usuario para cerrar sesion
 
   useEffect(() => {
     const fetchUserData = async () => {

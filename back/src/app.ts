@@ -7,6 +7,7 @@ import adminPatientRoutes from "./admin/routes/patient.routes";
 import specialistRequest from "./specialist/routes/specialistRequest.routes";
 import specialistSettings from "./specialist/routes/specialistSettings.routes";
 import specialistAppointments from './specialist/routes/specialistAppointments.routes'
+import specialistDashboard from './specialist/routes/specialisttDashboard.routes';
 import dotenv from 'dotenv';
 
 const app = express();
@@ -28,6 +29,6 @@ app.use("/admin/patient", adminPatientRoutes);
 app.use("/specialist", specialistRequest);
 app.use("/specialist/settings", specialistSettings);
 app.use("/specialist/appointments",specialistAppointments);
-
+app.use("/specialist/dashboard", specialistDashboard);
 
 export default app;
