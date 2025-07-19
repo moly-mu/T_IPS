@@ -1,87 +1,92 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../../context/AuthContext";
 import Barral from "../desis/Barral";
 import PropTypes from 'prop-types';
-
 import { 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  Star, 
-  Clock, 
-  MessageSquare, 
-  Award,
-  ChevronUp,
-  ChevronDown,
-  Filter
+  Users, Calendar, DollarSign, Star, Clock, 
+  MessageSquare, Award, ChevronUp, ChevronDown, Filter
 } from 'lucide-react';
+import axios from 'axios';
 
 const Ofertas = () => {
+  const navigate = useNavigate();
+  const { token } = useAuth();
   const [filtroTiempo, setFiltroTiempo] = useState('mes');
   const [loading, setLoading] = useState(true);
-  
-  const [metricas, setMetricas] = useState({
-    usuariosActivos: { valor: 0, cambio: 0, tipo: 'positivo' },
-    especialistas: { valor: 0, cambio: 0, tipo: 'positivo' },
-    consultasHoy: { valor: 0, cambio: 0, tipo: 'positivo' },
-    ingresos: { valor: 0, cambio: 0, tipo: 'positivo' },
-    rating: { valor: 0, cambio: 0, tipo: 'positivo' }
+  const [error, setError] = useState(null);
+  const [dashboardData, setDashboardData] = useState({
+    metricas: {
+      usuariosActivos: { valor: 0, cambio: 0, tipo: 'positivo' },
+      especialistas: { valor: 0, cambio: 0, tipo: 'positivo' },
+      consultasHoy: { valor: 0, cambio: 0, tipo: 'positivo' },
+      ingresos: { valor: 0, cambio: 0, tipo: 'positivo' },
+      rating: { valor: 0, cambio: 0, tipo: 'positivo' }
+    },
+    actividadReciente: [],
+    demografiaEdad: [],
+    visitasPorDia: [],
+    proximasCitas: [],
+    comentariosRecientes: [],
+    demografiaGenero: { mujeres: 0, hombres: 0 }
   });
-
-  const [actividadReciente, setActividadReciente] = useState([]);
-  const [demografiaEdad, setDemografiaEdad] = useState([]);
-  const [visitasPorDia, setVisitasPorDia] = useState([]);
-  const [proximasCitas, setProximasCitas] = useState([]);
-  const [comentariosRecientes, setComentariosRecientes] = useState([]);
-  const [demografiaGenero, setDemografiaGenero] = useState({ mujeres: 0, hombres: 0 });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/dashboard');
-        const data = await res.json();
+        setLoading(true);
+        setError(null);
         
-        // Actualizar métricas
-        setMetricas(data.metricas);
-        
-        // Actualizar actividad reciente
-        if (data.actividadReciente) {
-          setActividadReciente(data.actividadReciente);
+        if (!token) {
+          setLoading(false);
+          return;
         }
+
+        const response = await axios.get('http://localhost:3000/specialist/dashboard/metricas', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
         
-        // Actualizar demografía por edad
-        if (data.demografiaEdad) {
-          setDemografiaEdad(data.demografiaEdad);
+        const data = response.data;
+        
+        setDashboardData({
+          metricas: {
+            usuariosActivos: data.metricas?.usuariosActivos || { valor: 0, cambio: 0, tipo: 'positivo' },
+            especialistas: data.metricas?.especialistas || { valor: 0, cambio: 0, tipo: 'positivo' },
+            consultasHoy: data.metricas?.consultasHoy || { valor: 0, cambio: 0, tipo: 'positivo' },
+            ingresos: data.metricas?.ingresos || { valor: 0, cambio: 0, tipo: 'positivo' },
+            rating: data.metricas?.rating || { valor: 0, cambio: 0, tipo: 'positivo' }
+          },
+          actividadReciente: data.actividadReciente || [],
+          demografiaEdad: data.demografiaEdad || [],
+          visitasPorDia: data.visitasPorDia || [],
+          proximasCitas: data.proximasCitas || [],
+          comentariosRecientes: data.comentariosRecientes || [],
+          demografiaGenero: data.demografiaGenero || { mujeres: 0, hombres: 0 }
+        });
+        
+      } catch (err) {
+        console.error('Error al obtener datos:', err);
+        
+        if (err.response?.status === 401) {
+          setError('Sesión expirada - Por favor inicie sesión nuevamente');
+          // Opcional: puedes forzar logout aquí si lo prefieres
+          // logout();
+        } else {
+          setError(err.message || 'Error al cargar los datos del dashboard');
         }
-        
-        // Actualizar visitas por día
-        if (data.visitasPorDia) {
-          setVisitasPorDia(data.visitasPorDia);
-        }
-        
-        // Actualizar próximas citas
-        if (data.proximasCitas) {
-          setProximasCitas(data.proximasCitas);
-        }
-        
-        // Actualizar comentarios recientes
-        if (data.comentariosRecientes) {
-          setComentariosRecientes(data.comentariosRecientes);
-        }
-        
-        // Actualizar demografía por género
-        if (data.demografiaGenero) {
-          setDemografiaGenero(data.demografiaGenero);
-        }
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Error al obtener datos del dashboard:', error);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchDashboardData();
-  }, []);
+    if (token) {
+      fetchDashboardData();
+    } else {
+      setLoading(false);
+    }
+  }, [token]);
 
   const getActivityIcon = (tipo) => {
     switch (tipo) {
@@ -132,10 +137,34 @@ const Ofertas = () => {
     formato: PropTypes.oneOf(['numero', 'dinero']),
   };
 
-  const maxVisitas = visitasPorDia.length > 0 ? Math.max(...visitasPorDia.map(d => d.visitas)) : 1;
-  const porcentajeMujeres = demografiaGenero.mujeres + demografiaGenero.hombres > 0 
-    ? Math.round((demografiaGenero.mujeres / (demografiaGenero.mujeres + demografiaGenero.hombres)) * 100)
+  // Calcular valores derivados
+  const maxVisitas = dashboardData.visitasPorDia.length > 0 
+    ? Math.max(...dashboardData.visitasPorDia.map(d => d.visitas), 1) 
+    : 1;
+    
+  const totalGenero = dashboardData.demografiaGenero.mujeres + dashboardData.demografiaGenero.hombres;
+  const porcentajeMujeres = totalGenero > 0 
+    ? Math.round((dashboardData.demografiaGenero.mujeres / totalGenero) * 100)
     : 50;
+
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6 -mt-244">
+        <Barral/>
+        <div className="max-w-[102rem] ml-84 mx-auto space-y-6">
+          <div className="flex justify-center items-center h-64 flex-col gap-4">
+            <div className="text-lg text-red-600">No autenticado - Por favor inicie sesión</div>
+            <button 
+              onClick={() => navigate('/login')}
+              className="px-4 py-2 bg-[#00102D] text-white rounded-lg hover:bg-[#003366]"
+            >
+              Ir a Iniciar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -144,6 +173,27 @@ const Ofertas = () => {
         <div className="max-w-[102rem] ml-84 mx-auto space-y-6">
           <div className="flex justify-center items-center h-64">
             <div className="text-lg text-gray-600">Cargando datos del dashboard...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6 -mt-244">
+        <Barral/>
+        <div className="max-w-[102rem] ml-84 mx-auto space-y-6">
+          <div className="flex justify-center items-center h-64 flex-col gap-4">
+            <div className="text-lg text-red-600">{error}</div>
+            {error.includes('Sesión expirada') && (
+              <button 
+                onClick={() => navigate('/login')}
+                className="px-4 py-2 bg-[#00102D] text-white rounded-lg hover:bg-[#003366]"
+              >
+                Ir a Iniciar Sesión
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -183,38 +233,38 @@ const Ofertas = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <MetricaCard 
             titulo="Usuarios Activos" 
-            valor={metricas.usuariosActivos.valor} 
-            cambio={metricas.usuariosActivos.cambio}
-            tipo={metricas.usuariosActivos.tipo}
+            valor={dashboardData.metricas.usuariosActivos.valor} 
+            cambio={dashboardData.metricas.usuariosActivos.cambio}
+            tipo={dashboardData.metricas.usuariosActivos.tipo}
             icono={Users}
           />
           <MetricaCard 
             titulo="Especialistas" 
-            valor={metricas.especialistas.valor} 
-            cambio={metricas.especialistas.cambio}
-            tipo={metricas.especialistas.tipo}
+            valor={dashboardData.metricas.especialistas.valor} 
+            cambio={dashboardData.metricas.especialistas.cambio}
+            tipo={dashboardData.metricas.especialistas.tipo}
             icono={Award}
           />
           <MetricaCard 
             titulo="Consultas Hoy" 
-            valor={metricas.consultasHoy.valor} 
-            cambio={metricas.consultasHoy.cambio}
-            tipo={metricas.consultasHoy.tipo}
+            valor={dashboardData.metricas.consultasHoy.valor} 
+            cambio={dashboardData.metricas.consultasHoy.cambio}
+            tipo={dashboardData.metricas.consultasHoy.tipo}
             icono={Calendar}
           />
           <MetricaCard 
             titulo="Ingresos" 
-            valor={metricas.ingresos.valor} 
-            cambio={metricas.ingresos.cambio}
-            tipo={metricas.ingresos.tipo}
+            valor={dashboardData.metricas.ingresos.valor} 
+            cambio={dashboardData.metricas.ingresos.cambio}
+            tipo={dashboardData.metricas.ingresos.tipo}
             icono={DollarSign}
             formato="dinero"
           />
           <MetricaCard 
             titulo="Rating Promedio" 
-            valor={metricas.rating.valor} 
-            cambio={metricas.rating.cambio}
-            tipo={metricas.rating.tipo}
+            valor={dashboardData.metricas.rating.valor} 
+            cambio={dashboardData.metricas.rating.cambio}
+            tipo={dashboardData.metricas.rating.tipo}
             icono={Star}
           />
         </div>
@@ -229,8 +279,8 @@ const Ofertas = () => {
               <Filter className="w-5 h-5 text-gray-400" />
             </div>
             <div className="space-y-4">
-              {demografiaEdad.length > 0 ? (
-                demografiaEdad.map((item, index) => (
+              {dashboardData.demografiaEdad.length > 0 ? (
+                dashboardData.demografiaEdad.map((item, index) => (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
@@ -304,8 +354,8 @@ const Ofertas = () => {
               <Clock className="w-5 h-5 text-gray-400" />
             </div>
             <div className="space-y-4">
-              {actividadReciente.length > 0 ? (
-                actividadReciente.map((actividad, index) => {
+              {dashboardData.actividadReciente.length > 0 ? (
+                dashboardData.actividadReciente.map((actividad, index) => {
                   const Icon = getActivityIcon(actividad.tipo);
                   return (
                     <div key={index} className="flex items-center gap-3">
@@ -341,16 +391,19 @@ const Ofertas = () => {
               <div className="text-sm text-gray-600">Últimos 30 días</div>
             </div>
             <div className="flex items-end justify-between h-48 gap-1">
-              {visitasPorDia.length > 0 ? (
-                visitasPorDia.map((dia, index) => (
+              {dashboardData.visitasPorDia.length > 0 ? (
+                dashboardData.visitasPorDia.map((dia, index) => (
                   <div key={index} className="flex flex-col items-center">
                     <div 
                       className="w-2 bg-[#003366] rounded-t-sm hover:bg-[#00102D] transition-colors cursor-pointer"
-                      style={{ height: `${(dia.visitas / maxVisitas) * 180}px` }}
-                      title={`Día ${dia.dia}: ${dia.visitas} visitas`}
+                      style={{ 
+                        height: `${(dia.visitas / maxVisitas) * 180}px`,
+                        minHeight: dia.visitas === 0 ? '2px' : ''
+                      }}
+                      title={`${dia.fecha}: ${dia.visitas} visitas`}
                     ></div>
                     {index % 5 === 0 && (
-                      <span className="text-xs text-gray-400 mt-2">{dia.dia}</span>
+                      <span className="text-xs text-gray-400 mt-2">{dia.fecha.split('/')[0]}</span>
                     )}
                   </div>
                 ))
@@ -367,8 +420,8 @@ const Ofertas = () => {
               <Calendar className="w-5 h-5 text-gray-400" />
             </div>
             <div className="space-y-4">
-              {proximasCitas.length > 0 ? (
-                proximasCitas.map((cita, index) => (
+              {dashboardData.proximasCitas.length > 0 ? (
+                dashboardData.proximasCitas.map((cita, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
                       <p className="font-medium text-gray-900">{cita.paciente}</p>
@@ -393,12 +446,12 @@ const Ofertas = () => {
             <h3 className="text-lg font-semibold text-gray-900">Comentarios Recientes</h3>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="font-medium">{metricas.rating.valor} promedio</span>
+              <span className="font-medium">{dashboardData.metricas.rating.valor} promedio</span>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {comentariosRecientes.length > 0 ? (
-              comentariosRecientes.map((comentario, index) => (
+            {dashboardData.comentariosRecientes.length > 0 ? (
+              dashboardData.comentariosRecientes.map((comentario, index) => (
                 <div key={index} className="p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-medium text-gray-900">{comentario.paciente}</span>
@@ -407,7 +460,7 @@ const Ofertas = () => {
                         <Star 
                           key={i} 
                           className={`w-4 h-4 ${
-                            i < comentario.rating 
+                            i < Math.round(comentario.rating) 
                               ? 'fill-yellow-400 text-yellow-400' 
                               : 'text-gray-300'
                           }`} 
