@@ -71,12 +71,12 @@ const SpecialistsSection = () => {
 						id: item.id,
 						name: `${item.User?.firstname || ""} ${item.User?.lastname || ""}`,
 						specialty:
-							item.ProfesionalHasSpecialty?.[0]?.Specialty?.name ||
+							item.SpecialistHasSpecialty?.[0]?.Specialty?.name ||
 							"Sin especialidad",
-						experience: item.prof_data?.working_experience || "No registrada",
-						rating: item.prof_data?.mppc || 0,
-						education: decodeByteObject(item.prof_data?.degrees) || "No registrada",
-						consultations: item.prof_data?.consultations || 0,
+						experience: item.spec_data?.working_experience || "No registrada",
+						rating: item.spec_data?.mppc || 0,
+						education: decodeByteObject(item.spec_data?.degrees) || "No registrada",
+						consultations: item.spec_data?.consultations || 0,
 						certifications,
 						status: item.User?.status || "Pendiente", // para que sea 'Pendiente' o 'Aprovado'
 					};

@@ -25,6 +25,8 @@ import UserSection from "../admin/user/UserSection";
 import SpecialistsSection from "../admin/specialist/SpecialistsSection";
 import ServicesSection from "../admin/service/ServicesSection";
 
+
+
 const Layout = ({ children, activeTab, setActiveTab }) => {
 	return (
 		<div className="flex h-screen">
@@ -230,29 +232,24 @@ ChartCard.propTypes = {
 	className: PropTypes.string,
 };
 
-const DemographicsChart = () => {
-	const demographics = [
-		{ label: "18-30 años", value: 35, color: "bg-blue-500" },
-		{ label: "31-45 años", value: 28, color: "bg-green-500" },
-		{ label: "46-60 años", value: 22, color: "bg-purple-500" },
-		{ label: "60+ años", value: 15, color: "bg-orange-500" },
-	];
+const DemographicsChart = ({ edades }) => {
+	const colors = ["bg-blue-500", "bg-green-500", "bg-purple-500", "bg-orange-500"];
 
 	return (
-		<ChartCard title="Demografía por Edad">
+		<ChartCard title="Demografía por Edad (Pacientes) ">
 			<div className="space-y-4">
-				{demographics.map((item, index) => (
+				{edades.map((item, index) => (
 					<div key={index} className="flex items-center">
-						<div className="w-20 text-sm text-gray-600">{item.label}</div>
+						<div className="w-20 text-sm text-gray-600">{item.range}</div>
 						<div className="flex-1 mx-4">
 							<div className="w-full bg-gray-200 rounded-full h-2">
 								<div
-									className={`h-2 rounded-full ${item.color}`}
-									style={{ width: `${item.value}%` }}
+									className={`h-2 rounded-full ${colors[index % colors.length]}`}
+									style={{ width: `${item.percentage}%` }}
 								></div>
 							</div>
 						</div>
-						<div className="w-12 text-sm text-gray-900 text-right">{item.value}%</div>
+						<div className="w-12 text-sm text-gray-900 text-right">{item.percentage}%</div>
 					</div>
 				))}
 			</div>
@@ -260,51 +257,75 @@ const DemographicsChart = () => {
 	);
 };
 
-const GenderChart = () => {
+DemographicsChart.propTypes = {
+	edades: PropTypes.arrayOf(
+		PropTypes.shape({
+			range: PropTypes.string.isRequired,
+			count: PropTypes.number.isRequired,
+			percentage: PropTypes.string.isRequired,
+		})
+	).isRequired,
+};
+
+
+const GenderChart = ({ generos }) => {
+	const mujeres = generos.find((g) => g.gender === "Femenino") || { percentage: "0.0" };
+	const hombres = generos.find((g) => g.gender === "Masculino") || { percentage: "0.0" };
+
+	const strokeDasharray = `${mujeres.percentage}, ${100 - parseFloat(mujeres.percentage)}`;
+
 	return (
 		<ChartCard title="Distribución por Género">
 			<div className="flex items-center justify-center h-40">
 				<div className="relative w-32 h-32">
 					<svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
 						<path
-							d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
+							d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
 							fill="none"
 							stroke="#e5e7eb"
 							strokeWidth="3"
 						/>
 						<path
-							d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
+							d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
 							fill="none"
 							stroke="#3b82f6"
 							strokeWidth="3"
-							strokeDasharray="60, 40"
+							strokeDasharray={strokeDasharray}
 						/>
 					</svg>
 					<div className="absolute inset-0 flex items-center justify-center">
 						<div className="text-center">
-							<div className="text-2xl font-light text-gray-900">60%</div>
+							<div className="text-2xl font-light text-gray-900">{mujeres.percentage}%</div>
 							<div className="text-sm text-gray-600">Mujeres</div>
 						</div>
 					</div>
 				</div>
 			</div>
+
 			<div className="flex justify-center space-x-6 mt-4">
 				<div className="flex items-center">
 					<div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-					<span className="text-sm text-gray-600">Mujeres (60%)</span>
+					<span className="text-sm text-gray-600">Mujeres ({mujeres.percentage}%)</span>
 				</div>
 				<div className="flex items-center">
 					<div className="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
-					<span className="text-sm text-gray-600">Hombres (40%)</span>
+					<span className="text-sm text-gray-600">Hombres ({hombres.percentage}%)</span>
 				</div>
 			</div>
 		</ChartCard>
 	);
 };
+
+GenderChart.propTypes = {
+	generos: PropTypes.arrayOf(
+		PropTypes.shape({
+			gender: PropTypes.string.isRequired,
+			count: PropTypes.number.isRequired,
+			percentage: PropTypes.string.isRequired,
+		})
+	).isRequired,
+};
+
 
 const SpecialistRequests = () => {
 	const [requests, setRequests] = useState([]);
@@ -317,24 +338,23 @@ useEffect(() => {
 
       // Mapea los datos a lo que el frontend espera
       const mapped = await Promise.all(
-        data.map(async (pro) => {
+        data.map(async (spec) => {
           const ratingRes = await axios.get(
-            `http://localhost:3000/admin/profesional/${pro.id}/rating`
+            `http://localhost:3000/admin/profesional/${spec.id}/rating`
           );
 
           return {
-            id: pro.id,
-            name: `${pro.User.firstname} ${pro.User.lastname}`,
-            specialty: pro.ProfesionalHasSpecialty[0]?.Specialty?.name ?? "Sin especialidad",
-            experience: pro.prof_data.working_experience,
+            id: spec.id,
+            name: `${spec.User.firstname} ${spec.User.lastname}`,
+            specialty: spec.SpecialistHasSpecialty[0]?.Specialty?.name ?? "Sin especialidad",
+            experience: spec.spec_data.working_experience,
             rating: parseFloat(ratingRes.data.avg).toFixed(1),
-            status: pro.User.status.toLowerCase(),
-            date: new Date(pro.User.joinDate).toISOString().split("T")[0],
+            status: spec.User.status.toLowerCase(),
+            date: new Date(spec.User.joinDate).toISOString().split("T")[0],
           };
         })
       );
-      const pendientes = mapped.filter((pro) => pro.status === "pendiente");
-
+      const pendientes = mapped.filter((spec) => spec.status === "pendiente");
       setRequests(pendientes);
     } catch (err) {
       console.error("Error al obtener solicitudes de especialistas:", err);
@@ -356,6 +376,9 @@ useEffect(() => {
 	return (
 		<ChartCard title="Solicitudes de Especialistas" className="col-span-2">
 			<div className="space-y-4">
+				
+				{/*Console.log de prueba*/}
+ 
 				{requests.map((request) => (
 					<div
 						key={request.id}
@@ -471,6 +494,21 @@ const RecentActivity = () => {
 const Pin = () => {
 	const [activeTab, setActiveTab] = useState("dashboard");
 
+	const [stats, setStats] = useState(null);
+
+	useEffect(() => {
+	const fetchStats = async () => {
+		try {
+		const res = await axios.get("http://localhost:3000/admin/stats");
+		setStats(res.data);
+		} catch (err) {
+		console.error("Error al cargar estadísticas del dashboard:", err);
+		}
+	};
+
+	fetchStats();
+	}, []);
+
 	const renderContent = () => {
 		switch (activeTab) {
 			case "users":
@@ -480,42 +518,42 @@ const Pin = () => {
 			case "services":
 				return <ServicesSection />;
 			default:
-				return (
+				return stats ? (
 					<>
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 							<StatsCard
 								title="Usuarios Activos"
-								value="1,234"
+								value={stats.totalPacientes}
 								icon={Users}
-								trend="+12% este mes"
+								trend=""
 								color="blue"
 							/>
 							<StatsCard
 								title="Especialistas"
-								value="89"
+								value={stats.especialistas}
 								icon={UserCheck}
-								trend="+5 nuevos"
+								trend=""
 								color="green"
 							/>
 							<StatsCard
 								title="Consultas Hoy"
-								value="156"
+								value={stats.consultas}
 								icon={Calendar}
-								trend="+8% vs ayer"
+								trend=""
 								color="purple"
 							/>
 							<StatsCard
 								title="Ingresos"
-								value="$45,670"
+								value={`$${stats.ingresos.toLocaleString()}`}
 								icon={Activity}
-								trend="+15% este mes"
+								trend=""
 								color="orange"
 							/>
 						</div>
 
 						<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-							<DemographicsChart />
-							<GenderChart />
+							<DemographicsChart edades={stats.edades}/>
+							<GenderChart generos={stats.generos}/>
 							<RecentActivity />
 						</div>
 
@@ -523,7 +561,9 @@ const Pin = () => {
 							<SpecialistRequests />
 						</div>
 					</>
-				);
+				) : (
+					<div className="text-center text-gray-500">Cargando estadísticas...</div>
+				)
 		}
 	};
 
