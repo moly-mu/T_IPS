@@ -1,3 +1,4 @@
+//! Realizar cambios de los campos
 import { useState } from "react";
 import Barral from "../desis/Barral";
 import { Link } from "react-router-dom";
@@ -601,7 +602,7 @@ const Cards = () => {
 
             {/* CV PDF (Opcional) */}
             <div className="mb-4">
-              <h3 className="font-medium mb-2">CV PDF (Opcional)</h3>
+              <h3 className="font-medium mb-2">CV PDF</h3>
               <input
                 type="file"
                 onChange={(e) => handleDocumentChange(e, 'cvPdf')}

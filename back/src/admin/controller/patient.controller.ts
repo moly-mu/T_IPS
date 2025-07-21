@@ -8,11 +8,12 @@ export const getAllPacientes = async (req: Request, res: Response) => {
   try {
     const { status, gender, search } = req.query;
 
-    const pacientes = await prisma.paciente.findMany({
+    const pacientes = await prisma.patient.findMany({
       include: {
         User: {
           include: {
             credential_users: true,
+            userReviewsReceived: true,
           },
         },
         Appointments: {
@@ -24,21 +25,36 @@ export const getAllPacientes = async (req: Request, res: Response) => {
     });
 
     const response = pacientes
-      .map((p) => ({
-        id: p.User.id,
-        name: `${p.User.firstname} ${p.User.lastname}`,
-        email: p.User.credential_users.email,
-        document: p.User.credential_users.document,
-        phone: p.User.phone,
-        age: p.User.age,
-        gender: p.User.gender,
-        consultations: p.Appointments.length,
-        lastConsultation:
-          p.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] || null,
-        status: p.User.status,
-        rating: 4.5,
-        joinDate: p.User.joinDate.toISOString().split("T")[0],
-      }))
+      .map((p) => {
+        const reviews = p.User.userReviewsReceived || [];
+
+        // Calcular promedio rating
+        const rating =
+          reviews.length > 0
+            ? parseFloat(
+                (
+                  reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+                ).toFixed(2)
+              )
+            : 0;
+
+        return {
+          id: p.User.id,
+          name: `${p.User.firstname} ${p.User.lastname}`,
+          email: p.User.credential_users.email,
+          document: p.User.credential_users.document,
+          phone: p.User.phone,
+          age: p.User.age,
+          gender: p.User.gender,
+          consultations: p.Appointments.length,
+          lastConsultation:
+            p.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] ||
+            null,
+          status: p.User.status,
+          rating, // 👈 usamos el cálculo real aquí
+          joinDate: p.User.joinDate.toISOString().split("T")[0],
+        };
+      })
       .filter((u) => {
         const matchesStatus = !status || u.status === status;
         const matchesGender = !gender || u.gender === gender;
@@ -61,7 +77,7 @@ export const getPacienteById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const paciente = await prisma.paciente.findFirst({
+    const paciente = await prisma.patient.findFirst({
       where: {
         User_idUser: Number(id),
       },
@@ -94,7 +110,8 @@ export const getPacienteById = async (req: Request, res: Response) => {
       gender: paciente.User.gender,
       consultations: paciente.Appointments.length,
       lastConsultation:
-        paciente.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] || null,
+        paciente.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] ||
+        null,
       status: paciente.User.status,
       rating: 4.5,
       joinDate: paciente.User.joinDate.toISOString().split("T")[0],
@@ -114,7 +131,7 @@ export const getPacienteRating = async (req: Request, res: Response) => {
 
     const reviews = await prisma.userReview.findMany({
       where: {
-        reviewer_id: Number(id),
+        reviewed_id: Number(id),
       },
     });
 
@@ -139,7 +156,7 @@ export const createPaciente = async (req: Request, res: Response) => {
       sex,
       document,
       document_type,
-      languaje,
+      language,
       phone,
       email,
       password,
@@ -164,7 +181,7 @@ export const createPaciente = async (req: Request, res: Response) => {
           gender,
           sex,
           document_type,
-          languaje,
+          language,
           phone,
           credential_users_idcredential_users: credential.id,
           rol_idrol: Number(rol_idrol),
@@ -175,10 +192,12 @@ export const createPaciente = async (req: Request, res: Response) => {
       const pacData = await tx.pacData.create({
         data: {
           medical_history: Buffer.from(""),
+          Direction: "123 Main St",
+          Blod_type: "+O",
         },
       });
 
-      const paciente = await tx.paciente.create({
+      const paciente = await tx.patient.create({
         data: {
           User_idUser: user.id,
           User_credential_users_idcredential_users: credential.id,
@@ -199,9 +218,9 @@ export const createPaciente = async (req: Request, res: Response) => {
     if (error.code === "P2002") {
       res.status(400).json({ error: "El correo o documento ya existe" });
     } else if (error.code === "P2003") {
-      res
-        .status(400)
-        .json({ error: "Clave foránea inválida (revisa rol_idrol o credential_id)" });
+      res.status(400).json({
+        error: "Clave foránea inválida (revisa rol_idrol o credential_id)",
+      });
     } else {
       res.status(500).json({ error: "Error interno del servidor" });
     }
@@ -238,7 +257,7 @@ export const deletePaciente = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    await prisma.paciente.deleteMany({
+    await prisma.patient.deleteMany({
       where: { User_idUser: Number(id) },
     });
 

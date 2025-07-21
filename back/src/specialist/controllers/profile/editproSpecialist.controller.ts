@@ -11,7 +11,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     age,
     gender,
     sex,
-    languaje,
+    language,
     document_type,
     phone,
   } = req.body;
@@ -25,7 +25,7 @@ export const updateProfile = async (req: Request, res: Response) => {
         age,
         gender,
         sex,
-        languaje,
+        language,
         document_type,
         phone,
       },

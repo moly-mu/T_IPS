@@ -14,5 +14,4 @@ router.put("/editProfile",validateToken,updateProfile);
 
 
 
-
 export default router;
