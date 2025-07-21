@@ -28,6 +28,11 @@ import MedicalPaymentSystem from "../company/paymentService/MedicalPaymentSystem
 import MedicalProfilesSection from "../homepage/sections/MedicalProfilesSection";
 import SymptomQuestionnaire from "../company/AssistanceConsultation/SymptomQuestionnaire ";
 import MedicalAppointmentSection from "../company/AssistanceConsultation/MedicalAppointmentSection";
+import CancelAppointmentM from "../company/cancelAppointment/CancelAppointmentM";
+import PasswordRecovery from "../company/recoverPassword/PasswordRecovery";
+import NotFoundPage from "../NotFoundPage";
+import TeleconsultaSurvey from "../company/AssistanceConsultation/TeleconsultaSurvey";
+
 
 
 const AppRoutes = () => {
@@ -62,6 +67,9 @@ const AppRoutes = () => {
         <Route path="/pago" element={<MedicalPaymentSystem/>} />
         <Route path="/DiagnosticoPrevio" element={<SymptomQuestionnaire/>} />
         <Route path="/AsistirAConsulta" element={<MedicalAppointmentSection/>} />
+        <Route path="/CancelarCitaM" element={<CancelAppointmentM/>} />
+        <Route path="/RecuperarContraseña" element={<PasswordRecovery/>} />
+        <Route path="/EncuestaSatisfaccion" element={<TeleconsultaSurvey/>} />
 
 
         {/* Administrador*/}
@@ -73,6 +81,7 @@ const AppRoutes = () => {
 
         {/* Extrahome*/}
         <Route path="/quans" element={<FAQSection/>} />
+        <Route path="/Page404" element={<NotFoundPage/>} />
       </Routes>
     </div>
   );

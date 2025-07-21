@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Alert, Snackbar, AlertTitle } from "@mui/material";
+import axios from 'axios';
 
 const Pregistro = () => {
   // Estados para manejar las alertas
@@ -92,36 +93,41 @@ const Pregistro = () => {
   };
 
   // Función para manejar el envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Mostrar alerta de procesando
-    showAlert('info', 'Procesando tu registro, por favor espera...', 'Creando cuenta');
+  if (!validateForm()) return;
 
-    // Simular proceso de registro
+  showAlert('info', 'Procesando tu registro, por favor espera...', 'Creando cuenta');
+
+  try {
+    const response = await axios.post('http://localhost:3000/api/register', {
+      email: formData.correo,
+      document: formData.numeroDocumento,
+      firstname: formData.primerNombre,
+      second_firstname: formData.segundoNombre,
+      lastname: formData.primerApellido,
+      second_lastname: formData.segundoApellido,
+      age: 25, // asigna la edad real que necesites
+      gender: 'masculino', // o 'femenino'
+      password: formData.contraseña,
+      sex: 'masculino', // o 'femenino'
+      languaje: 'español',
+      document_type: formData.tipoDocumento,
+      phone: '1234567890' // aquí también el valor real o agrégalo al formulario
+    });
+
+    showAlert('success', `¡Bienvenido ${formData.primerNombre}! Registro exitoso.`, 'Registro Exitoso');
+
     setTimeout(() => {
-      // Simular éxito del registro
-      const registroExitoso = true; // Aquí iría tu lógica de registro real
-
-      if (registroExitoso) {
-        showAlert('success', 
-          `¡Bienvenido ${formData.primerNombre}! Tu cuenta ha sido creada exitosamente. Serás redirigido en unos momentos.`, 
-          '¡Registro exitoso!'
-        );
-        
-        // Redirigir después de 3 segundos
-        setTimeout(() => {
-          window.location.href = '/pagusuario'; // o usar navigate si usas React Router
-        }, 3000);
-      } else {
-        showAlert('error', 'Hubo un problema al crear tu cuenta. Por favor intenta nuevamente.', 'Error en el registro');
-      }
+      window.location.href = '/pagusuario';
     }, 2000);
-  };
+
+  } catch (error) {
+    console.error(error);
+    showAlert('error', error.response?.data?.error || 'Error al registrar.', 'Registro Fallido');
+  }
+};
 
   const Navbar = () => {
     return (

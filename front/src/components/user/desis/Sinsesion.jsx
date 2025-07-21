@@ -81,6 +81,7 @@ const Sinsesion = () => {
                   ¿No tienes cuenta?{" "}
                   <Link to="/Sreg" className="text-[#003366] font-semibold hover:underline ml-1">
                     Registrarme aquí
+
                   </Link>
                 </p>
               </div>
