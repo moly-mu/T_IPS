@@ -1,6 +1,9 @@
+//! Realizar cambios de los campos
 import { useState } from "react";
 import Barral from "../desis/Barral";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../../../context/AuthContext";
 
 const Cards = () => {
   const [trabajos, setTrabajos] = useState([]);
@@ -21,6 +24,8 @@ const Cards = () => {
   const [certificados, setCertificados] = useState([]);
   const [foto, setFoto] = useState(null);
   const [biografia, setBiografia] = useState("");
+
+  const { token } = useAuth();
 
   // Información Personal
   const [informacionPersonal, setInformacionPersonal] = useState({
@@ -116,6 +121,70 @@ const Cards = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleSubmit = async () => {
+    try {
+      // Preparar el objeto de datos según la estructura esperada por el endpoint
+      const requestData = {
+        biography: biografia,
+        picture: foto, // Asumiendo que foto es la URL base64
+        specialty: informacionProfesional.especialidadMedica,
+        price: parseFloat(informacionProfesional.precioACobrar),
+        graduationYear: parseInt(informacionProfesional.añoGraduacion),
+        workExperience: trabajos.map(t => `${t.trabajo} - ${t.experiencia}`).join(", "),
+        languages: idiomas,
+        education: educacion ? [{
+          institution: educacion.split(" - ")[0] || "",
+          degree: educacion.split(" - ")[1] || educacion,
+          year: parseInt(informacionProfesional.añoGraduacion)
+        }] : [],
+        skills: habilidades.split(",").map(s => s.trim()),
+        references: referenciasProfesionales.map(ref => ({
+          name: ref.nombre,
+          contact: ref.telefono
+        })),
+        certificates: certificados.length > 0 ? "data:application/pdf;base64,..." : "", // Simplificado para prueba
+        documentInfo: {
+          dni: informacionPersonal.numeroDocumento,
+          type: informacionPersonal.tipoDocumento
+        },
+        personalInfo: {
+          address: informacionPersonal.direccion,
+          phone: informacionPersonal.telefono
+        },
+        personalRefs: referenciasPersonales.map(ref => ({
+          name: ref.nombre,
+          relationship: ref.relacion,
+          phone: ref.telefono
+        }))
+      };
+
+      // Enviar la solicitud POST
+      const response = await axios.post(
+        "http://localhost:3000/specialist/specialistRequest",
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      // Mostrar alerta de éxito
+      alert("Solicitud enviada con éxito");
+      console.log("Respuesta del servidor:", response.data);
+      
+    } catch (error) {
+      console.error("Error al enviar la solicitud:", error);
+      alert("Error al enviar la solicitud");
+    }
+  };
+
+  if (!token) {
+    return <div>Cargando...</div>;
+  }
+
 
   return (
     <div className="bg-gray-50 min-h-screen p-6 flex">
@@ -601,7 +670,7 @@ const Cards = () => {
 
             {/* CV PDF (Opcional) */}
             <div className="mb-4">
-              <h3 className="font-medium mb-2">CV PDF (Opcional)</h3>
+              <h3 className="font-medium mb-2">CV PDF</h3>
               <input
                 type="file"
                 onChange={(e) => handleDocumentChange(e, 'cvPdf')}
@@ -629,19 +698,20 @@ const Cards = () => {
           </div>
         </div>
 
-        {/* Botón de Guardar */}
-        <Link to="/pagusuario">
-          <div className="mt-6 flex justify-start w-full">
-            <button
-              className="w-full mt-4 bg-[#00102D] text-white p-2 rounded-md hover:bg-[#001a4a] transition-colors"
-              onClick={() => alert("Solicitud enviada con exito")}>
-              Enviar Solicitud y Volver
-            </button>
-          </div>
-        </Link>
-      </div>
+        {/* Botón de Guardar - modificado para usar handleSubmit */}
+      <Link to="/pagusuario">
+        <div className="mt-6 flex justify-start w-full">
+          <button
+            className="w-full mt-4 bg-[#00102D] text-white p-2 rounded-md hover:bg-[#001a4a] transition-colors"
+            onClick={handleSubmit}>
+            Enviar Solicitud y Volver
+          </button>
+        </div>
+      </Link>
     </div>
+  </div>
   );
 };
+
 
 export default Cards;

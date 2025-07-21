@@ -1,8 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Alert, Snackbar, AlertTitle } from "@mui/material";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+
 
 const PinSesion = () => {
+  const { login } = useAuth();
   const [alert, setAlert] = useState({
     open: false,
     severity: 'info',
@@ -42,7 +46,7 @@ const PinSesion = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.email) {
@@ -66,21 +70,27 @@ const PinSesion = () => {
       return;
     }
 
-    showAlert('info', 'Verificando credenciales...', 'Iniciando sesión');
+    try {
+    const response = await axios.post("http://localhost:3000/specialist/auth/login", {
+      email: formData.email,
+      password: formData.password,
+    });
 
-    setTimeout(() => {
-      const loginSuccess = true;
+    const { token } = response.data;
 
-      if (loginSuccess) {
-        showAlert('success', 'Has iniciado sesión correctamente', '¡Bienvenido!');
-        setTimeout(() => {
-          navigate('/pagusuario'); // ✅ Redirección corregida
-        }, 1500);
-      } else {
-        showAlert('error', 'Credenciales incorrectas. Verifica tu email y contraseña', 'Error de autenticación');
-      }
-    }, 2000);
-  };
+    if (token) {
+      login(token); // ✅ Guarda el token en el contexto (y localStorage)
+
+      showAlert("success", "Has iniciado sesión correctamente", "¡Bienvenido!");
+      setTimeout(() => {
+        navigate("/pagusuario");
+      }, 1500);
+    }
+  } catch (error) {
+    console.error("❌ Error al iniciar sesión:", error);
+    showAlert("error", "Credenciales incorrectas o usuario no aprobado", "Error de autenticación");
+  }
+};
 
   const handleForgotPassword = () => {
     if (!formData.email) {
@@ -90,6 +100,8 @@ const PinSesion = () => {
 
     showAlert('info', 'Se ha enviado un enlace de recuperación a tu correo electrónico', 'Recuperación de contraseña');
   };
+
+  
 
   const Navbar = () => (
     <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">

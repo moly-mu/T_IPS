@@ -1,8 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import {useAuth } from "../../../context/AuthContext";
 
 const Sinsesion = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -26,6 +28,8 @@ const Sinsesion = () => {
         email: formData.email,
         password: formData.password,
       });
+      const { token } = response.data;
+      login (token);
       console.log("Login exitoso", response.data);
       // Redirige al perfil si el login es exitoso
       navigate("/perfilPaciente");
