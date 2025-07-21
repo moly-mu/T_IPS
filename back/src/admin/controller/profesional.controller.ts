@@ -5,14 +5,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Obtener todos los profesionales (opcionalmente útil para admin)
+// Obtener todos los especialistas (opcionalmente útil para admin)
 export const getAllProfessionals = async (_req: Request, res: Response) => {
 	try {
-		const professionals = await prisma.profesional.findMany({
+		const professionals = await prisma.specialist.findMany({
 			include: {
-				prof_data: true,
+				spec_data: true,
 				User: true,
-				ProfesionalHasSpecialty: {
+				SpecialistHasSpecialty: {
 					include: {
 						Specialty: true,
 					},
@@ -21,20 +21,20 @@ export const getAllProfessionals = async (_req: Request, res: Response) => {
 		});
 		res.json(professionals);
 	} catch (error) {
-		res.status(500).json({ error: "Error al obtener los profesionales", details: error });
+		res.status(500).json({ error: "Error al obtener los especialistas", details: error });
 	}
 };
 
-// Obtener un profesional por ID (admin)
+// Obtener un especialista por ID (admin)
 export const getProfessionalById = async (req: Request, res: Response) => {
 	const id = Number(req.params.id);
 	try {
-		const professional = await prisma.profesional.findUnique({
+		const professional = await prisma.specialist.findUnique({
 			where: { id },
 			include: {
-				prof_data: true,
+				spec_data: true,
 				User: true,
-				ProfesionalHasSpecialty: {
+				SpecialistHasSpecialty: {
 					include: {
 						Specialty: true,
 					},
@@ -43,33 +43,33 @@ export const getProfessionalById = async (req: Request, res: Response) => {
 		});
 
 		if (!professional) {
-			res.status(404).json({ error: "Profesional no encontrado" });
+			res.status(404).json({ error: "Especialista no encontrado" });
 			return;
 		}
 		res.json(professional);
 	} catch (error) {
-		res.status(500).json({ error: "Error al buscar el profesional", details: error });
+		res.status(500).json({ error: "Error al buscar el especialista", details: error });
 	}
 };
 
-// Crear nuevo profesional
+// Crear nuevo especialista
 export const createProfessional = async (req: Request, res: Response) => {
 	const {
 		User_idUser,
 		User_credential_users_idcredential_users,
 		User_rol_idrol,
-		prof_data_idprof_data,
+		spec_data_idspec_data,
 		specialty_idspecialty,
 	} = req.body;
 
 	try {
-		const profesional = await prisma.profesional.create({
+		const profesional = await prisma.specialist.create({
 			data: {
 				User_idUser,
 				User_credential_users_idcredential_users,
 				User_rol_idrol,
-				prof_data_idprof_data,
-				ProfesionalHasSpecialty: {
+				spec_data_idspec_data,
+				SpecialistHasSpecialty: {
 					create: {
 						specialty_idspecialty,
 					},
@@ -78,17 +78,17 @@ export const createProfessional = async (req: Request, res: Response) => {
 		});
 		res.status(201).json(profesional);
 	} catch (error) {
-		res.status(400).json({ error: "Error al crear el profesional", details: error });
+		res.status(400).json({ error: "Error al crear el especialista", details: error });
 	}
 };
 
-// Actualizar el estado del profesional (en tabla USER)
+// Actualizar el estado del Especialista (en tabla USER)
 export const updateProfessionalStatus = async (req: Request, res: Response) => {
 	const id = Number(req.params.id);
 	const { status } = req.body;
 
 	try {
-		const professional = await prisma.profesional.findUnique({
+		const professional = await prisma.specialist.findUnique({
 			where: { id },
 			include: {
 				User: true,
@@ -96,7 +96,7 @@ export const updateProfessionalStatus = async (req: Request, res: Response) => {
 		});
 
 		if (!professional) {
-			res.status(404).json({ error: "Profesional no encontrado" });
+			res.status(404).json({ error: "Especialista no encontrado" });
 			return;
 		}
 
@@ -112,41 +112,41 @@ export const updateProfessionalStatus = async (req: Request, res: Response) => {
 		res.json({ message: "Estado actualizado", user: updatedUser });
 	} catch (error) {
 		res.status(400).json({
-			error: "Error al actualizar estado del profesional",
+			error: "Error al actualizar estado del especialista",
 			details: error,
 		});
 	}
 };
 
-// Eliminar profesional
+// Eliminar Especialista
 export const deleteProfessional = async (req: Request, res: Response) => {
 	const id = Number(req.params.id);
 
 	try {
-		await prisma.profesional.delete({ where: { id } });
-		res.json({ message: "Profesional eliminado correctamente" });
+		await prisma.specialist.delete({ where: { id } });
+		res.json({ message: "Especialista eliminado correctamente" });
 	} catch (error) {
-		res.status(400).json({ error: "Error al eliminar el profesional", details: error });
+		res.status(400).json({ error: "Error al eliminar el especialista", details: error });
 	}
 };
 
-// Obtener profesionales por especialidad (con datos mapeados para el frontend)
+// Obtener Especialistas por especialidad (con datos mapeados para el frontend)
 export const getProfessionalsBySpecialty = async (req: Request, res: Response) => {
 	const specialtyId = Number(req.params.specialtyId);
 
 	try {
-		const professionals = await prisma.profesional.findMany({
+		const professionals = await prisma.specialist.findMany({
 			where: {
-				ProfesionalHasSpecialty: {
+				SpecialistHasSpecialty: {
 					some: {
 						specialty_idspecialty: specialtyId,
 					},
 				},
 			},
 			include: {
-				prof_data: true,
+				spec_data: true,
 				User: true,
-				ProfesionalHasSpecialty: {
+				SpecialistHasSpecialty: {
 					include: {
 						Specialty: true,
 					},
@@ -176,12 +176,12 @@ export const getProfessionalsBySpecialty = async (req: Request, res: Response) =
 				return {
 					id: pro.id,
 					name: `${pro.User.firstname} ${pro.User.lastname}`,
-					specialty: pro.ProfesionalHasSpecialty[0]?.Specialty.name ?? "Sin especialidad",
-					experience: pro.prof_data.working_experience,
+					specialty: pro.SpecialistHasSpecialty[0]?.Specialty.name ?? "Sin especialidad",
+					experience: pro.spec_data.working_experience,
 					rating: avgRating,
-					education: Buffer.from(pro.prof_data.educational_certificates).toString("utf8"),
-					certifications: [Buffer.from(pro.prof_data.degrees).toString("utf8")],
-					consultations: pro.prof_data.consultations,
+					education: Buffer.from(pro.spec_data.educational_certificates).toString("utf8"),
+					certifications: [Buffer.from(pro.spec_data.degrees).toString("utf8")],
+					consultations: pro.spec_data.consultations,
 					status: pro.User.status.toLowerCase(),
 				};
 			})
@@ -190,13 +190,13 @@ export const getProfessionalsBySpecialty = async (req: Request, res: Response) =
 		res.json(mapped);
 	} catch (error) {
 		res.status(500).json({
-			error: "Error al obtener profesionales por especialidad",
+			error: "Error al obtener Especialistas por especialidad",
 			details: error,
 		});
 	}
 };
 
-// Obtener el ratig promedio de los profesionales
+// Obtener el ratig promedio de los Especialistas
 export const getProfessionalRating = async (req: Request, res: Response) => {
 	const id = Number(req.params.id);
 	try {
