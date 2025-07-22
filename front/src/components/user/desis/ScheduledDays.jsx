@@ -1,6 +1,6 @@
 import Barral from '../desis/Barral';
 import { ChevronLeft, ChevronRight, Plus, Calendar, Clock, Eye, User } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const appointments = [
@@ -249,12 +249,13 @@ function ScheduledDays() {
                               Confirmar
                             </button>
                           )}
+                          <Link to="/HistoriaClinicaEditable">
                           <button
                             onClick={() => handleReschedule(appointment.id)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                          >
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
                             Reprogramar
                           </button>
+                          </Link>
                         </div>
                       </td>
                     </tr>
@@ -401,10 +402,11 @@ function ScheduledDays() {
                   onClick={() => {
                     handleReschedule(selectedPatient.id);
                     closeModal();
+                    navigate('/IrCita');
                   }}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
                 >
-                  Reprogramar
+                  Ir a Consulta
                 </button>
               </div>
             </div>
