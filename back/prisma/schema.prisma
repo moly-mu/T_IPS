@@ -460,7 +460,7 @@ model MedicalOrder {
   issuedAt                                DateTime @default(now()) @db.Timestamp
   description                             String   @db.Text
   instructions                            String?  @db.Text
-  status                                  String   @default("pendiente") @db.VarChar(45)
+  status                                  UserStatus  @default(Pendiente) 
 
   Appointment Appointment @relation(fields: [appointmentId], references: [id])
   Specialist  Specialist  @relation(fields: [specialist_idEspecialista, specialist_spec_data_idspec_data, specialist_User_idUser, specialist_User_credential_users_idcred, specialist_User_rol_idrol], references: [id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
@@ -479,3 +479,4 @@ enum UserStatus {
   Inactivo
   Pendiente
 }
+
