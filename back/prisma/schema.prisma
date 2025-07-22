@@ -129,7 +129,9 @@ model Specialist {
   User_idUser                              Int
   User_credential_users_idcredential_users Int
   User_rol_idrol                           Int
+  
 
+  Status                 UserStatus[]
   spec_data              SpecData                 @relation(fields: [spec_data_idspec_data], references: [id])
   User                   User                     @relation(fields: [User_idUser, User_credential_users_idcredential_users, User_rol_idrol], references: [id, credential_users_idcredential_users, rol_idrol])
   SpecialistHasSpecialty SpecialistHasSpecialty[]
@@ -268,7 +270,8 @@ model SpecialistRequest {
   documentInfo   String? // JSON string
   personalInfo   String? // JSON string
   personalRefs   String? // JSON string
-  status         String   @default("pendiente")
+
+  status         UserStatus @default(Pendiente)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

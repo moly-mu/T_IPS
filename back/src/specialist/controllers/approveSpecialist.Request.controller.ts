@@ -37,7 +37,6 @@ export const approveSpecialistRequest = async (req: Request, res: Response) => {
     await prisma.specialist.create({
       data: {
         spec_data_idspec_data: profData.id,
-        status: "Activo",
         User_idUser: request.user.id,
         User_credential_users_idcredential_users: request.user.credential_users_idcredential_users,
         User_rol_idrol: request.user.rol_idrol,

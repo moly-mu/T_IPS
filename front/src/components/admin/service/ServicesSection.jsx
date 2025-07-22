@@ -134,7 +134,10 @@ const ServicesSection = () => {
 
 	const totalServicios = serviciosFiltrados.length;
 	const serviciosActivos = serviciosFiltrados.filter((s) => s.status === "Activo").length;
-	const totalConsultas = serviciosFiltrados.reduce((acc, s)=> acc + (s._count?.Appointment || 0), 0);
+	const totalConsultas = serviciosFiltrados.reduce(
+		(acc, s) => acc + (s._count?.Appointment || 0),
+		0
+	);
 	const ingresoTotal = serviciosFiltrados.reduce((acc, s) => acc + s.price, 0);
 	const porcentajeActivos =
 		totalServicios > 0 ? Math.round((serviciosActivos / totalServicios) * 100) : 0;
@@ -299,9 +302,13 @@ const ServicesSection = () => {
 								<td className="px-4 py-2 flex items-center gap-1">
 									<Clock className="w-4 h-4 text-gray-500" /> {s.duration} min
 								</td>
-								<td className="px-4 py-2 flex items-center gap-1">
-									<Calendar className="h-4 w-4 text-gray-400" /> {s._count?.Appointment || 0}
+								<td>
+									<div className="px-4 py-2 flex items-center gap-1">
+										<Calendar className="h-4 w-4 text-gray-400" />{" "}
+										{s._count?.Appointment || 0}
+									</div>
 								</td>
+
 								<td className="px-4 py-2">${s.price.toLocaleString()}</td>
 								<td className="px-4 py-2">
 									<button
