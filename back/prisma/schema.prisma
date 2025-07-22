@@ -60,7 +60,6 @@ model User {
   rol_idrol                           Int        @default(1)
   status                              UserStatus @default(Pendiente)
   joinDate                            DateTime   @default(now()) @db.Timestamp(0)
-  blood_type                          String?    @db.VarChar(10)
   
   credential_users    CredentialUser      @relation(fields: [credential_users_idcredential_users], references: [id])
   rol                 Rol                 @relation(fields: [rol_idrol], references: [id])
@@ -79,7 +78,7 @@ model PacData {
   id                Int       @id @default(autoincrement()) @map("idpac_data")
   medical_history   Bytes
   Direction         String    @db.VarChar(100)
-  Blod_type         String    @db.VarChar(10)
+  bloodType         BloodType
   allergies         String?   @db.Text
   emergency_contact String?   @db.VarChar(100)
   Patient           Patient[]
@@ -156,6 +155,7 @@ model Specialty {
   SpecialtyReview        SpecialtyReview[]
   Appointment            Appointment[]
   Consents               Consent[]
+  workSchedule            DateTime @db.Timestamp(0)         
 
   @@map("specialty")
 }
@@ -479,4 +479,15 @@ enum UserStatus {
   Activo
   Inactivo
   Pendiente
+}
+
+enum BloodType {
+  A_POS  @map("A+")
+  A_NEG  @map("A-")
+  B_POS  @map("B+")
+  B_NEG  @map("B-")
+  AB_POS @map("AB+")
+  AB_NEG @map("AB-")
+  O_POS  @map("O+")
+  O_NEG  @map("O-")
 }

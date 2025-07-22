@@ -17,7 +17,7 @@ router.get("/User/:id", UserProfile);
 //* Ruta para actualizar el perfil del usuario
 router.put('/User/:id', updateUserProfile);
 //* Ruta para agendar una cita
-router.get("/User/:id/scheduleAppointment",validateToken, UserScheduleAppointment);
+router.get("/User/:id/scheduleAppointment", UserScheduleAppointment);
 //* Ruta protegida para obtener el id del usuario
 router.get("/getUser/me",validateToken, getUserProfileByToken);
 
