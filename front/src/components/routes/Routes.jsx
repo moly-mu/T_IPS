@@ -23,7 +23,6 @@ import DoctorProfile from "../company/DoctorProfile";
 import DoctorProfileAfterLogin from "../company/DoctorProfileAfterLogin";
 import MedicalCalendar from "../company/MedicalCalendar";
 import DoctorSearchPage from "../company/DoctorSearchPage";
-import PatientDashboard from "../company/PatientDashboard ";
 import MedicalPaymentSystem from "../company/paymentService/MedicalPaymentSystem";
 import MedicalProfilesSection from "../homepage/sections/MedicalProfilesSection";
 import SymptomQuestionnaire from "../company/AssistanceConsultation/SymptomQuestionnaire ";
@@ -32,6 +31,8 @@ import CancelAppointmentM from "../company/cancelAppointment/CancelAppointmentM"
 import PasswordRecovery from "../company/recoverPassword/PasswordRecovery";
 import NotFoundPage from "../NotFoundPage";
 import TeleconsultaSurvey from "../company/AssistanceConsultation/TeleconsultaSurvey";
+import GoDoctorAppointment from "../user/desis/doctorAppointment/GoDoctorAppointment";
+import PatientProfile from "../company/patientHome/PatientProfile";
 
 
 
@@ -53,13 +54,14 @@ const AppRoutes = () => {
         <Route path="/ajus" element={<Ajustes />} />
         <Route path="/calendar" element={<Calendar/>} />
         <Route path="/listopc" element={<ScheduledDays/>} />
+        <Route path="/IrCita" element={<GoDoctorAppointment/>} />
 
         
         {/* usuario*/}
         <Route path="/Pins" element={<PinSesion />} />
         <Route path="/Preg" element={<Pregistro />} />
         <Route path="/pagempresa" element={<Pins />} />
-        <Route path="/perfilPaciente" element={<PatientDashboard/>} />
+        <Route path="/perfilPaciente" element={<PatientProfile/>} />
         <Route path="/perfilDoctor" element={<DoctorProfile/>} />
         <Route path="/perfilDoctorDes" element={<DoctorProfileAfterLogin/>} />
         <Route path="/calendarQuotes" element={<MedicalCalendar/>} />

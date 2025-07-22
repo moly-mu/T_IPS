@@ -152,10 +152,7 @@ const MedicalCalendar = () => {
               <a href="/Tins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
                 ADMINISTRADOR
               </a>
-              <a href="/Sins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
-                PACIENTE
-              </a>
-              <a href="/Pins" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
+              <a href="/Sins" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
                 INICIAR SESIÓN
               </a>
             </div>

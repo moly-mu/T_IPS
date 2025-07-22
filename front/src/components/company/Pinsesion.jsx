@@ -74,7 +74,7 @@ const PinSesion = () => {
       if (loginSuccess) {
         showAlert('success', 'Has iniciado sesión correctamente', '¡Bienvenido!');
         setTimeout(() => {
-          navigate('/pagusuario'); // ✅ Redirección corregida
+          navigate('/pagusuario'); 
         }, 1500);
       } else {
         showAlert('error', 'Credenciales incorrectas. Verifica tu email y contraseña', 'Error de autenticación');
