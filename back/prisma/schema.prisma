@@ -60,7 +60,8 @@ model User {
   rol_idrol                           Int        @default(1)
   status                              UserStatus @default(Pendiente)
   joinDate                            DateTime   @default(now()) @db.Timestamp(0)
-
+  blood_type                          String?    @db.VarChar(10)
+  
   credential_users    CredentialUser      @relation(fields: [credential_users_idcredential_users], references: [id])
   rol                 Rol                 @relation(fields: [rol_idrol], references: [id])
   Paciente            Patient[]
