@@ -18,7 +18,8 @@
       "@services/*": ["specialist/services/*"],
       "@controllers/*": ["specialist/controllers/*"],
       "@repos/*": ["specialist/repos/*"],
-      "@prisma/*": ["controllers/prisma/*"]
+      "@prisma":["prisma/client.ts"],
+      "@adminSpecialties/*": ["admin/specialties/*"]
     },
   },
   "include": ["src","scripts","roles"],

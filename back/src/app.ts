@@ -11,6 +11,7 @@ import specialistAppointments from './specialist/routes/specialistAppointments.r
 import specialistDashboard from './specialist/routes/specialisttDashboard.routes';
 import dotenv from 'dotenv';
 import specialistAuthRoutes from "./specialist/routes/specialistAuth.routes";
+import getAllSpecialties from "./admin/specialties/routes/specialties.routes";
 
 const app = express();
 
@@ -26,7 +27,8 @@ app.use("/api", userRoutes); // /api/register, /api/login, /api/request-speciali
 app.use("/admin/profesional", adminProfRoutes);
 app.use("/admin/specialty", adminSpecialRoutes);
 app.use("/admin/patient", adminPatientRoutes);
-app.use("/admin/stats", adminStatsRoutes)
+app.use("/admin/stats", adminStatsRoutes);
+app.use("/admin/test", getAllSpecialties);
 
 //*Rutas de especialista
 app.use("/specialist", specialistRequest);
