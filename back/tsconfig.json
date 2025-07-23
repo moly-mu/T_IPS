@@ -11,7 +11,12 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "src",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "src", // Punto de partida para los paths
+    "paths": {
+      "@prisma":["prisma/client.ts"],
+      "@adminSpecialties/*": ["admin/specialties/*"]
+    }
   },
   "include": ["src","scripts","roles"],
   "exclude": ["node_modules"]
