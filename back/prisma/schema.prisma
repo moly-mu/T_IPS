@@ -155,7 +155,8 @@ model Specialty {
   SpecialtyReview        SpecialtyReview[]
   Appointment            Appointment[]
   Consents               Consent[]
-  workSchedule            DateTime @db.Timestamp(0)         
+  workStartSchedule      DateTime @db.Timestamp(0) @default (now())
+  workEndSchedule        DateTime @db.Timestamp(0) @default (now())        
 
   @@map("specialty")
 }

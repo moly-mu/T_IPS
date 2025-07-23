@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { BloodType, PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
@@ -31,7 +31,16 @@ async function main() {
     { username: "admin_marketing", password: "marketing123" },
     { username: "admin_compras", password: "compras123" },
   ];
-
+  const bloodTypeMap: Record<string, BloodType> = {
+   'A+': BloodType.A_POS,
+  'A-': BloodType.A_NEG,
+  'B+': BloodType.B_POS,
+  'B-': BloodType.B_NEG,
+  'AB+': BloodType.AB_POS,
+  'AB-': BloodType.AB_NEG,
+  'O+': BloodType.O_POS,
+  'O-': BloodType.O_NEG,
+};
   const admins = await Promise.all(
     adminData.map(async (adminInfo) => {
       const hashedPassword = await hash(adminInfo.password, 12);
@@ -119,6 +128,8 @@ async function main() {
           price: spec.price,
           service: spec.service,
           duration: spec.duration,
+          workStartSchedule: new Date('2025-01-01T08:00:00Z'),
+          workEndSchedule: new Date('2025-01-01T16:00:00Z'),
         },
       })
     )
@@ -502,7 +513,7 @@ async function main() {
         data: {
           medical_history: Buffer.from(info.history),
           Direction: info.direction,
-          Blod_type: info.blood,
+          bloodType: bloodTypeMap[info.blood],
           allergies: info.allergies,
           emergency_contact: info.emergency,
         },
@@ -1284,4 +1295,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  });
+  });  
