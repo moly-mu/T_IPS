@@ -1,13 +1,12 @@
 import bcrypt from "bcryptjs";
-import { UserStatus } from "@prisma/client";
-import { findCredentialByEmail } from "../../repos/Login.interface";
+import { findCredentialByEmail } from "../../repos/Login.repository";
 import { SpecialistLoginInput, SpecialistLoginResult } from "../../models/interfaces/auth/specialist.interface";
 
 export const loginSpecialistService = async (
-  email: string,
+  SpecialistLoginInput: SpecialistLoginInput,
   password: string
 ): Promise<SpecialistLoginResult> => {
-  const credential = await findCredentialByEmail(email);
+  const credential = await findCredentialByEmail(SpecialistLoginInput);
 
   if (!credential || credential.User.length === 0) {
     return { error: "Usuario no encontrado" };
@@ -19,7 +18,7 @@ export const loginSpecialistService = async (
     return { error: "No estás registrado como especialista" };
   }
 
-  if (user.status !== UserStatus.Activo) {
+  if (user.status !== "Activo") {
     return { error: "Tu cuenta aún no ha sido aprobada" };
   }
 
