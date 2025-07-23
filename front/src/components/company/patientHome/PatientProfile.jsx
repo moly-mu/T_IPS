@@ -50,7 +50,7 @@ const PatientProfile = () => {
                                 { key: 'historial', label: 'Historial de consultas', icon: Edit3 },
                                 { key: 'misCitas', label: 'Mis Citas', icon: Calendar },
                                 { key: 'misEncuestas', label: 'Mis Encuestas', icon: Star },
-                                { key: 'wallet', label: 'Billeter', icon: DollarSign }
+                                { key: 'wallet', label: 'Billetera', icon: DollarSign }
                             ].map(({ key, label, icon: Icon}) => (
                                 <button 
                                 key={key}

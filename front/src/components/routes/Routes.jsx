@@ -33,6 +33,7 @@ import NotFoundPage from "../NotFoundPage";
 import TeleconsultaSurvey from "../company/AssistanceConsultation/TeleconsultaSurvey";
 import GoDoctorAppointment from "../user/desis/doctorAppointment/GoDoctorAppointment";
 import PatientProfile from "../company/patientHome/PatientProfile";
+import ClinicalHistory from "../user/desis/clinicalHistory/ClinicalHistory";
 
 
 
@@ -55,6 +56,7 @@ const AppRoutes = () => {
         <Route path="/calendar" element={<Calendar/>} />
         <Route path="/listopc" element={<ScheduledDays/>} />
         <Route path="/IrCita" element={<GoDoctorAppointment/>} />
+        <Route path="/EdicionHistoriaC" element={<ClinicalHistory/>} />
 
         
         {/* usuario*/}

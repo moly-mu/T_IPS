@@ -102,6 +102,75 @@ const Sregistro = () => {
                     placeholder="Introduce tu segundo apellido"
                   />
                 </div>
+
+                {/* genero */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Género
+                  </label>
+                  <input
+                    name="genero"
+                    type="text"
+                    required
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                    placeholder="Especifica tu género"
+                  />
+                </div>
+  
+                {/* Sexo */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Sexo
+                  </label>
+                  <select
+                    name="sexo"
+                    required
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled selected>
+                    Selecciona tu sexo
+                    </option>
+                    <option value="M" className="text-black bg-white">
+                    Masculino
+                    </option>
+                    <option value="F" className="text-black bg-white">
+                    Femenino
+                    </option>
+                  </select>
+                </div>
+
+                {/* lenguaje */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Lenguaje
+                  </label>
+                  <input
+                    name="lenguaje"
+                    type="text"
+                    required
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                    placeholder="Introduce tu idioma preferido"
+                  />
+                </div>
+  
+                {/* telefono */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Teléfono
+                  </label>
+                  <input
+                    name="telefono"
+                    type="tel"
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                    placeholder="Introduce tu teléfono (ej: +35 325 125 4587)"
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['Backspace', 'Delte', 'ArrowLeft', 'ArrowRight', 'Tab', '+'];
+                      const isNumber = /^[0-9]$/.test(e.key);
+                      if (!isNumber && !allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                </div>
   
                 {/* tipo de documento */}
                 <div>

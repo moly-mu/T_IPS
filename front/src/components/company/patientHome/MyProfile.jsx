@@ -6,7 +6,7 @@ const MyProfile = () => {
   
   // Estados para el perfil
   const [profile, setProfile] = useState({
-    nombre: 'Juan Pérez',
+    nombre: 'Juan Manuel Pérez Rodríguez',
     email: 'juan.perez@email.com',
     telefono: '+57 300 123 4567',
     fechaNacimiento: '1985-03-15',
