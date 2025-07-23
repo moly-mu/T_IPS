@@ -3,10 +3,17 @@ import { findCredentialByEmail } from "../../repos/Login.repository";
 import { SpecialistLoginInput, SpecialistLoginResult } from "../../models/interfaces/auth/specialist.interface";
 
 export const loginSpecialistService = async (
-  SpecialistLoginInput: SpecialistLoginInput,
-  password: string
+  SpecialistLoginInput: SpecialistLoginInput
 ): Promise<SpecialistLoginResult> => {
   const credential = await findCredentialByEmail(SpecialistLoginInput);
+  if (!SpecialistLoginInput.email) {
+  return { error: "Email es requerido" };
+}
+
+  if (!SpecialistLoginInput.password) {
+    return { error: "Contraseña es requerida" };
+  }
+
 
   if (!credential || credential.User.length === 0) {
     return { error: "Usuario no encontrado" };
@@ -22,7 +29,7 @@ export const loginSpecialistService = async (
     return { error: "Tu cuenta aún no ha sido aprobada" };
   }
 
-  const passwordMatch = await bcrypt.compare(password, credential.password);
+  const passwordMatch = await bcrypt.compare(SpecialistLoginInput.password, credential.password);
   if (!passwordMatch) {
     return { error: "Contraseña incorrecta" };
   }

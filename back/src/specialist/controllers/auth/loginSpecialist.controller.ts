@@ -7,7 +7,7 @@ export const loginSpecialist = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const result = await loginSpecialistService(email, password);
+    const result = await loginSpecialistService({email, password});
 
     if (result.error) {
       if (
