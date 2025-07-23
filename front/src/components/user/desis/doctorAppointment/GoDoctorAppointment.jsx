@@ -14,7 +14,7 @@ const Footer = () => (
 const GoDoctorAppointment = () => {
   const navigate = useNavigate();
   const patientData = {
-    nombre: "Ana Martínez",
+    nombre: "Juan Manuel Pérez Rodríguez",
     edad: "29 años",
     identificacion: "1.098.765.432",
     telefono: "+57 320 555 7890",

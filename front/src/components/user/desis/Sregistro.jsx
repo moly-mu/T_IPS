@@ -1,6 +1,24 @@
 import { Link } from "react-router-dom"; 
+import { useState } from "react";
 
 const Sregistro = () => {
+
+  const [formData, setFormData] = useState({
+    genero: "",
+    genroOtro:"",
+    idioma: "",
+    idiomaOtro: "",
+    fechaNacimiento: ""
+  })
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
 
       const Navbar = () => {
     return (
@@ -108,13 +126,39 @@ const Sregistro = () => {
                   <label className="text-gray-300 text-sm block mb-2">
                     Género
                   </label>
-                  <input
+                  <select
                     name="genero"
-                    type="text"
+                    value={formData.genero}
+                    onChange={handleInputChange}
                     required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Especifica tu género"
-                  />
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled>
+                    Selecciona tu género
+                    </option>
+                    <option value="M" className="text-black bg-white">
+                    Masculino
+                    </option>
+                    <option value="F" className="text-black bg-white">
+                    Femenino
+                    </option>
+                    <option value="Otro" className="text-black bg-white">
+                    Otro
+                    </option>
+                  </select>
+
+                  {formData.genero === "Otro" && (
+                    <div className="mt-4">
+                      <label className="text-gray-300 text-sm block mb-2">Especifica tu género</label>
+                      <input 
+                      type="text"
+                      name="generoOtro"
+                      value={formData.generoOtro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Escribe tu género"
+                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
+                      />
+                    </div>
+                  )}
                 </div>
   
                 {/* Sexo */}
@@ -141,15 +185,40 @@ const Sregistro = () => {
                 {/* lenguaje */}
                 <div>
                   <label className="text-gray-300 text-sm block mb-2">
-                    Lenguaje
+                    Idioma
                   </label>
-                  <input
-                    name="lenguaje"
-                    type="text"
+                  <select
+                    name="idioma"
+                    value={formData.idioma}
+                    onChange={handleInputChange}
                     required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu idioma preferido"
-                  />
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled>
+                    Selecciona tu idioma
+                    </option>
+                    <option value="Español" className="text-black bg-white">Español</option>
+                    <option value="Portugues" className="text-black bg-white">Portugués</option>
+                    <option value="Frances" className="text-black bg-white">Francés</option>
+                    <option value="Aleman" className="text-black bg-white">Alemén</option>
+                    <option value="Ingles" className="text-black bg-white">Inglés</option>
+                    <option value="Otro" className="text-black bg-white">
+                    Otro
+                    </option>
+                  </select>
+
+                  {formData.idioma === "Otro" && (
+                    <div className="mt-4">
+                      <label className="text-gray-300 text-sm block mb-2">Especifica tu idioma</label>
+                      <input 
+                      type="text"
+                      name="idiomaOtro"
+                      value={formData.idiomaOtro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Escribe tu idioma"
+                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
+                      />
+                    </div>
+                  )}
                 </div>
   
                 {/* telefono */}
@@ -224,6 +293,18 @@ const Sregistro = () => {
                     required
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu correo electrónico"
+                  />
+                </div>
+
+                {/* Fecha de Nacimiento */}
+                <div className="text-gray-300 text-sm block mb-2">
+                  <label className="font-medium mb-2">Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    name="fechaNacimiento"
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                    value={handleInputChange.fechaNacimiento}
+                    onChange={handleInputChange}
                   />
                 </div>
   
