@@ -2,6 +2,8 @@
 import { Request, Response, NextFunction } from "express";
 import { SpecialtyStatus } from "@prisma/client";
 
+
+
 export const validateSpecialty = (req: Request, res: Response, next: NextFunction) => {
 	const { name, status, price, service, duration } = req.body;
 

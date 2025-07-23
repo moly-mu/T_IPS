@@ -278,7 +278,7 @@ const ServicesSection = () => {
 								Servicio
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-								Duración
+								RANGO Duración
 							</th>
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 								CONSULTAS
@@ -308,7 +308,6 @@ const ServicesSection = () => {
 										{s._count?.Appointment || 0}
 									</div>
 								</td>
-
 								<td className="px-4 py-2">${s.price.toLocaleString()}</td>
 								<td className="px-4 py-2">
 									<button
