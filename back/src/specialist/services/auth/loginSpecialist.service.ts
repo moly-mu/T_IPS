@@ -1,20 +1,13 @@
-import { PrismaClient, UserStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { UserStatus } from "@prisma/client";
+import { findCredentialByEmail } from "../../repos/Login.interface";
+import { SpecialistLoginInput, SpecialistLoginResult } from "../../models/interfaces/auth/specialist.interface";
 
-const prisma = new PrismaClient();
-
-export const loginSpecialistService = async (email: string, password: string) => {
-  const credential = await prisma.credentialUser.findUnique({
-    where: { email },
-    include: {
-      User: {
-        include: {
-          Especialista: true,
-          rol: true,
-        },
-      },
-    },
-  });
+export const loginSpecialistService = async (
+  email: string,
+  password: string
+): Promise<SpecialistLoginResult> => {
+  const credential = await findCredentialByEmail(email);
 
   if (!credential || credential.User.length === 0) {
     return { error: "Usuario no encontrado" };
@@ -35,6 +28,5 @@ export const loginSpecialistService = async (email: string, password: string) =>
     return { error: "Contraseña incorrecta" };
   }
 
-  // Si todo está bien, retorna el usuario y credential
   return { user, credential };
 };

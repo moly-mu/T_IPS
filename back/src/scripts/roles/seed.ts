@@ -1107,9 +1107,10 @@ async function main() {
           issuedAt: new Date(2023, 4, 15 + index, 10, 45, 0),
           description: orderDescriptions[index],
           instructions: orderInstructions[index],
-          status: ["Pendiente", "En proceso", "Completado", "Cancelado"][
+          //status: ["Pendiente", "En proceso", "Completado", "Cancelado"]
+          [
             index % 4
-          ],
+          ]: "Pendiente", // Alternating status for demonstration
         },
       })
     )

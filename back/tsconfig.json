@@ -11,8 +11,17 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "src",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@models/*": ["specialist/models/*"],
+      "@services/*": ["specialist/services/*"],
+      "@controllers/*": ["specialist/controllers/*"],
+      "@repos/*": ["specialist/repos/*"],
+      "@prisma/*": ["controllers/prisma/*"]
+    },
   },
   "include": ["src","scripts","roles"],
   "exclude": ["node_modules"]
+  
 }

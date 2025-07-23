@@ -10,7 +10,6 @@ export const loginSpecialist = async (req: Request, res: Response) => {
     const result = await loginSpecialistService(email, password);
 
     if (result.error) {
-      // Puedes personalizar los códigos según el mensaje de error
       if (
         result.error === "No estás registrado como especialista" ||
         result.error === "Tu cuenta aún no ha sido aprobada"
