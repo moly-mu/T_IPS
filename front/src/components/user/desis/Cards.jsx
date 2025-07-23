@@ -6,6 +6,7 @@ import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
 
 const Cards = () => {
+  const { token } = useAuth();
   const [trabajos, setTrabajos] = useState([]);
   const [nuevoTrabajo, setNuevoTrabajo] = useState({ trabajo: "", experiencia: "" });
 
@@ -25,7 +26,9 @@ const Cards = () => {
   const [foto, setFoto] = useState(null);
   const [biografia, setBiografia] = useState("");
 
-  const { token } = useAuth();
+  //Agregar campo para horario laboral
+  //Franja horaria por cantidades especialidades
+  
 
   // Información Personal
   const [informacionPersonal, setInformacionPersonal] = useState({

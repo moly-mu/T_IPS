@@ -9,6 +9,11 @@ const MedicalCalendar = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  //Agregar Filtro por lenguage 
+  //Agregar Filtro por especialidad
+  //Calendario por especialidad 
+  //
 
   const monthNames = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',

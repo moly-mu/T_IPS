@@ -27,7 +27,7 @@ const GoDoctorAppointment = () => {
   };
 
   const handleIniciarConsulta = () => {
-    navigate('/');
+    navigate('/EdicionHistoriaC');
   };
 
   return (
