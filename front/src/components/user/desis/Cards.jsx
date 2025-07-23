@@ -25,7 +25,9 @@ const Cards = () => {
   const [foto, setFoto] = useState(null);
   const [biografia, setBiografia] = useState("");
 
+
   const { token } = useAuth();
+
 
   // Información Personal
   const [informacionPersonal, setInformacionPersonal] = useState({
