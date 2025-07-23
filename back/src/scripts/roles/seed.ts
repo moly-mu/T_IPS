@@ -32,7 +32,7 @@ async function main() {
     { username: "admin_compras", password: "compras123" },
   ];
   const bloodTypeMap: Record<string, BloodType> = {
-   'A+': BloodType.A_POS,
+  'A+': BloodType.A_POS,
   'A-': BloodType.A_NEG,
   'B+': BloodType.B_POS,
   'B-': BloodType.B_NEG,

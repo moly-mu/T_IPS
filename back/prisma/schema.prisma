@@ -50,9 +50,9 @@ model User {
   second_firstname                    String?    @db.VarChar(45)
   lastname                            String     @db.VarChar(45)
   second_lastname                     String?    @db.VarChar(45)
-  age                                 Int
+  birthdate                           DateTime   
   gender                              String     @db.VarChar(45)
-  sex                                 String     @db.VarChar(10)
+  sex                                 Sex
   language                            String     @db.VarChar(45)
   document_type                       String     @db.VarChar(45)
   phone                               String     @default("0000000000") @db.VarChar(20)
@@ -481,7 +481,10 @@ enum UserStatus {
   Inactivo
   Pendiente
 }
-
+enum Sex{ 
+  Male    @map("Masculino") 
+  Female  @map("Femenino")
+}
 enum BloodType {
   A_POS  @map("A+")
   A_NEG  @map("A-")
