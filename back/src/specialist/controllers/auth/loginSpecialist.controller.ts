@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { SECRET_KEY } from "../../middleware/authMiddleware";
-import { loginSpecialistService } from "../../services/auth/loginSpecialist.service";
+import { loginSpecialistService } from "@specialistServices/";
 
 export const loginSpecialist = async (req: Request, res: Response) => {
   const { email, password } = req.body;

@@ -1,0 +1,1 @@
+export {loginSpecialistService} from "./auth/loginSpecialist.service";

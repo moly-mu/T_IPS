@@ -1,5 +1,5 @@
 import prisma from "@prisma";
-import {SpecialistLoginInput} from "../models/interfaces/auth/specialist.interface";
+import {SpecialistLoginInput} from "@specialistTypes/";
 
 export const findCredentialByEmail = async (email: SpecialistLoginInput) => {
   return prisma.credentialUser.findUnique({

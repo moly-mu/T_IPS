@@ -1,7 +1,7 @@
 import express from "express";
-import {createSpecialistRequest} from "../controllers/createSpecialist.Request.controller";
-import {listSpecialistRequests} from "../controllers/listSpecialist.Request.controller";
-import {approveSpecialistRequest} from "../controllers/approveSpecialist.Request.controller";
+import {createSpecialistRequest} from "../controllers/request/createSpecialist.Request.controller";
+import {listSpecialistRequests} from "../controllers/request/listSpecialist.Request.controller";
+import {approveSpecialistRequest} from "../controllers/request/approveSpecialist.Request.controller";
 import {validateToken} from "../middleware/authMiddleware";
 
 const router = express.Router();

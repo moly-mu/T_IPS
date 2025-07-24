@@ -14,12 +14,13 @@
     "resolveJsonModule": true,
     "baseUrl": "./src",
     "paths": {
-      "@models/*": ["specialist/models/*"],
-      "@services/*": ["specialist/services/*"],
-      "@controllers/*": ["specialist/controllers/*"],
-      "@repos/*": ["specialist/repos/*"],
+      "@specialistModels/": ["specialist/models"],
+      "@specialistServices/": ["specialist/services"],
+      "@specialistControllers/": ["specialist/controllers"],
+      "@specialistRepos/": ["specialist/repos"],
+      "@specialistTypes/":["specialist/types"],
       "@prisma":["prisma/client.ts"],
-      "@adminSpecialties/*": ["admin/specialties/*"]
+      "@adminSpecialties/*": ["admin/specialties"]
     },
   },
   "include": ["src","scripts","roles"],

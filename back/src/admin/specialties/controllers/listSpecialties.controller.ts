@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import * as specialtyService from "@adminSpecialties/services/specialty.service";
+import * as specialtyService from "../services/specialty.service";
 
 export const getAllSpecialties = async(req: Request, res: Response)=>{
     try{

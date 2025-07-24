@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
-import { findCredentialByEmail } from "../../repos/Login.repository";
-import { SpecialistLoginInput, SpecialistLoginResult } from "../../models/interfaces/auth/specialist.interface";
+import { findCredentialByEmail } from "@specialistRepos/";
+import { SpecialistLoginInput, SpecialistLoginResult } from "@specialistTypes/";
 
 export const loginSpecialistService = async (
   SpecialistLoginInput: SpecialistLoginInput

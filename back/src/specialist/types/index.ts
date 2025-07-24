@@ -1,0 +1,1 @@
+export {SpecialistLoginInput,SpecialistLoginResult} from "./auth/Login.types";
