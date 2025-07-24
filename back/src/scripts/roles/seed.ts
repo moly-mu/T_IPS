@@ -1,4 +1,4 @@
-import { BloodType, PrismaClient } from "@prisma/client";
+import { Sex,BloodType, PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
@@ -251,7 +251,6 @@ async function main() {
     {
       firstname: "Juan",
       lastname: "Pérez",
-      age: 35,
       gender: "Masculino",
       phone: "3001234567",
     },
@@ -399,9 +398,8 @@ async function main() {
         data: {
           firstname: userData.firstname,
           lastname: userData.lastname,
-          age: userData.age,
           gender: userData.gender,
-          sex: userData.gender === "Masculino" ? "Hombre" : "Mujer",
+          sex: Sex.Masculino,
           language: "Español",
           document_type: "Cédula",
           phone: userData.phone,
@@ -419,9 +417,8 @@ async function main() {
         data: {
           firstname: userData.firstname,
           lastname: userData.lastname,
-          age: userData.age,
           gender: userData.gender,
-          sex: userData.gender === "Masculino" ? "Hombre" : "Mujer",
+          sex: Sex.Femenino,
           language: "Español",
           document_type: "Cédula",
           phone: userData.phone,
