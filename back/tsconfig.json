@@ -15,7 +15,8 @@
     "baseUrl": "src", // Punto de partida para los paths
     "paths": {
       "@prisma":["prisma/client.ts"],
-      "@adminSpecialties/*": ["admin/specialties/*"]
+      "@adminSpecialties/*": ["admin/specialties/*"],
+      "@constants" : ["constants/"]
     }
   },
   "include": ["src","scripts","roles"],
