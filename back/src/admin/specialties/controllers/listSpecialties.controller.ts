@@ -1,3 +1,5 @@
+// src/admin/specialties/controllerr/specialties.controller.ts
+
 import {Request, Response} from "express";
 import * as specialtyService from "@adminSpecialties/services/specialty.service";
 
