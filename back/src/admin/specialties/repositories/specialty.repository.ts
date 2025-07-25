@@ -2,6 +2,10 @@
 
 import prisma from "@prisma";
 
-export const getAllSpecialties = async () => {
-  return await prisma.specialty.findMany();
+export const getAllSpecialtiesRepository = async () => {
+  return await prisma.specialty.findMany({
+    orderBy:{
+      id: 'asc',
+    }
+  });
 };

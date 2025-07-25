@@ -20,8 +20,9 @@
       "@specialistRepos/": ["specialist/repos"],
       "@specialistTypes/":["specialist/types"],
       "@prisma":["prisma/client.ts"],
-      "@adminSpecialties/*": ["admin/specialties"]
-    },
+      "@adminSpecialties/*": ["admin/specialties/*"],
+      "@constants" : ["constants/"]
+    }
   },
   "include": ["src","scripts","roles"],
   "exclude": ["node_modules"]
