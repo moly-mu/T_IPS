@@ -1,7 +1,7 @@
 // src/admin/specialties/controllerr/specialties.controller.ts
 
 import { Request, Response } from "express";
-import { getAllSpecialtiesService } from "@adminSpecialties/services/";
+import { getAllSpecialtiesService } from "@adminSpecialties/application/use-cases/specialty";
 import { HttpStatus, Message, ErrorCode } from "@constants"
 
 

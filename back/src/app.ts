@@ -11,7 +11,7 @@ import specialistAppointments from './specialist/routes/specialistAppointments.r
 import specialistDashboard from './specialist/routes/specialisttDashboard.routes';
 import dotenv from 'dotenv';
 import specialistAuthRoutes from "./specialist/routes/specialistAuth.routes";
-import getAllSpecialties from "./admin/specialties/routes/specialties.routes";
+import getAllSpecialties from "./admin/specialties/presentation/routes/specialties.routes";
 
 const app = express();
 
