@@ -15,7 +15,7 @@ const ClinicalHistory = () => {
   const [formData, setFormData] = useState({
     ingreso: '12658456',
     fechaImpresion: ' ',
-    identificacion: '1031984532',
+    identificacion: '1.098.765.432',
     nombre: 'Juan Manuel',
     apellidos: 'Pérez Rodríguez'
   });
