@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { User, FileText, Shield, Plus, Trash2 } from 'lucide-react';
+import { User, FileText, Shield, Plus, Trash2, Edit3, Save, X } from 'lucide-react';
 
 const GeneralData = () => {
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
   const [patientData, setPatientData] = useState({
     idhistoria_medica: '',
     patient_idPaciente: '',
@@ -13,6 +15,21 @@ const GeneralData = () => {
     eps_type: '',
     emergency_contact: '',
     contact_phone: ''
+  });
+
+  const [formData, setFormData] = useState({
+    nombre: 'Juan Manuel Pérez Rodríguez',
+    edad: '40',
+    email: 'juan.perez@email.com',
+    telefono: '+57 300 123 4567',
+    fechaNacimiento: '1985-03-15',
+    direccion: 'Calle 123 #45-67, Bogotá',
+    tipoSangre: 'O+',
+    alergias: 'Penicilina, Mariscos',
+    contactoEmergencia: 'María Pérez - 300 765 4321',
+    gender: 'Masculino',
+
+
   });
 
   const [medicalHistory, setMedicalHistory] = useState([
@@ -43,6 +60,10 @@ const GeneralData = () => {
     fecha_creacion: '',
     fecha_actualizacion: ''
   });
+
+  const handleSaveProfile = () => {
+    setIsEditingProfile(false);
+  }
 
     //agregar en datos del paciente:
   //causa de atención, edad, tipo de paciente
@@ -87,6 +108,26 @@ const GeneralData = () => {
 
   return (
     <div className="space-y-8">
+      {/*Boton para editar datos*/}
+      <div className="flex kistify-between items-center mb-8">
+        {!isEditingProfile ? (
+          <button
+          onClick={() => setIsEditingProfile(true)}
+          className="flex items-center gap-2 text-green-600 hover:text-gray-900 transition-colors">
+            <Edit3 size={20} className='text-green-600 font-semibold'/>Editar</button>
+        ) : (
+          <div className='flex gap-4'>
+            <button
+            onClick={handleSaveProfile}
+            className='flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors'>
+              <Save size={16}/>Guardar</button>
+              <button
+              onClick={() => setIsEditingProfile(false)}
+              className='flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors'>
+              <X size={16}/>Cancelar</button>
+          </div>
+        )}
+      </div>
       
       {/* Información del Paciente */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
@@ -101,16 +142,44 @@ const GeneralData = () => {
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-blue-700 mb-1">Nombres y Apellidos</label>
-            <p className="text-base text-blue-900 font-semibold">Juan Pérez Rodríguez</p>
+            {isEditingProfile ? (
+              <input 
+              type="text"
+              value={formData.nombre} 
+              onChange={(e) => setFormData({...formData, nombre: e.target.value})}/>
+            ) : (
+              <p className="text-base text-blue-900 font-semibold">{formData.nombre}</p>
+            )}
           </div>
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-blue-700 mb-1">Edad</label>
-            <p className="text-base text-blue-900 font-semibold">20</p>
+            {isEditingProfile ? (
+            <input 
+            type="text"
+            value={formData.edad}
+            onChange={(e) => setFormData({...formData, nombre: e.target.value})}/>
+            ) : (
+              <p className="text-base text-blue-900 font-semibold">{formData.edad}</p>
+            )}
           </div>
 
           <div>
+              <label className="block text-sm font-medium text-blue-700 mb-1 pt-1">Fecha de nacimiento</label>
+              {isEditingProfile ? (
+              <input
+                type="date"
+                value={formData.fechaNacimiento}
+                onChange={(e) => setFormData({...formData, fechaNacimiento: e.target.value})}
+                className="w-full px-3 py-2 border-b border-blue-300 pb-3 text-sm focus:border-blue-300 focus:outline-none transition-colors rounded-sm"/>
+              ) : (
+                <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.fechaNacimiento}</p>
+              )}
+            </div>
+
+          <div>
             <label className="block text-sm font-medium text-blue-700 mb-2">Género</label>
+            {isEditingProfile ? (
             <select
               value={patientData.gender}
               onChange={(e) => handlePatientDataChange('gender', e.target.value)}
@@ -121,6 +190,9 @@ const GeneralData = () => {
               <option value="Femenino">Femenino</option>
               <option value="Otro">Otro</option>
             </select>
+            ) : ( 
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.gender}</p>
+            )}
           </div>
           
           <div className="mb-4">
@@ -166,6 +238,21 @@ const GeneralData = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium text-blue-700 mb-1">Contacto de emergencia</label>
             <p className="text-base text-blue-900 font-semibold">María Pérez - 300 765 4321</p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-blue-700 mb-1">Profesión</label>
+            <p className="text-base text-blue-900 font-semibold">Maestro de obra</p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-blue-700 mb-1">Estado civil</label>
+            <p className="text-base text-blue-900 font-semibold">Soltero</p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-blue-700 mb-1">Grupo étnico</label>
+            <p className="text-base text-blue-900 font-semibold">N/A</p>
           </div>
         </div>
       </div>
