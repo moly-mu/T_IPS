@@ -19,5 +19,7 @@ router.get("/:id", getSpecialtyById);
 router.put("/:id", updateSpecialty);                       
 router.delete("/:id", deleteSpecialty);                    
 
+
+
 export default router;
 

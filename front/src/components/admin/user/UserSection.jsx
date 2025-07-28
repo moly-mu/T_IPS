@@ -416,7 +416,7 @@ const UserSection = () => {
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
 										<div className="text-sm text-gray-900">
-											{new Date(user.joinDate).toLocaleDateString()}
+											{dayjs(user.joinDate).format("DD/MM/YYYY")}
 										</div>
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
