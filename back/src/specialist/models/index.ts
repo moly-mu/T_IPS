@@ -1,1 +1,0 @@
-export {SpecialistLoginInputSchema, SpecialistLoginResultSchema } from "./auth/specialist.schema";

@@ -1,0 +1,1 @@
+export {findCredentialByEmail} from "../infraestructure/repo/auth/Login.repository"

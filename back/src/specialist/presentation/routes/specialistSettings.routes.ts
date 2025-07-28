@@ -3,7 +3,7 @@ import {changePassword} from "../controllers/config/changePasswordSpecialist.con
 import {deactivateAccount} from "../controllers/config/deactivateSettingsSpecialist.controller";
 import {deleteAccount} from "../controllers/config/deleteSettingSpecialist.controller";
 import {getSettings} from "../controllers/config/settingsSpecialist.controller";
-import {validateToken  } from "../middleware/authMiddleware";
+import {validateToken  } from "../../middleware/authMiddleware";
 import {getSpecDataByUser} from "../controllers/profile/listdataSpecialist.controller";
 const router = express.Router();
 

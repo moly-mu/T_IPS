@@ -14,11 +14,11 @@
     "resolveJsonModule": true,
     "baseUrl": "./src",
     "paths": {
-      "@specialistModels/": ["specialist/models"],
-      "@specialistServices/": ["specialist/services"],
-      "@specialistControllers/": ["specialist/controllers"],
-      "@specialistRepos/": ["specialist/repos"],
-      "@specialistTypes/":["specialist/types"],
+      "@specialistDomain/": ["specialist/domain"],
+      "@specialistAplication/": ["specialist/aplication"],
+      "@specialistInfraestructure/": ["specialist/infraestructure"],
+      "@specialistPresentation/": ["specialist/Presentation"],
+      "@specialistShared/":["specialist/shared"],
       "@prisma":["prisma/client.ts"],
       "@adminSpecialties/*": ["admin/specialties"]
     },

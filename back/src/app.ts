@@ -5,12 +5,12 @@ import adminProfRoutes from "./admin/routes/profesional.routes";
 import adminSpecialRoutes from "./admin/routes/specialty.routes";
 import adminPatientRoutes from "./admin/routes/patient.routes";
 import adminStatsRoutes from "./admin/routes/stats.routes";
-import specialistRequest from "./specialist/routes/specialistRequest.routes";
-import specialistSettings from "./specialist/routes/specialistSettings.routes";
-import specialistAppointments from './specialist/routes/specialistAppointments.routes'
-import specialistDashboard from './specialist/routes/specialisttDashboard.routes';
+import specialistRequest from "./specialist/presentation/routes/specialistRequest.routes";
+import specialistSettings from "./specialist/presentation/routes/specialistSettings.routes";
+import specialistAppointments from './specialist/presentation/routes/specialistAppointments.routes';
+import specialistDashboard from './specialist/presentation/routes/specialisttDashboard.routes';
 import dotenv from 'dotenv';
-import specialistAuthRoutes from "./specialist/routes/specialistAuth.routes";
+import specialistAuthRoutes from "./specialist/presentation/routes/specialistAuth.routes";
 import getAllSpecialties from "./admin/specialties/routes/specialties.routes";
 
 const app = express();

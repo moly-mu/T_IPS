@@ -1,6 +1,6 @@
 import express from "express";
 import {getAppointments} from "../controllers/appointments/listappoinments.controller";
-import {validateToken} from "../middleware/authMiddleware";
+import {validateToken} from "../../middleware/authMiddleware";
 import { listSpecialistRequests } from "../controllers/request/listSpecialist.Request.controller";
 import { getProfile } from "../controllers/profile/listproSpecialist.controller";
 import { updateProfile} from "../controllers/profile/editproSpecialist.controller";

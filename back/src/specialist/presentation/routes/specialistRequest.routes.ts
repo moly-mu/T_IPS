@@ -2,7 +2,7 @@ import express from "express";
 import {createSpecialistRequest} from "../controllers/request/createSpecialist.Request.controller";
 import {listSpecialistRequests} from "../controllers/request/listSpecialist.Request.controller";
 import {approveSpecialistRequest} from "../controllers/request/approveSpecialist.Request.controller";
-import {validateToken} from "../middleware/authMiddleware";
+import {validateToken} from "../../middleware/authMiddleware";
 
 const router = express.Router();
 
