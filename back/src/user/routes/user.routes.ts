@@ -1,24 +1,22 @@
-import {registerUser} from "../controllers/auth.Register.controller";
-import {loginUser} from "../controllers/auth.Login.controller";
-import {UserProfile} from "../controllers/auth.UserProfile.controller";
-import { updateUserProfile } from '../controllers/auth.UserProfileEdit.controller';
-import {validateToken} from "../../specialist/middleware/authMiddleware";
-import {getUserProfileByToken} from "../controllers/getId.UserProfile.controller"; 
-import {UserScheduleAppointment} from "../controllers/getld.UserScheduleAppointment.controller";
+import {validateToken } from "../middleware/validateToken";
+import {registerUser} from "../controllers/Registro/post.Register.controller";
+import {loginUser} from "../controllers/Acceso/auth.Login.controller";
+import {UserProfile} from "../controllers/Perfil/getld.UserProfile.controller";
+import {updateUserProfile } from '../controllers/Perfil/put.UserProfileEdit.controller';
+import {UserScheduleAppointment} from "../controllers/Citas/getld.UserScheduleAppointment.controller";
 import express from "express";
 
 const router = express.Router();
 
-// *Rutas de registrarse y de iniciar sesión del usuario
+// *Ruta de registrarse  
 router.post("/register", registerUser);
+// *Ruta iniciar sesión del usuario
 router.post("/login", loginUser);
 // *Ruta para obtener el perfil del usuario
-router.get("/User/:id", UserProfile);
+router.get("/User/Profile", validateToken,UserProfile);
 //* Ruta para actualizar el perfil del usuario
-router.put('/User/:id', updateUserProfile);
+router.put('/User/Profile', validateToken,updateUserProfile);
 //* Ruta para agendar una cita
-router.get("/User/:id/scheduleAppointment", UserScheduleAppointment);
-//* Ruta protegida para obtener el id del usuario
-router.get("/getUser/me",validateToken, getUserProfileByToken);
+router.get("/User/scheduleAppointment", validateToken, UserScheduleAppointment);
 
 export default router;

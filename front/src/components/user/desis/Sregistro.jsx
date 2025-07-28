@@ -1,50 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const Sregistro = () => {
 
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    genero: "",
+    genroOtro:"",
+    idioma: "",
+    idiomaOtro: "",
+    fechaNacimiento: ""
+  })
 
-  const [formData, setFormData] = useState({ //! Falta agregar campos del prisma
-  primerNombre: "",
-  segundoNombre: "",
-  primerApellido: "",
-  segundoApellido: "",
-  tipoDocumento: "",
-  numeroDocumento: "",
-  correo: "",
-  contraseña: ""
-});
-
-  const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
-  });
-};
-
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    const response = await axios.post("http://localhost:3000/api/register", formData);
-
-    if (response.status === 200 || response.status === 201) {
-      alert("Registro exitoso");
-      navigate("/Sins");
-    } else {
-      alert("Error al registrar: " + response.data.mensaje);
-    }
-  } catch (error) {
-    if (error.response) {
-      alert("Error: " + error.response.data.mensaje);
-    } else {
-      alert("Error al conectar con el servidor");
-    }
-  }
-};
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
 
       const Navbar = () => {
@@ -80,7 +53,7 @@ const Sregistro = () => {
         <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100">
           <div className="w-full max-w-4xl shadow-lg rounded-md bg-[#00102D] p-8">
             {/* formulario registro */}
-            <form onSubmit={handleSubmit}>
+            <form>
               <div className="mb-6 text-center">
                 <h3 className="text-white text-3xl font-extrabold">Registrarse</h3>
                 <p className="text-sm mt-4 text-gray-300">
@@ -103,8 +76,6 @@ const Sregistro = () => {
                     name="primerNombre"
                     type="text"
                     required
-                    value={formData.primerNombre}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu primer nombre"
                   />
@@ -118,8 +89,6 @@ const Sregistro = () => {
                   <input
                     name="segundoNombre"
                     type="text"
-                    value={formData.segundoNombre}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu segundo nombre"
                   />
@@ -134,8 +103,6 @@ const Sregistro = () => {
                     name="primerApellido"
                     type="text"
                     required
-                    value={formData.primerApellido}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu primer apellido"
                   />
@@ -149,8 +116,6 @@ const Sregistro = () => {
                   <input
                     name="segundoApellido"
                     type="text"
-                    value={formData.segundoApellido}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu segundo apellido"
                   />
@@ -284,8 +249,6 @@ const Sregistro = () => {
                   <select
                     name="tipoDocumento"
                     required
-                    value={formData.tipoDocumento}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
                     <option value="" disabled selected>
                     Selecciona un tipo de documento
@@ -314,8 +277,6 @@ const Sregistro = () => {
                     name="numeroDocumento"
                     type="text"
                     required
-                    value={formData.numeroDocumento}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu número de documento"
                   />
@@ -330,8 +291,6 @@ const Sregistro = () => {
                     name="correo"
                     type="email"
                     required
-                    value={formData.correo}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu correo electrónico"
                   />
@@ -358,8 +317,6 @@ const Sregistro = () => {
                     name="contraseña"
                     type="password"
                     required
-                    value={formData.contraseña}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu contraseña"
                   />
@@ -376,13 +333,13 @@ const Sregistro = () => {
                 </button>
                 </Link>
 
-                
+                <Link to="/">
                 <button
                   type="submit"
                   className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#FFCB00] hover:bg-[#FFC107] focus:outline-none">
                   Registrarme
                 </button>
-                
+                </Link>
               </div>
             </form>
           </div>
