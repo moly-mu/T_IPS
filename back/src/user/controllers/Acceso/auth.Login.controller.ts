@@ -13,7 +13,6 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 
   try {
-    // Buscar usuario por email
     const credential = await prisma.credentialUser.findUnique({
       where: { email },
       include: {
@@ -25,26 +24,42 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Correo o contraseña incorrectos." });
     }
 
-    // Validar contraseña
     const isMatch = await bcrypt.compare(password, credential.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Correo o contraseña incorrectos." });
     }
 
-    // Obtener el primer User asociado
     const user = credential.User[0];
     if (!user) {
       return res.status(404).json({ error: "No se encontró el perfil de usuario asociado." });
     }
 
-    // Generar token JWT
+    // Generar token
     const token = jwt.sign(
       { id: user.id, email: credential.email, role: user.rol_idrol },
       process.env.JWT_SECRET || "secret",
       { expiresIn: "1d" }
     );
 
-    return res.status(200).json({ token, user });
+    // Crear objeto sanitizado (sin ids)
+    const sanitizedUser = {
+      firstname: user.firstname,
+      second_firstname: user.second_firstname,
+      lastname: user.lastname,
+      second_lastname: user.second_lastname,
+      birthdate: user.birthdate,
+      gender: user.gender,
+      sex: user.sex,
+      language: user.language,
+      document_type: user.document_type,
+      phone: user.phone,
+      status: user.status,
+      joinDate: user.joinDate,
+      email: credential.email,
+      document: credential.document
+    };
+
+    return res.status(200).json({ token, user: sanitizedUser });
 
   } catch (err: any) {
     console.error("ERROR EN LOGIN:", err);

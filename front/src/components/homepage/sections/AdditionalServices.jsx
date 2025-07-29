@@ -16,7 +16,7 @@ const AdditionalServices = () => {
       title: "Diagnóstico Previo",
       subtitle: "Evaluación automatizada",
       code: "03",
-      route: "/Page404"
+      route: "/ServicioTres"
     },
     {
       title: "Historia Clínica",

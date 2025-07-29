@@ -1,8 +1,8 @@
-import { PrismaClient, Gender, Language, DocumentType, Sex } from "@prisma/client";
+import { PrismaClient, Gender, Language, DocumentType, Sex, BloodType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
-
+//BloodType
 const prisma = new PrismaClient();
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -36,7 +36,7 @@ export const registerUser = async (req: Request, res: Response) => {
   if (!language) errors.push("El idioma es obligatorio.");
   if (!birthdate) errors.push("La fecha de nacimiento es obligatoria.");
   if (!phone) errors.push("El número de teléfono es obligatorio.");
-
+  if (!BloodType) errors.push("El tipo de sangre es obligatorio.");
   // Validar longitud de documento
   const docStr = document?.toString();
   if (docStr && (docStr.length < 4 || docStr.length > 13)) {
