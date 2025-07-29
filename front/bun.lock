@@ -9,6 +9,7 @@
         "@mui/material": "^7.2.0",
         "axios": "^1.10.0",
         "gsap": "^3.12.5",
+        "html2pdf": "^0.0.11",
         "html2pdf.js": "^0.10.3",
         "iconsax-react": "^0.0.8",
         "jspdf": "^3.0.1",
@@ -552,6 +553,8 @@
     "hoist-non-react-statics": ["hoist-non-react-statics@3.3.2", "", { "dependencies": { "react-is": "^16.7.0" } }, "sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw=="],
 
     "html2canvas": ["html2canvas@1.4.1", "", { "dependencies": { "css-line-break": "^2.1.0", "text-segmentation": "^1.0.3" } }, "sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA=="],
+
+    "html2pdf": ["html2pdf@0.0.11", "", {}, "sha512-Kx3I5r7lazHZzZv5lDk59jQoTxqaEGlf2BcGNvzWGPQVu0hE8jYCk4hboksuaCvmMJPa0S0A+156ZbE71Wdo2w=="],
 
     "html2pdf.js": ["html2pdf.js@0.10.3", "", { "dependencies": { "es6-promise": "^4.2.5", "html2canvas": "^1.0.0", "jspdf": "^3.0.0" } }, "sha512-RcB1sh8rs5NT3jgbN5zvvTmkmZrsUrxpZ/RI8TMbvuReNZAdJZG5TMfA2TBP6ZXxpXlWf9NB/ciLXVb6W2LbRQ=="],
 
