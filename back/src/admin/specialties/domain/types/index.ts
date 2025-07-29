@@ -1,1 +1,1 @@
-export * from "./specialtyTypes"
+export * from "./specialtyTypes";

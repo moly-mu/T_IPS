@@ -1,13 +1,16 @@
 // src/admin/specialties/controllerr/specialties.controller.ts
 
 import { Request, Response } from "express";
-import { getAllSpecialtiesService } from "@adminSpecialties/application/use-cases/specialty";
+import { GetAllSpecialtiesService } from "@adminSpecialties/application/use-cases/specialty";
+import { GetAllSpecialtyPrismaRepository } from "../../infrastructure/repositories/";
 import { HttpStatus, Message, ErrorCode } from "@constants"
 
 
-export const getAllSpecialtiesController = async(_req: Request, res: Response)=>{
+export const ListAllSpecialtiesController = async(_req: Request, res: Response)=>{
     try{
-        const specialties = await getAllSpecialtiesService();
+        const repository = new GetAllSpecialtyPrismaRepository();
+        const useCase = new GetAllSpecialtiesService(repository);
+        const specialties = await useCase.execute();
         res.status(HttpStatus.OK).json(specialties);
     } catch (error){
         console.error("Error getting specialties: ", error);

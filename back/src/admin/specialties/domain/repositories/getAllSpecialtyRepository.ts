@@ -1,6 +1,7 @@
-import { Specialty } from "../entities"
+// src/admin/specialties/domain/repositories/getAllSpecialtyRepository.ts
 
-export interface SpecialtyRespositori {
-    findMany(): Promise <Specialty[]>
-    save(specialty: Specialty): Promise <void>
+import { SpecialtyEntity } from "../entities"
+
+export interface SpecialtyRepository {
+    getAll(): Promise<SpecialtyEntity[]>
 }
