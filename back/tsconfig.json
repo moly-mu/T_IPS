@@ -21,7 +21,7 @@
       "@specialistShared/":["specialist/shared"],
       "@prisma":["prisma/client.ts"],
       "@adminSpecialties/*": ["admin/specialties/*"],
-      "@constants" : ["constants/"]
+      "@constants" : ["shared/constants/"]
     }
   },
   "include": ["src","scripts","roles"],

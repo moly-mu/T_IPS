@@ -1,3 +1,5 @@
+// src/admin/src/constants/httpStatus.ts
+
 export enum HttpStatus {
     OK = 200,
     CREATED = 201,
