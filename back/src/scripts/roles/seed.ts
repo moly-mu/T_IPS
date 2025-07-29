@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Gender,Language,DocumentType,Eps,UserStatus,SpecialtyStatus,Sex,BloodType, PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
@@ -32,6 +32,18 @@ async function main() {
     { username: "admin_compras", password: "compras123" },
   ];
 
+  
+
+  const bloodTypeMap: Record<string, BloodType> = {
+  'A+': BloodType.A_POS,
+  'A-': BloodType.A_NEG,
+  'B+': BloodType.B_POS,
+  'B-': BloodType.B_NEG,
+  'AB+': BloodType.AB_POS,
+  'AB-': BloodType.AB_NEG,
+  'O+': BloodType.O_POS,
+  'O-': BloodType.O_NEG,
+};
   const admins = await Promise.all(
     adminData.map(async (adminInfo) => {
       const hashedPassword = await hash(adminInfo.password, 12);
@@ -119,6 +131,8 @@ async function main() {
           price: spec.price,
           service: spec.service,
           duration: spec.duration,
+          workStartSchedule: new Date('2025-01-01T08:00:00Z'),
+          workEndSchedule: new Date('2025-01-01T16:00:00Z'),
         },
       })
     )
@@ -240,7 +254,6 @@ async function main() {
     {
       firstname: "Juan",
       lastname: "Pérez",
-      age: 35,
       gender: "Masculino",
       phone: "3001234567",
     },
@@ -388,15 +401,17 @@ async function main() {
         data: {
           firstname: userData.firstname,
           lastname: userData.lastname,
-          age: userData.age,
-          gender: userData.gender,
-          sex: userData.gender === "Masculino" ? "Hombre" : "Mujer",
-          language: "Español",
-          document_type: "Cédula",
+          second_firstname: userData.firstname,
+          second_lastname: userData.lastname,
+          gender: Gender.Masculino,
+          sex: Sex.Masculino,
+          language: Language.Espanol,
+          document_type: DocumentType.CC,
           phone: userData.phone,
           credential_users_idcredential_users: credentials[index].id,
           rol_idrol: roles[1].id, // Paciente role
-          status: "Activo",
+          status: UserStatus.Activo,
+          birthdate: new Date("1990-01-01"),
         },
       })
     )
@@ -408,15 +423,17 @@ async function main() {
         data: {
           firstname: userData.firstname,
           lastname: userData.lastname,
-          age: userData.age,
-          gender: userData.gender,
-          sex: userData.gender === "Masculino" ? "Hombre" : "Mujer",
-          language: "Español",
-          document_type: "Cédula",
+          second_firstname: userData.firstname,
+          second_lastname: userData.lastname,
+          gender: Gender.Masculino,
+          sex: Sex.Femenino,
+          language: Language.Espanol,
+          document_type: DocumentType.CC,
           phone: userData.phone,
           credential_users_idcredential_users: credentials[index + 10].id,
           rol_idrol: roles[0].id, // Especialista role
-          status: "Activo",
+          status: UserStatus.Activo,
+          birthdate: new Date("1990-01-01"),
         },
       })
     )
@@ -502,7 +519,7 @@ async function main() {
         data: {
           medical_history: Buffer.from(info.history),
           Direction: info.direction,
-          Blod_type: info.blood,
+          bloodType: bloodTypeMap[info.blood],
           allergies: info.allergies,
           emergency_contact: info.emergency,
         },
@@ -640,13 +657,7 @@ async function main() {
             patient.User_credential_users_idcredential_users,
           patient_User_rol_idrol: patient.User_rol_idrol,
           email: credentials[index].email,
-          eps_type: [
-            "Sura",
-            "EPS Sanitas",
-            "Compensar",
-            "Famisanar",
-            "Salud Total",
-          ][index % 5],
+          eps_type:Eps.Compensar,
           emergency_contact:
             pacDataRecords[index].emergency_contact || "DEFAULT_VALUE",
           contact_phone: patientUsers[index].phone,
@@ -1187,19 +1198,6 @@ async function main() {
     "Instituto de Radiología",
   ];
 
-  const languages = [
-    "Español, Inglés",
-    "Español, Francés",
-    "Español, Italiano",
-    "Español, Alemán",
-    "Español, Portugués",
-    "Español, Inglés, Francés",
-    "Español",
-    "Español, Inglés",
-    "Español, Italiano, Inglés",
-    "Español, Alemán, Inglés",
-  ];
-
   const skills = [
     "Neurología clínica, EEG, EMG",
     "Oncología médica, Quimioterapia",
@@ -1225,7 +1223,7 @@ async function main() {
           price: 100000 + index * 10000,
           graduationYear: 2005 + index,
           workExperience: workExperiences[index],
-          languages: languages[index],
+          language:Language.Ingles,
           education: educationUniversities[index],
           skills: skills[index],
           references: JSON.stringify([
@@ -1285,4 +1283,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  });
+  });  

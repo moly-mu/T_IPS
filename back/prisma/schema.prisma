@@ -50,17 +50,17 @@ model User {
   second_firstname                    String?    @db.VarChar(45)
   lastname                            String     @db.VarChar(45)
   second_lastname                     String?    @db.VarChar(45)
-  age                                 Int
-  gender                              String     @db.VarChar(45)
-  sex                                 String     @db.VarChar(10)
-  language                            String     @db.VarChar(45)
-  document_type                       String     @db.VarChar(45)
+  birthdate                           DateTime   
+  gender                              Gender
+  sex                                 Sex
+  language                            Language
+  document_type                       DocumentType
   phone                               String     @default("0000000000") @db.VarChar(20)
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(1)
   status                              UserStatus @default(Pendiente)
   joinDate                            DateTime   @default(now()) @db.Timestamp(0)
-
+  
   credential_users    CredentialUser      @relation(fields: [credential_users_idcredential_users], references: [id])
   rol                 Rol                 @relation(fields: [rol_idrol], references: [id])
   Paciente            Patient[]
@@ -78,7 +78,7 @@ model PacData {
   id                Int       @id @default(autoincrement()) @map("idpac_data")
   medical_history   Bytes
   Direction         String    @db.VarChar(100)
-  Blod_type         String    @db.VarChar(10)
+  bloodType         BloodType
   allergies         String?   @db.Text
   emergency_contact String?   @db.VarChar(100)
   Patient           Patient[]
@@ -156,6 +156,8 @@ model Specialty {
   SpecialtyReview        SpecialtyReview[]
   Appointment            Appointment[]
   Consents               Consent[]
+  workStartSchedule      DateTime @db.Timestamp(0) @default (now())
+  workEndSchedule        DateTime @db.Timestamp(0) @default (now())        
 
   @@map("specialty")
 }
@@ -262,7 +264,7 @@ model SpecialistRequest {
   price          Float
   graduationYear Int
   workExperience String?
-  languages      String?
+  language       Language
   education      String?
   skills         String?
   references     String? // JSON string
@@ -289,7 +291,7 @@ model MedicalHistory {
   patient_User_credential_users_idcred Int
   patient_User_rol_idrol               Int
   email                                String @db.VarChar(100)
-  eps_type                             String @db.VarChar(45)
+  eps_type                             Eps
   emergency_contact                    String @db.VarChar(100)
   contact_phone                        String @db.VarChar(20)
 
@@ -481,4 +483,52 @@ enum UserStatus {
   Inactivo
   Pendiente
 }
+enum Sex{ 
+  Masculino
+  Femenino
+}
+enum BloodType {
+  A_POS  @map("A+")
+  A_NEG  @map("A-")
+  B_POS  @map("B+")
+  B_NEG  @map("B-")
+  AB_POS @map("AB+")
+  AB_NEG @map("AB-")
+  O_POS  @map("O+")
+  O_NEG  @map("O-")
+}
+enum Gender {
+  Masculino
+  Femenino
+  Otro
+}
 
+enum Language {
+  Espanol   @map("Español")
+  Ingles    @map("Inglés")
+  Frances   @map("Francés")
+  Aleman    @map("Alemán")
+  Portugues @map("Portugués")
+}
+
+enum DocumentType {
+  CC   // Colombianos mayores de edad
+  TI   // Colombianos menores de edad
+  CE   // Extranjeros residentes legalmente
+  PPT  // Migrantes venezolanos
+  RC   // Para menores de 7 años
+  PAS  // Extranjeros no residentes o uso internacional
+}
+
+enum Eps {
+  Sura
+  Sanitas
+  Compensar
+  Famisanar
+  SaludTotal
+  NuevaEps
+  Coosalud
+  MutualSer
+  Otra
+  Ninguna
+}

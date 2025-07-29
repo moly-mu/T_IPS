@@ -4,11 +4,10 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 export const UserProfile = async (req: Request, res: Response) => {
-  const { id } = req.params;
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: Number(id) },
+      where: { id: req.userId },
       include: {
         credential_users: true,
         rol: true

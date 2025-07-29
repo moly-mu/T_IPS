@@ -91,7 +91,6 @@ const PinSesion = () => {
     showAlert("error", "Credenciales incorrectas o usuario no aprobado", "Error de autenticación");
   }
 };
-
   const handleForgotPassword = () => {
     if (!formData.email) {
       showAlert('warning', 'Por favor ingresa tu correo electrónico primero', 'Email requerido');

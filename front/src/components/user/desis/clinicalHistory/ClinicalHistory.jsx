@@ -15,7 +15,7 @@ const ClinicalHistory = () => {
   const [formData, setFormData] = useState({
     ingreso: '12658456',
     fechaImpresion: ' ',
-    identificacion: '1031984532',
+    identificacion: '1.098.765.432',
     nombre: 'Juan Manuel',
     apellidos: 'Pérez Rodríguez'
   });
@@ -75,7 +75,6 @@ const ClinicalHistory = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-8 bg-gray-50 min-h-screen">
-      {/* Header minimalista */}
       <div className="border border-teal-200 mb-8 bg-white rounded-lg shadow-sm">
         {/* Sección superior */}
         <div className="border-b border-teal-100 p-8 bg-gradient-to-r from-teal-50 to-blue-50 rounded-t-lg">

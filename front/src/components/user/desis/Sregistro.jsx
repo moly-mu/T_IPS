@@ -1,50 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const Sregistro = () => {
 
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    genero: "",
+    genroOtro:"",
+    idioma: "",
+    idiomaOtro: "",
+    fechaNacimiento: ""
+  })
 
-  const [formData, setFormData] = useState({ //! Falta agregar campos del prisma
-  primerNombre: "",
-  segundoNombre: "",
-  primerApellido: "",
-  segundoApellido: "",
-  tipoDocumento: "",
-  numeroDocumento: "",
-  correo: "",
-  contraseña: ""
-});
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-  const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
-  });
-};
-
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    const response = await axios.post("http://localhost:3000/api/register", formData);
-
-    if (response.status === 200 || response.status === 201) {
-      alert("Registro exitoso");
-      navigate("/Sins");
-    } else {
-      alert("Error al registrar: " + response.data.mensaje);
-    }
-  } catch (error) {
-    if (error.response) {
-      alert("Error: " + error.response.data.mensaje);
-    } else {
-      alert("Error al conectar con el servidor");
-    }
-  }
-};
 
       const Navbar = () => {
     return (
@@ -79,7 +53,7 @@ const Sregistro = () => {
         <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100">
           <div className="w-full max-w-4xl shadow-lg rounded-md bg-[#00102D] p-8">
             {/* formulario registro */}
-            <form onSubmit={handleSubmit}>
+            <form>
               <div className="mb-6 text-center">
                 <h3 className="text-white text-3xl font-extrabold">Registrarse</h3>
                 <p className="text-sm mt-4 text-gray-300">
@@ -102,8 +76,6 @@ const Sregistro = () => {
                     name="primerNombre"
                     type="text"
                     required
-                    value={formData.primerNombre}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu primer nombre"
                   />
@@ -117,8 +89,6 @@ const Sregistro = () => {
                   <input
                     name="segundoNombre"
                     type="text"
-                    value={formData.segundoNombre}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu segundo nombre"
                   />
@@ -133,8 +103,6 @@ const Sregistro = () => {
                     name="primerApellido"
                     type="text"
                     required
-                    value={formData.primerApellido}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu primer apellido"
                   />
@@ -148,8 +116,6 @@ const Sregistro = () => {
                   <input
                     name="segundoApellido"
                     type="text"
-                    value={formData.segundoApellido}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu segundo apellido"
                   />
@@ -160,13 +126,39 @@ const Sregistro = () => {
                   <label className="text-gray-300 text-sm block mb-2">
                     Género
                   </label>
-                  <input
+                  <select
                     name="genero"
-                    type="text"
+                    value={formData.genero}
+                    onChange={handleInputChange}
                     required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Especifica tu género"
-                  />
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled>
+                    Selecciona tu género
+                    </option>
+                    <option value="M" className="text-black bg-white">
+                    Masculino
+                    </option>
+                    <option value="F" className="text-black bg-white">
+                    Femenino
+                    </option>
+                    <option value="Otro" className="text-black bg-white">
+                    Otro
+                    </option>
+                  </select>
+
+                  {formData.genero === "Otro" && (
+                    <div className="mt-4">
+                      <label className="text-gray-300 text-sm block mb-2">Especifica tu género</label>
+                      <input 
+                      type="text"
+                      name="generoOtro"
+                      value={formData.generoOtro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Escribe tu género"
+                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
+                      />
+                    </div>
+                  )}
                 </div>
   
                 {/* Sexo */}
@@ -193,15 +185,40 @@ const Sregistro = () => {
                 {/* lenguaje */}
                 <div>
                   <label className="text-gray-300 text-sm block mb-2">
-                    Lenguaje
+                    Idioma
                   </label>
-                  <input
-                    name="lenguaje"
-                    type="text"
+                  <select
+                    name="idioma"
+                    value={formData.idioma}
+                    onChange={handleInputChange}
                     required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
-                    placeholder="Introduce tu idioma preferido"
-                  />
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled>
+                    Selecciona tu idioma
+                    </option>
+                    <option value="Español" className="text-black bg-white">Español</option>
+                    <option value="Portugues" className="text-black bg-white">Portugués</option>
+                    <option value="Frances" className="text-black bg-white">Francés</option>
+                    <option value="Aleman" className="text-black bg-white">Alemén</option>
+                    <option value="Ingles" className="text-black bg-white">Inglés</option>
+                    <option value="Otro" className="text-black bg-white">
+                    Otro
+                    </option>
+                  </select>
+
+                  {formData.idioma === "Otro" && (
+                    <div className="mt-4">
+                      <label className="text-gray-300 text-sm block mb-2">Especifica tu idioma</label>
+                      <input 
+                      type="text"
+                      name="idiomaOtro"
+                      value={formData.idiomaOtro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Escribe tu idioma"
+                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
+                      />
+                    </div>
+                  )}
                 </div>
   
                 {/* telefono */}
@@ -232,8 +249,6 @@ const Sregistro = () => {
                   <select
                     name="tipoDocumento"
                     required
-                    value={formData.tipoDocumento}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
                     <option value="" disabled selected>
                     Selecciona un tipo de documento
@@ -262,8 +277,6 @@ const Sregistro = () => {
                     name="numeroDocumento"
                     type="text"
                     required
-                    value={formData.numeroDocumento}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu número de documento"
                   />
@@ -278,10 +291,20 @@ const Sregistro = () => {
                     name="correo"
                     type="email"
                     required
-                    value={formData.correo}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu correo electrónico"
+                  />
+                </div>
+
+                {/* Fecha de Nacimiento */}
+                <div className="text-gray-300 text-sm block mb-2">
+                  <label className="font-medium mb-2">Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    name="fechaNacimiento"
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                    value={handleInputChange.fechaNacimiento}
+                    onChange={handleInputChange}
                   />
                 </div>
   
@@ -294,8 +317,6 @@ const Sregistro = () => {
                     name="contraseña"
                     type="password"
                     required
-                    value={formData.contraseña}
-                    onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu contraseña"
                   />
@@ -312,13 +333,13 @@ const Sregistro = () => {
                 </button>
                 </Link>
 
-                
+                <Link to="/">
                 <button
                   type="submit"
                   className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#FFCB00] hover:bg-[#FFC107] focus:outline-none">
                   Registrarme
                 </button>
-                
+                </Link>
               </div>
             </form>
           </div>

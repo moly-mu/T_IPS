@@ -187,13 +187,13 @@ export const getProfessionalsBySpecialty = async (req: Request, res: Response) =
 			})
 		);
 
-    res.json(mapped);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error al obtener profesionales por especialidad",
-      details: error,
-    });
-  }
+		res.json(mapped);
+	} catch (error) {
+		res.status(500).json({
+			error: "Error al obtener Especialistas por especialidad",
+			details: error,
+		});
+	}
 };
 
 export const getProfessionalRating = async (req: Request, res: Response) => {
@@ -215,3 +215,4 @@ export const getProfessionalRating = async (req: Request, res: Response) => {
 		res.status(500).json({ error: "Error al obtener el rating" });
 	}
 };
+
