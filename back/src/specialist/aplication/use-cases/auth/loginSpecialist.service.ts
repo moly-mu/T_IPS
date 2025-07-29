@@ -24,11 +24,11 @@ export const loginSpecialistService = async (
   // Aquí deberías obtener el hash de la contraseña real desde la base de datos.
   // Si tu entidad Specialist no tiene el hash, ajusta el repositorio para incluirlo.
   // Por ejemplo, specialist.passwordHash
-  // const passwordMatch = await bcrypt.compare(SpecialistLoginInput.password, specialist.passwordHash);
+  const passwordMatch = await bcrypt.compare(SpecialistLoginInput.password, specialist.passwordHash);
 
-  // if (!passwordMatch) {
-  //   return { error: "Contraseña incorrecta" };
-  // }
+  if (!passwordMatch) {
+  return { error: "Contraseña incorrecta" };
+   }
 
   if (specialist.status !== "Activo") {
     return { error: "Tu cuenta aún no ha sido aprobada" };

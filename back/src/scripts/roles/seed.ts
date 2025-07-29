@@ -1238,7 +1238,7 @@ async function main() {
             address: pacDataRecords[index].Direction,
             phone: patientUsers[index].phone,
           }),
-          status: ["pendiente", "aprobado", "rechazado"][index % 3],
+          status: [UserStatus.Activo, UserStatus.Pendiente, UserStatus.Inactivo][index % 3],
         },
       })
     )

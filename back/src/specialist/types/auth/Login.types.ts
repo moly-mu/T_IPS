@@ -1,7 +1,7 @@
 import {
   SpecialistLoginInputSchema,
   SpecialistLoginResultSchema,
-} from "@specialistModels/";
+} from "../../presentation/validators/specialistSchemas";
 import { z } from "zod";
 
 export type SpecialistLoginInput = z.infer<typeof SpecialistLoginInputSchema>;

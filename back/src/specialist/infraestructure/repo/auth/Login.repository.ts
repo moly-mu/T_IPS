@@ -23,7 +23,8 @@ export class LoginSpecialistPrismaRepository implements SpecialistRepository {
     return new Specialist(
       especialista.id,
       credential.email,
-      credential.User[0].status
+      credential.User[0].status,
+      credential.password
     );
   }
   
