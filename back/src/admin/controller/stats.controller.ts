@@ -29,11 +29,25 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
     });
 
     // Ingresos totales
-    const totalIngresos = await prisma.invoice.aggregate({
-      _sum: {
-        amount: true,
+    const especialidadesConConsultas = await prisma.specialty.findMany({
+    select: {
+      price: true,
+      _count: {
+        select: {
+          Appointment: {
+            where: {
+              state: "Completada",
+            },
+          },
+        },
       },
-    });
+    },
+  });
+
+  const ingresosCalculados = especialidadesConConsultas.reduce((total, especialidad) => {
+    return total + especialidad.price * especialidad._count.Appointment;
+  }, 0);
+
 
     // Obtener pacientes desde tabla user
     const allPatients = await prisma.user.findMany({
@@ -99,7 +113,7 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
       usuariosActivos: totalUsuariosActivos,
       especialistas: totalEspecialistas,
       consultas: totalConsultas,
-      ingresos: totalIngresos._sum.amount || 0,
+      ingresos: ingresosCalculados,
       totalPacientes,
       edades,
       generos,

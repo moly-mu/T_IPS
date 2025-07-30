@@ -138,7 +138,44 @@ const ServicesSection = () => {
 		(acc, s) => acc + (s._count?.Appointment || 0),
 		0
 	);
-	const ingresoTotal = serviciosFiltrados.reduce((acc, s) => acc + s.price, 0);
+	const ingresoTotal = serviciosFiltrados.reduce(
+  			(acc, s) => acc + s.price * (s._count?.Appointment || 0),0
+		);
+
+		const ingresosPorMes = servicios.reduce(
+		(acc, s) => {
+			const joined = new Date(s.joinDate);
+			const month = joined.getMonth();
+			const year = joined.getFullYear();
+			const consultas = s._count?.Appointment || 0;
+			const total = s.price * consultas;
+
+			// Si pertenece al mes actual
+			if (month === currentMonth && year === currentYear) {
+				acc.actual += total;
+			}
+			// Si pertenece al mes pasado
+			if (
+			(month === currentMonth - 1 && year === currentYear) ||
+			(currentMonth === 0 && month === 11 && year === currentYear - 1)
+			) {
+				acc.anterior += total;
+			}
+
+			return acc;
+		},
+		{ actual: 0, anterior: 0 }
+		);
+
+		const variacionIngresos =
+		ingresosPorMes.anterior > 0
+			? ((ingresosPorMes.actual - ingresosPorMes.anterior) / ingresosPorMes.anterior) * 100
+			: 0;
+
+		const colorClase = variacionIngresos >= 0 ? "text-green-600" : "text-red-600";
+		const signo = variacionIngresos >= 0 ? "+" : "";
+
+
 	const porcentajeActivos =
 		totalServicios > 0 ? Math.round((serviciosActivos / totalServicios) * 100) : 0;
 
@@ -217,7 +254,7 @@ const ServicesSection = () => {
 							<p className="text-2xl font-bold text-gray-900">
 								${ingresoTotal.toLocaleString()}
 							</p>
-							<p className="text-xs text-green-600 mt-1">+18% este mes</p>
+							<p className={`text-xs ${colorClase} mt-1`}>{`${signo}${variacionIngresos.toFixed(1)}% este mes`}</p>
 						</div>
 						<div className="p-3 bg-orange-50 rounded-lg">
 							<DollarSign className="h-6 w-6 text-orange-600" />

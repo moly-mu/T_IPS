@@ -12,6 +12,8 @@ import specialistDashboard from './specialist/routes/specialisttDashboard.routes
 import dotenv from 'dotenv';
 import specialistAuthRoutes from "./specialist/routes/specialistAuth.routes";
 import getAllSpecialties from "./admin/specialties/presentation/routes/specialties.routes";
+import specialistRequestRoutes from "./admin/routes/specialistRequest.routes";
+import {updateSpecialistRequestStatus} from "./admin/controller/specialistRequest.controller";
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use("/admin/specialty", adminSpecialRoutes);
 app.use("/admin/patient", adminPatientRoutes);
 app.use("/admin/stats", adminStatsRoutes);
 app.use("/admin/test", getAllSpecialties);
+app.use("/admin/specialist-requests", specialistRequestRoutes);
+app.put("/:id", updateSpecialistRequestStatus);
 
 //*Rutas de especialista
 app.use("/specialist", specialistRequest);
