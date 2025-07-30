@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export const listSpecialistRequests = async (_req: Request, res: Response) => {
   try {
     const requests = await prisma.specialistRequest.findMany({
-      where: { status: "pendiente" },
+      where: { status: "Pendiente" },
       include: { user: true },
     });
     res.json(requests);

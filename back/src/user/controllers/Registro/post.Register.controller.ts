@@ -106,6 +106,7 @@ export const registerUser = async (req: Request, res: Response) => {
     const result = await prisma.$transaction(async (tx) => {
       const credentials = await tx.credentialUser.create({
         data: {
+          where 
           email,
           password: hashedPassword,
           document: Number(document),
