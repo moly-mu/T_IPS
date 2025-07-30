@@ -1,4 +1,6 @@
 //Profesion
+//Grupo etnico
+//Eps
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
@@ -19,7 +21,10 @@ export const UserProfile = async (req: Request, res: Response) => {
                 Direction: true,
                 bloodType: true,
                 allergies: true,
-                emergency_contact: true
+                emergency_contact: true,
+                eps_type: true,
+                profession: true,
+                ethnicgroup: true
               }
             }
           }
@@ -34,7 +39,6 @@ export const UserProfile = async (req: Request, res: Response) => {
     const paciente = user.Paciente?.[0];
 
     const sanitizedUser = {
-      // Excluimos user.id
       firstname: user.firstname,
       second_firstname: user.second_firstname,
       lastname: user.lastname,
@@ -50,7 +54,6 @@ export const UserProfile = async (req: Request, res: Response) => {
 
       credential_users: user.credential_users
         ? {
-            // Excluimos credential_users.id
             document: user.credential_users.document,
             email: user.credential_users.email
           }
@@ -58,19 +61,20 @@ export const UserProfile = async (req: Request, res: Response) => {
 
       rol: user.rol
         ? {
-            // Excluimos rol.id
             rol_name: user.rol.rol_name
           }
         : null,
 
       Paciente: paciente
         ? {
-            // Excluimos los IDs del modelo Paciente
             pac_data: {
               Direction: paciente.pac_data?.Direction ?? null,
               bloodType: paciente.pac_data?.bloodType ?? null,
               allergies: paciente.pac_data?.allergies ?? null,
-              emergency_contact: paciente.pac_data?.emergency_contact ?? null
+              emergency_contact: paciente.pac_data?.emergency_contact ?? null,
+              eps_type: paciente.pac_data?.eps_type ?? null,
+              profession: paciente.pac_data?.profession ?? null,
+              ethnicgroup: paciente.pac_data?.ethnicgroup ?? null
             }
           }
         : {
@@ -78,7 +82,10 @@ export const UserProfile = async (req: Request, res: Response) => {
               Direction: null,
               bloodType: null,
               allergies: null,
-              emergency_contact: null
+              emergency_contact: null,
+              eps_type: null,
+              profession: null,
+              ethnicgroup: null
             }
           }
     };
