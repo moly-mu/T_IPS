@@ -440,15 +440,16 @@ async function main() {
   );
 
   // 6. Create PacData (10 records)
-  const pacDataInfo = [
+ const pacDataInfo = [
   {
     history: "Historia médica de ejemplo",
     direction: "Calle 123 #45-67",
     blood: "O+",
     allergies: "Penicilina, Mariscos",
     emergency: "Laura Pérez - 3201234567",
-    profession: "Ingeniera Civil",
+    profession: "Ingeniero",
     ethnicgroup: "Mestizo",
+    eps: "Sura",
   },
   {
     history: "Hipertensión controlada",
@@ -458,6 +459,7 @@ async function main() {
     emergency: "José Rodríguez - 3201234568",
     profession: "Contador",
     ethnicgroup: "Afrocolombiano",
+    eps: "Sanitas",
   },
   {
     history: "Diabetes tipo 2",
@@ -467,6 +469,7 @@ async function main() {
     emergency: "Carmen Martínez - 3201234569",
     profession: "Profesor",
     ethnicgroup: "Indígena",
+    eps: "Compensar",
   },
   {
     history: "Asma bronquial",
@@ -474,8 +477,9 @@ async function main() {
     blood: "AB+",
     allergies: "Polen, Ácaros",
     emergency: "Luis López - 3201234570",
-    profession: "Arquitecto",
+    profession: "Chef",
     ethnicgroup: "Mestizo",
+    eps: "Famisanar",
   },
   {
     history: "Artritis reumatoide",
@@ -483,8 +487,9 @@ async function main() {
     blood: "O-",
     allergies: "Antiinflamatorios",
     emergency: "Rosa González - 3201234571",
-    profession: "Abogada",
-    ethnicgroup: "Rom",
+    profession: "Médico",
+    ethnicgroup: "Palenquero",
+    eps: "SaludTotal",
   },
   {
     history: "Migraña crónica",
@@ -492,8 +497,9 @@ async function main() {
     blood: "A-",
     allergies: "Chocolate, Vino",
     emergency: "Mario Fernández - 3201234572",
-    profession: "Enfermero",
+    profession: "Diseñador",
     ethnicgroup: "Raizal",
+    eps: "NuevaEps",
   },
   {
     history: "Gastritis crónica",
@@ -501,8 +507,9 @@ async function main() {
     blood: "B-",
     allergies: "Picante",
     emergency: "Ana Sánchez - 3201234573",
-    profession: "Odontóloga",
-    ethnicgroup: "Palenquero",
+    profession: "Abogado",
+    ethnicgroup: "Gitano",
+    eps: "Coosalud",
   },
   {
     history: "Hipotiroidismo",
@@ -510,8 +517,9 @@ async function main() {
     blood: "AB-",
     allergies: "Yodo",
     emergency: "Carlos Ramírez - 3201234574",
-    profession: "Veterinario",
-    ethnicgroup: "Indígena",
+    profession: "Psicólogo",
+    ethnicgroup: "Negro",
+    eps: "MutualSer",
   },
   {
     history: "Osteoporosis",
@@ -519,8 +527,9 @@ async function main() {
     blood: "O+",
     allergies: "Lactosa",
     emergency: "Marta Torres - 3201234575",
-    profession: "Psicóloga",
-    ethnicgroup: "Mestizo",
+    profession: "Técnico en sistemas",
+    ethnicgroup: "Otro",
+    eps: "Otra",
   },
   {
     history: "Anemia ferropénica",
@@ -528,8 +537,9 @@ async function main() {
     blood: "A+",
     allergies: "Mariscos",
     emergency: "Pedro Ruiz - 3201234576",
-    profession: "Ingeniero de sistemas",
-    ethnicgroup: "Afrocolombiano",
+    profession: "Estudiante",
+    ethnicgroup: "Mestizo",
+    eps: "Ninguna",
   },
 ];
 
@@ -543,7 +553,7 @@ async function main() {
           bloodType: bloodTypeMap[info.blood],
           allergies: info.allergies,
           emergency_contact: info.emergency,
-          eps_type:Eps.Compensar,
+          eps_type: info.eps as Eps,
           profession: info.profession,
           ethnicgroup: info.ethnicgroup,
         },
