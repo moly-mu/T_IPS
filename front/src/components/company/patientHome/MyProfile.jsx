@@ -14,7 +14,7 @@ const MyProfile = () => {
     genero: 'Masculino',
     sexo: 'Masculino',
     lenguaje: 'Español',
-    numeroDocumento: '1234567',
+    numeroDocumento: '1.098.765.432',
     tipoDocumento: 'CC - Cédula de Ciudadanía',
     telefono: '+57 300 123 4567',
     contactoEmergencia: 'María Pérez - 300 765 4321',
@@ -23,7 +23,10 @@ const MyProfile = () => {
     tipoSangre: 'O+',
     alergias: 'Penicilina, Mariscos',
     eps: 'Salud Total',
-  
+    profesion: 'Minero',
+    estadoCivil: 'Casado',
+    grupoEtnico: 'N//A',
+    departamento: 'Bogotá',
   });
 
   const handleSaveProfile = () => {
@@ -203,6 +206,35 @@ const MyProfile = () => {
               <p className="text-gray-900 pb-3 border-b border-gray-100">{profile.eps}</p>
             )}
           </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Estado Civil</label>
+            {isEditingProfile ? (
+              <textarea
+                value={profile.estadoCivil}
+                onChange={(e) => setProfile({...profile, estadoCivil: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent resize-none"
+                rows="2"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{profile.estadoCivil}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Departamento</label>
+            {isEditingProfile ? (
+              <textarea
+                value={profile.departamento}
+                onChange={(e) => setProfile({...profile, departamento: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent resize-none"
+                rows="2"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{profile.departamento}</p>
+            )}
+          </div>
+
         </div>
 
         <div className="space-y-6">
@@ -319,8 +351,7 @@ const MyProfile = () => {
               <select
                 value={profile.tipoSangre}
                 onChange={(e) => setProfile({...profile, tipoSangre: e.target.value})}
-                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
-              >
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent">
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
                 <option value="B+">B+</option>
@@ -332,6 +363,34 @@ const MyProfile = () => {
               </select>
             ) : (
               <p className="text-gray-900 pb-3 border-b border-gray-100">{profile.tipoSangre}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Profesión</label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={profile.profesion}
+                onChange={(e) => setProfile({...profile, profesion: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{profile.profesion}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Grupo Étnico</label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={profile.grupoEtnico}
+                onChange={(e) => setProfile({...profile, grupoEtnico: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{profile.grupoEtnico}</p>
             )}
           </div>
 

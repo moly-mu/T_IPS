@@ -4,17 +4,12 @@ import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
 import TreatmentMedications from './TreatmentMedications';
 
-//agregar:
-//fecha de ingreso/egreso por default
-//hora de inicio y fin por defaul 
-//identificación de la historia clinica y del paciente 
-//razón y modo de consulta 
-//agregar facturazion
+const today = new Date().toISOString().split('T')[0];
 
 const ClinicalHistory = () => {
   const [formData, setFormData] = useState({
     ingreso: '12658456',
-    fechaImpresion: ' ',
+    fechaImpresion: today,
     identificacion: '1.098.765.432',
     nombre: 'Juan Manuel',
     apellidos: 'Pérez Rodríguez'
