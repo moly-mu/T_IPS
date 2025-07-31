@@ -1,112 +1,142 @@
 import Barral from '../desis/Barral';
 import { ChevronLeft, ChevronRight, Plus, Calendar, Clock, Eye, User } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-
-const appointments = [
-  { 
-    id: 1,
-    patientName: 'María González', 
-    date: '2025-06-13', 
-    time: '09:00',
-    confirmed: true,
-    specialty: 'Ortopedia',
-    patientDetails: {
-      age: 45,
-      phone: '+57 301 234 5678',
-      email: 'maria.gonzalez@email.com',
-      address: 'Calle 123 #45-67, Bogotá',
-      identification: '52.123.456',
-      medicalHistory: 'Hipertensión arterial, seguimiento rutinario'
-    }
-  },
-  { 
-    id: 2,
-    patientName: 'Carlos Rodríguez', 
-    date: '2025-06-13', 
-    time: '10:30',
-    confirmed: false,
-    specialty: 'Ortopedia',
-    patientDetails: {
-      age: 38,
-      phone: '+57 312 987 6543',
-      email: 'carlos.rodriguez@email.com',
-      address: 'Carrera 87 #12-34, Bogotá',
-      identification: '80.987.654',
-      medicalHistory: 'Migrañas recurrentes, evaluación neurológica'
-    }
-  },
-  { 
-    id: 3,
-    patientName: 'Ana Martínez', 
-    date: '2025-06-14', 
-    time: '14:00',
-    confirmed: true,
-    specialty: 'Ortopedia',
-    patientDetails: {
-      age: 29,
-      phone: '+57 320 555 7890',
-      email: 'ana.martinez@email.com',
-      address: 'Avenida 68 #89-12, Bogotá',
-      identification: '1.098.765.432',
-      medicalHistory: 'Dermatitis atópica, control periódico'
-    }
-  },
-  { 
-    id: 4,
-    patientName: 'Luis Fernández', 
-    date: '2025-06-15', 
-    time: '11:15',
-    confirmed: false,
-    specialty: 'Ortopedia',
-    patientDetails: {
-      age: 62,
-      phone: '+57 315 111 2233',
-      email: 'luis.fernandez@email.com',
-      address: 'Calle 50 #78-90, Bogotá',
-      identification: '19.876.543',
-      medicalHistory: 'Cataratas bilaterales, evaluación pre-quirúrgica'
-    }
-  },
-];
+import { useState, useEffect, useContext, useCallback } from 'react';
+import axios from '../../../api/axios';
+import { AuthContext } from '../../../context/AuthContext';
 
 function ScheduledDays() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const [stats, setStats] = useState({ total: 0, confirmed: 0, pending: 0, cancelled: 0 });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // Función para mostrar mensaje de éxito temporalmente
+  const showSuccessMessage = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => setSuccessMessage(null), 3000);
+  };
+
+  // Cargar citas programadas desde el backend
+  const fetchAppointments = useCallback(async () => {
+    if (!token) {
+      console.log('No hay token disponible');
+      return;
+    }
+    
+    console.log('Token disponible:', token ? 'Sí' : 'No');
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await axios.get('http://localhost:3000/specialist/appointments/scheduled', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      console.log('Respuesta del servidor:', response.data);
+      setAppointments(response.data.appointments || []);
+      setStats(response.data.stats || { total: 0, confirmed: 0, pending: 0, cancelled: 0 });
+    } catch (err) {
+      console.error('Error completo:', err);
+      console.error('Respuesta del error:', err.response?.data);
+      console.error('Status del error:', err.response?.status);
+      setError(`Error al cargar las citas programadas: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  // Confirmar una cita
+  const confirmAppointment = async (appointmentId) => {
+    if (!token) return;
+    
+    try {
+      await axios.put(`/specialist/appointments/confirm/${appointmentId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      // Recargar las citas después de confirmar
+      fetchAppointments();
+      showSuccessMessage('Cita confirmada exitosamente');
+      console.log('Cita confirmada exitosamente');
+    } catch (err) {
+      console.error('Error al confirmar la cita:', err);
+      setError('Error al confirmar la cita');
+    }
+  };
+
+  // Obtener detalles de una cita específica
+  const getAppointmentDetails = async (appointmentId) => {
+    if (!token) return null;
+    
+    try {
+      const response = await axios.get(`/specialist/appointments/details/${appointmentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      return response.data;
+    } catch (err) {
+      console.error('Error al obtener detalles de la cita:', err);
+      setError('Error al obtener detalles de la cita');
+      return null;
+    }
+  };
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    if (token) {
+      fetchAppointments();
+    }
+  }, [token, fetchAppointments]);
 
   const handlePrevious = () => {
-    // Lógica para navegación anterior
-    console.log('Previous clicked');
+    const currentDate = new Date(selectedDate);
+    currentDate.setDate(currentDate.getDate() - 7);
+    setSelectedDate(currentDate.toISOString().split('T')[0]);
   };
 
   const handleNext = () => {
-    // Lógica para navegación siguiente
-    console.log('Next clicked');
+    const currentDate = new Date(selectedDate);
+    currentDate.setDate(currentDate.getDate() + 7);
+    setSelectedDate(currentDate.toISOString().split('T')[0]);
   };
 
   const handleAddEvent = () => {
-    // Lógica para agregar cita
-    console.log('Add appointment clicked');
+    // Redirigir a la página de creación de citas
+    navigate('/IrCita');
   };
 
   const handleNavigation = (path) => {
     navigate(path);
   };
 
-  const handleConfirmAppointment = (appointmentId) => {
-    // Lógica para confirmar cita
-    console.log('Confirming appointment:', appointmentId);
+  const handleConfirmAppointment = async (appointmentId) => {
+    await confirmAppointment(appointmentId);
   };
 
-  const handleReschedule = (appointmentId) => {
-    // Lógica para reprogramar cita
-    console.log('Rescheduling appointment:', appointmentId);
+  const handleReschedule = async (appointmentId) => {
+    // Por ahora redirigir a la página de reprogramación
+    // En el futuro se puede implementar un modal para seleccionar nueva fecha/hora
+    navigate('/IrCita', { state: { rescheduleId: appointmentId } });
   };
 
-  const handleViewDetails = (appointment) => {
-    setSelectedPatient(appointment);
+  const handleViewDetails = async (appointment) => {
+    // Obtener detalles completos de la cita
+    const detailedAppointment = await getAppointmentDetails(appointment.id);
+    setSelectedPatient(detailedAppointment || appointment);
     setShowModal(true);
   };
 
@@ -158,6 +188,14 @@ function ScheduledDays() {
                 <span>Nueva Cita</span>
               </button>
               
+              <button
+                onClick={fetchAppointments}
+                disabled={loading}
+                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 px-4 py-2 rounded-lg transition-colors text-white"
+              >
+                <span>Actualizar</span>
+              </button>
+              
               {/* Botones de navegación al lado de Add Event */}
               <div className="flex gap-2 ml-2">
                 <button
@@ -188,99 +226,125 @@ function ScheduledDays() {
             <div className="pt-16 p-6 bg-gray-0 ">
               <h1 className="text-3xl font-bold">Citas Programadas</h1>
               <p className="text-gray-600">Gestiona y revisa todas las citas médicas agendadas.</p>
+              
+              {/* Loading state */}
+              {loading && (
+                <div className="flex justify-center items-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00102D]"></div>
+                  <span className="ml-2">Cargando citas...</span>
+                </div>
+              )}
+              
+              {/* Success message */}
+              {successMessage && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                  {successMessage}
+                </div>
+              )}
+              
+              {/* Error state */}
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                  {error}
+                </div>
+              )}
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full max-w-6xl bg-white shadow-md rounded-lg border">
-                <thead className="bg-gray-800 text-white">
-                  <tr>
-                    <th className="px-6 py-3 text-left">Paciente</th>
-                    <th className="px-6 py-3 text-left">Fecha</th>
-                    <th className="px-6 py-3 text-left">Hora</th>
-                    <th className="px-6 py-3 text-left">Especialidad</th>
-                    <th className="px-6 py-3 text-left">Estado</th>
-                    <th className="px-6 py-3 text-left">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {appointments.map((appointment) => (
-                    <tr key={appointment.id} className="border-b hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <p className="text-gray-800 font-medium">{appointment.patientName}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-gray-500" />
-                          <p className="text-gray-700">{formatDate(appointment.date)}</p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-gray-500" />
-                          <p className="text-gray-700">{appointment.time}</p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-gray-700">{appointment.specialty}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          appointment.confirmed 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {appointment.confirmed ? '✓ Confirmada' : '⏳ Pendiente'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleViewDetails(appointment)}
-                            className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
-                          >
-                            <Eye className="w-3 h-3" />
-                            Ver
-                          </button>
-                          {!appointment.confirmed && (
-                            <button
-                              onClick={() => handleConfirmAppointment(appointment.id)}
-                              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                            >
-                              Confirmar
-                            </button>
-                          )}
-                          <Link to="/HistoriaClinicaEditable">
-                          <button
-                            onClick={() => handleReschedule(appointment.id)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
-                            Reprogramar
-                          </button>
-                          </Link>
-                        </div>
-                      </td>
+              {!loading && appointments.length === 0 ? (
+                <div className="text-center py-8">
+                  <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No hay citas programadas</h3>
+                  <p className="text-gray-500">Aún no tienes citas agendadas para mostrar.</p>
+                </div>
+              ) : (
+                <table className="min-w-full max-w-6xl bg-white shadow-md rounded-lg border">
+                  <thead className="bg-gray-800 text-white">
+                    <tr>
+                      <th className="px-6 py-3 text-left">Paciente</th>
+                      <th className="px-6 py-3 text-left">Fecha</th>
+                      <th className="px-6 py-3 text-left">Hora</th>
+                      <th className="px-6 py-3 text-left">Especialidad</th>
+                      <th className="px-6 py-3 text-left">Estado</th>
+                      <th className="px-6 py-3 text-left">Acciones</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {appointments.map((appointment) => (
+                      <tr key={appointment.id} className="border-b hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <p className="text-gray-800 font-medium">{appointment.patientName}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-gray-500" />
+                            <p className="text-gray-700">{formatDate(appointment.date)}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-gray-500" />
+                            <p className="text-gray-700">{appointment.time}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-gray-700">{appointment.specialty}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            appointment.confirmed 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {appointment.confirmed ? '✓ Confirmada' : '⏳ Pendiente'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleViewDetails(appointment)}
+                              className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"
+                            >
+                              <Eye className="w-3 h-3" />
+                              Ver
+                            </button>
+                            {!appointment.confirmed && (
+                              <button
+                                onClick={() => handleConfirmAppointment(appointment.id)}
+                                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                              >
+                                Confirmar
+                              </button>
+                            )}
+                            <Link to="/HistoriaClinicaEditable">
+                            <button
+                              onClick={() => handleReschedule(appointment.id)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                              Reprogramar
+                            </button>
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             {/* Resumen de estadísticas */}
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white p-4 rounded-lg shadow-sm border">
                 <h3 className="text-lg font-semibold text-gray-800">Total de Citas</h3>
-                <p className="text-2xl font-bold text-blue-600">{appointments.length}</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.total}</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm border">
                 <h3 className="text-lg font-semibold text-gray-800">Confirmadas</h3>
-                <p className="text-2xl font-bold text-green-600">
-                  {appointments.filter(apt => apt.confirmed).length}
-                </p>
+                <p className="text-2xl font-bold text-green-600">{stats.confirmed}</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-sm border">
                 <h3 className="text-lg font-semibold text-gray-800">Pendientes</h3>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {appointments.filter(apt => !apt.confirmed).length}
-                </p>
+                <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
               </div>
             </div>
           </div>
@@ -315,24 +379,48 @@ function ScheduledDays() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-600">Edad</label>
-                    <p className="text-gray-800">{selectedPatient.patientDetails.age} años</p>
+                    <p className="text-gray-800">{selectedPatient.patientDetails?.age || 'No especificada'} años</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-600">Identificación</label>
-                    <p className="text-gray-800">{selectedPatient.patientDetails.identification}</p>
+                    <p className="text-gray-800">{selectedPatient.patientDetails?.identification || 'No especificada'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-600">Teléfono</label>
-                    <p className="text-gray-800">{selectedPatient.patientDetails.phone}</p>
+                    <p className="text-gray-800">{selectedPatient.patientDetails?.phone || 'No especificado'}</p>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-600">Email</label>
-                    <p className="text-gray-800">{selectedPatient.patientDetails.email}</p>
+                    <p className="text-gray-800">{selectedPatient.patientDetails?.email || 'No especificado'}</p>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-600">Dirección</label>
-                    <p className="text-gray-800">{selectedPatient.patientDetails.address}</p>
+                    <p className="text-gray-800">{selectedPatient.patientDetails?.address || 'No especificada'}</p>
                   </div>
+                  {selectedPatient.patientDetails?.bloodType && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600">Tipo de Sangre</label>
+                      <p className="text-gray-800">{selectedPatient.patientDetails.bloodType}</p>
+                    </div>
+                  )}
+                  {selectedPatient.patientDetails?.allergies && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600">Alergias</label>
+                      <p className="text-gray-800">{selectedPatient.patientDetails.allergies}</p>
+                    </div>
+                  )}
+                  {selectedPatient.patientDetails?.eps && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600">EPS</label>
+                      <p className="text-gray-800">{selectedPatient.patientDetails.eps}</p>
+                    </div>
+                  )}
+                  {selectedPatient.patientDetails?.emergencyContact && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600">Contacto de Emergencia</label>
+                      <p className="text-gray-800">{selectedPatient.patientDetails.emergencyContact}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -373,9 +461,21 @@ function ScheduledDays() {
 
               {/* Historial médico */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Historial Médico</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Información Médica</h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-700">{selectedPatient.patientDetails.medicalHistory}</p>
+                  {selectedPatient.patientDetails?.medicalHistory ? (
+                    <div className="space-y-2">
+                      {selectedPatient.patientDetails.medicalHistory.map((history, index) => (
+                        <div key={index} className="text-gray-700">
+                          <p><strong>Consultas:</strong> {history.consultations}</p>
+                          <p><strong>Diagnósticos:</strong> {history.diagnoses}</p>
+                          <p><strong>Prescripciones:</strong> {history.prescriptions}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-700">No hay historial médico disponible</p>
+                  )}
                 </div>
               </div>
 

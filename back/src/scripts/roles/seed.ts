@@ -154,7 +154,7 @@ async function main() {
       password: "patient123",
     },
     {
-      document: 234567890,
+      document: 234567890, 
       email: "maria.rodriguez@email.com",
       password: "maria123",
     },
@@ -1058,22 +1058,20 @@ async function main() {
   ];
 
   const prescriptions = await Promise.all(
-    medicalHistories.map((history, index) => {
-      const medicineIndex = index % medicineData.length;
-      const specialistIndex = index % specialistUsers.length;
-      return prisma.prescription.create({
+    medicalHistories.map((history, index) =>
+      prisma.prescription.create({
         data: {
           medicalHistoryId: history.id,
-          medicine: medicineData[medicineIndex].medicine,
-          dosage: medicineData[medicineIndex].dosage,
-          frequency: medicineData[medicineIndex].frequency,
-          duration: medicineData[medicineIndex].duration,
+          medicine: medicineData[index].medicine,
+          dosage: medicineData[index].dosage,
+          frequency: medicineData[index].frequency,
+          duration: medicineData[index].duration,
           indications: "Tomar con alimentos",
           issuedAt: new Date(2023, 4, 15 + index, 10 + index, 45, 0),
-          sentBy: `Dr. ${specialistUsers[specialistIndex].firstname} ${specialistUsers[specialistIndex].lastname}`,
+          sentBy: `Dr. ${specialistUsers[index].firstname} ${specialistUsers[index].lastname}`,
         },
-      });
-    })
+      })
+    )
   );
 
   // 16. Create Appointments (30 records with varied dates for dashboard)
@@ -1295,16 +1293,16 @@ async function main() {
           user_id: patient.id,
           user_cred_id: patient.credential_users_idcredential_users,
           user_rol_id: patient.rol_idrol,
-          specialty_id: specialties[index % specialties.length].id,
+          specialty_id: specialties[index].id,
           rating: 4.5 + (index % 6) * 0.1,
-          comment: specialtyComments[index % specialtyComments.length],
+          comment: specialtyComments[index],
           createdAt: new Date(2023, 4, 15 + index, 11, 5, 0),
         },
       })
     )
   );
 
-  // 19. Create Consents (15 records con especialidades cíclicas)
+  // 19. Create Consents (10 records)
   const consents = await Promise.all(
     patients.map((patient, index) =>
       prisma.consent.create({
@@ -1315,7 +1313,7 @@ async function main() {
           patient_User_credential_users_idcred:
             patient.User_credential_users_idcredential_users,
           patient_User_rol_idrol: patient.User_rol_idrol,
-          especialidad_id: specialties[index % specialties.length].id,
+          especialidad_id: specialties[index].id,
           fecha_firma: new Date(2023, 4, 10 + index, 0, 0, 0),
           firmado_por: `${patientUsers[index].firstname} ${patientUsers[index].lastname}`,
           relacion_con_paciente:
@@ -1326,7 +1324,7 @@ async function main() {
               : "Familiar",
           documento_identidad: credentials[index].document.toString(),
           consentimiento_texto: `Consiento el tratamiento médico para ${specialties[
-            index % specialties.length
+            index
           ].name.toLowerCase()}...`,
           firmado: true,
         },
