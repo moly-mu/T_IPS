@@ -22,32 +22,53 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
     });
 
     // Consultas completadas
+
+    // Fechas
+
+    const hoy = new Date();
+    hoy.setUTCHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(hoy);
+    tomorrow.setUTCDate(hoy.getUTCDate() + 1);
+
+
     const totalConsultas = await prisma.appointment.count({
       where: {
         state: "Completada",
+        appoint_finish: {
+          gte: hoy,
+          lt: tomorrow,
+        }
       },
     });
 
     // Ingresos totales
+
     const especialidadesConConsultas = await prisma.specialty.findMany({
-    select: {
-      price: true,
-      _count: {
-        select: {
-          Appointment: {
-            where: {
-              state: "Completada",
+      select: {
+        price: true,
+        _count: {
+          select: {
+            Appointment: {
+              where: {
+                state: "Completada",
+                appoint_finish: {
+                  gte: hoy,
+                  lt: tomorrow,
+                },
+              },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  const ingresosCalculados = especialidadesConConsultas.reduce((total, especialidad) => {
-    return total + especialidad.price * especialidad._count.Appointment;
-  }, 0);
-
+    const ingresosCalculados = especialidadesConConsultas.reduce(
+      (total, especialidad) => {
+        return total + especialidad.price * especialidad._count.Appointment;
+      },
+      0
+    );
 
     // Obtener pacientes desde tabla user
     const allPatients = await prisma.user.findMany({
@@ -82,7 +103,7 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
       else if (age >= 46 && age <= 60) ageGroups["46-60"]++;
       else ageGroups["60+"]++;
 
-      // Conteo por géner(o
+      // Conteo por género
       const normalized = (gender ?? "Otro") as Gender;
       if (genderCounts[normalized] !== undefined) {
         genderCounts[normalized]++;

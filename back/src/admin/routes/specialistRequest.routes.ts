@@ -1,12 +1,15 @@
-// src/admin/routes/specialistRequest.routes.ts
+import express from 'express';
+import {
+  getAllSpecialistRequests,
+  getSpecialistRequestById,
+  updateSpecialistRequestStatus
+} from '../controller/specialistRequest.controller'; // Asegúrate que la ruta sea correcta
 
-import { Router } from "express";
-import { getAllSpecialistRequests } from "../controller/specialistRequest.controller";
-import { updateSpecialistRequestStatus } from "../controller/specialistRequest.controller";
+const router = express.Router();
 
-const router = Router();
-
-router.get("/", getAllSpecialistRequests);
-router.put("/:id", updateSpecialistRequestStatus);
+// Rutas
+router.get('/', getAllSpecialistRequests);
+router.get('/:id', getSpecialistRequestById);
+router.patch('/:id/status', updateSpecialistRequestStatus);
 
 export default router;

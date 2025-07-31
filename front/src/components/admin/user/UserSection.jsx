@@ -5,7 +5,6 @@ import {
 	Eye,
 	Edit,
 	Trash2,
-	UserPlus,
 	MoreVertical,
 	Users,
 	Activity,
@@ -327,11 +326,6 @@ const UserSection = () => {
 								<option>Inactivo</option>
 							</select>
 						</div>
-
-						<button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2">
-							<UserPlus className="h-4 w-4" />
-							Nuevo Usuario
-						</button>
 					</div>
 				</div>
 			</div>
