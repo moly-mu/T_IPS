@@ -1,7 +1,7 @@
 import {validateToken } from "../middleware/validateToken";
 import {registerUser} from "../controllers/Registro/post.Register.controller";
 import {loginUser} from "../controllers/Acceso/auth.Login.controller";
-import {UserProfile} from "../controllers/Perfil/getld.UserProfile.controller";
+import {UserProfile} from "../controllers/Perfil/get.UserProfile.controller";
 import {updateUserProfile } from '../controllers/Perfil/put.UserProfileEdit.controller';
 import {UserScheduleAppointment} from "../controllers/Citas/getld.UserScheduleAppointment.controller";
 import express from "express";

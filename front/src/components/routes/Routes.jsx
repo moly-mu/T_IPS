@@ -34,6 +34,7 @@ import TeleconsultaSurvey from "../company/AssistanceConsultation/TeleconsultaSu
 import GoDoctorAppointment from "../user/desis/doctorAppointment/GoDoctorAppointment";
 import PatientProfile from "../company/patientHome/PatientProfile";
 import ClinicalHistory from "../user/desis/clinicalHistory/ClinicalHistory";
+import DiagnosticPreview from "../homepage/service/DiagnosticPreview";
 
 
 
@@ -46,6 +47,7 @@ const AppRoutes = () => {
         <Route path="/Sins" element={<Sinsesion />} />
         <Route path="/Sreg" element={<Sregistro />} />
         <Route path="/PrePerfiles" element={<MedicalProfilesSection />} />
+        <Route path="/ServicioTres" element={<DiagnosticPreview/>} />
 
         {/* medico */}
         <Route path="/pagusuario" element={<Pperfil />} />
