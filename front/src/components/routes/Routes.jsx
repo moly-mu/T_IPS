@@ -35,6 +35,7 @@ import GoDoctorAppointment from "../user/desis/doctorAppointment/GoDoctorAppoint
 import PatientProfile from "../company/patientHome/PatientProfile";
 import ClinicalHistory from "../user/desis/clinicalHistory/ClinicalHistory";
 import AnalyticsDashboard from "../admin/DashboardAnalytics/AnalyDashboard";
+import DiagnosticPreview from "../homepage/service/DiagnosticPreview";
 
 
 

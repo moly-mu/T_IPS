@@ -9,6 +9,7 @@ import specialistRequest from "./specialist/presentation/routes/specialistReques
 import specialistSettings from "./specialist/presentation/routes/specialistSettings.routes";
 import specialistAppointments from './specialist/presentation/routes/specialistAppointments.routes';
 import specialistDashboard from './specialist/presentation/routes/specialisttDashboard.routes';
+import specialistCalendar from './specialist/presentation/routes/specialistCalendar.routes';
 import dotenv from 'dotenv';
 import specialistAuthRoutes from "./specialist/presentation/routes/specialistAuth.routes";
 import getAllSpecialties from "./admin/specialties/presentation/routes/specialties.routes";
@@ -35,6 +36,7 @@ app.use("/specialist", specialistRequest);
 app.use("/specialist/settings", specialistSettings);
 app.use("/specialist/appointments",specialistAppointments);
 app.use("/specialist/dashboard", specialistDashboard);
+app.use("/specialist/calendar", specialistCalendar);
 app.use("/specialist/auth", specialistAuthRoutes);
 
 export default app;

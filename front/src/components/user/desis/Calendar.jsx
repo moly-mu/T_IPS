@@ -1,17 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, X, Edit3, Trash2 } from 'lucide-react';
+import axios from 'axios';
+import { AuthContext } from '../../../context/AuthContext';
 import Barral from '../desis/Barral';
 
 const Calendar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { token } = useContext(AuthContext);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState([
-    { id: 1, title: 'Event Conf.', date: '2025-06-13', color: 'red', time: 'all-day' },
-    { id: 2, title: 'Meeting', date: '2025-06-14', color: 'green', time: 'all-day' },
-    { id: 3, title: 'Workshop', date: '2025-06-15', color: 'blue', time: 'all-day' }
-  ]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [eventTitle, setEventTitle] = useState('');
@@ -36,6 +37,110 @@ const Calendar = () => {
   // Función de navegación movida al nivel del componente
   const handleNavigation = (route) => {
     navigate(route);
+  };
+
+  // Cargar eventos del backend
+  const fetchCalendarEvents = useCallback(async () => {
+    if (!token) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await axios.get("http://localhost:3000/specialist/calendar/events", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      setEvents(response.data);
+    } catch (err) {
+      console.error("Error al cargar eventos:", err);
+      setError("Error al cargar los eventos del calendario");
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchCalendarEvents();
+    }
+  }, [token]);
+
+  // Crear evento
+  const createEvent = async (eventData) => {
+    if (!token) return;
+    
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/specialist/calendar/events",
+        eventData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      // Agregar el evento al estado local
+      setEvents(prev => [...prev, response.data.event]);
+      return response.data.event;
+    } catch (err) {
+      console.error("Error al crear evento:", err);
+      setError("Error al crear el evento");
+      throw err;
+    }
+  };
+
+  // Actualizar evento
+  const updateEvent = async (eventId, eventData) => {
+    if (!token) return;
+    
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/specialist/calendar/events/${eventId}`,
+        eventData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      // Actualizar el evento en el estado local
+      setEvents(prev => prev.map(event => 
+        event.id === eventId ? response.data.event : event
+      ));
+      return response.data.event;
+    } catch (err) {
+      console.error("Error al actualizar evento:", err);
+      setError("Error al actualizar el evento");
+      throw err;
+    }
+  };
+
+  // Eliminar evento
+  const deleteEvent = async (eventId) => {
+    if (!token) return;
+    
+    try {
+      await axios.delete(
+        `http://localhost:3000/specialist/calendar/events/${eventId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      // Eliminar el evento del estado local
+      setEvents(prev => prev.filter(event => event.id !== eventId));
+    } catch (err) {
+      console.error("Error al eliminar evento:", err);
+      setError("Error al eliminar el evento");
+      throw err;
+    }
   };
 
   const getDaysInMonth = (date) => {
@@ -148,28 +253,32 @@ const Calendar = () => {
     }
   };
 
-  const handleSaveEvent = () => {
+  const handleSaveEvent = async () => {
     if (eventTitle.trim() && selectedDate) {
-      if (editingEvent) {
-        setEvents(events.map(event => 
-          event.id === editingEvent.id 
-            ? { ...event, title: eventTitle, color: eventColor, date: selectedDate, time: eventTime }
-            : event
-        ));
-      } else {
-        const newEvent = {
-          id: Date.now(),
+      try {
+        const eventData = {
           title: eventTitle,
           date: selectedDate,
           color: eventColor,
           time: eventTime
         };
-        setEvents([...events, newEvent]);
+
+        if (editingEvent) {
+          // Actualizar evento existente
+          await updateEvent(editingEvent.id, eventData);
+        } else {
+          // Crear nuevo evento
+          await createEvent(eventData);
+        }
+        
+        setShowModal(false);
+        setEventTitle('');
+        setSelectedDate('');
+        setEditingEvent(null);
+      } catch (err) {
+        console.error("Error al guardar evento:", err);
+        // El error ya se maneja en las funciones createEvent/updateEvent
       }
-      setShowModal(false);
-      setEventTitle('');
-      setSelectedDate('');
-      setEditingEvent(null);
     }
   };
 
@@ -182,8 +291,13 @@ const Calendar = () => {
     setShowModal(true);
   };
 
-  const handleDeleteEvent = (eventId) => {
-    setEvents(events.filter(event => event.id !== eventId));
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      await deleteEvent(eventId);
+    } catch (err) {
+      console.error("Error al eliminar evento:", err);
+      // El error ya se maneja en la función deleteEvent
+    }
   };
 
   const getColorClasses = (color) => {
@@ -417,6 +531,38 @@ const Calendar = () => {
 
       <div className="ml-64 min-h-screen bg-gray-100">
         <div className="-mt-244 px-6 pt-6">
+          {/* Error notification */}
+          {error && (
+            <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <X className="h-5 w-5 text-red-400" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-800">{error}</p>
+                </div>
+                <div className="ml-auto pl-3">
+                  <button
+                    onClick={() => setError(null)}
+                    className="text-red-400 hover:text-red-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loading indicator */}
+          {loading && (
+            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <p className="ml-3 text-sm text-blue-800">Cargando eventos...</p>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-6 bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center gap-4">
               <div className="flex gap-2">
