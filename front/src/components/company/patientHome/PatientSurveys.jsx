@@ -3,8 +3,9 @@ import { Star, CheckCircle } from 'lucide-react';
 
 const PatientSurveys = () => {
   const [selectedRating, setSelectedRating] = useState(0);
+  const [comment, setComment] = useState('');
 
-  const [encuestas] = useState([
+  const [encuestas, setEncuestas] = useState([
     {
       id: 1,
       doctor: 'Dr. Carlos Rodríguez',
@@ -22,8 +23,20 @@ const PatientSurveys = () => {
   ]);
 
   const handleSubmitSurvey = (encuestaId) => {
-    console.log(`Encuesta ${encuestaId} enviada con calificación: ${selectedRating}`);
+    console.log(`Encuesta ${encuestaId} enviada con calificación: ${selectedRating}${comment ? ` y comentario: ${comment}` : ''}`);
+    
+    // Actualizar el estado de la encuesta
+    setEncuestas(prevEncuestas => 
+      prevEncuestas.map(encuesta => 
+        encuesta.id === encuestaId 
+          ? { ...encuesta, completada: true, calificacion: selectedRating }
+          : encuesta
+      )
+    );
+    
+    // Limpia el formulario
     setSelectedRating(0);
+    setComment('');
   };
 
   return (
@@ -71,8 +84,7 @@ const PatientSurveys = () => {
                     <button
                       key={star}
                       onClick={() => setSelectedRating(star)}
-                      className="transition-all hover:scale-110"
-                    >
+                      className="transition-all hover:scale-110">
                       <Star
                         size={20}
                         className={star <= selectedRating ? 'text-yellow-500 fill-current' : 'text-gray-300 hover:text-yellow-400'}
@@ -80,11 +92,25 @@ const PatientSurveys = () => {
                     </button>
                   ))}
                 </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="comment" className="text-sm font-medium text-gray-700">
+                    Comentarios adicionales (opcional):
+                  </label>
+                  <textarea
+                    id="comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Comparte tu experiencia con la consulta..."
+                    className="w-full p-3 border border-gray-200 rounded-lg resize-none focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none text-sm"
+                    rows={3}
+                  />
+                </div>
+                
                 <button
                   onClick={() => handleSubmitSurvey(encuesta.id)}
                   disabled={selectedRating === 0}
-                  className="bg-gray-900 text-white px-4 py-2 text-sm hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                >
+                  className="bg-gray-900 text-white px-4 py-2 text-sm hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors rounded-lg">
                   ENVIAR CALIFICACIÓN
                 </button>
               </div>

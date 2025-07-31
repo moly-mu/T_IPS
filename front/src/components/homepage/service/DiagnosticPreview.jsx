@@ -1,5 +1,4 @@
-import { 
-  Thermometer, User, Clock, Heart, Activity, CheckCircle, ArrowRight, Shield, Brain, Sparkles, AlertTriangle } from 'lucide-react';
+import { Thermometer, User, Clock, Heart, Activity, CheckCircle, ArrowRight, Shield, Brain, Sparkles, AlertTriangle } from 'lucide-react';
 
 export default function DiagnosticPreview() {
   const handleStartDiagnostic = () => {
@@ -60,7 +59,6 @@ export default function DiagnosticPreview() {
                   <br />
                   <span className="text-gray-900">Previa</span>
                   <br />
-                  <span className="text-gray-900">Requerida.</span>
                 </h1>
               </div>
               
@@ -219,10 +217,10 @@ export default function DiagnosticPreview() {
             <div className="group cursor-pointer">
               <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 hover:shadow-xl transition-all duration-300">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Cuestionario Obligatorio: Rápido y Preciso.
+                  Cuestionario Opcional: Rápido y Preciso.
                   <ArrowRight className="w-6 h-6 inline-block ml-2 group-hover:translate-x-2 transition-transform" />
                 </h3>
-                <p className="text-gray-600">Completar este formulario es obligatorio antes de agendar cualquier consulta. Nos ayuda a garantizar que recibas la atención médica adecuada.</p>
+                <p className="text-gray-600">Completar este formulario es opcional antes de agendar cualquier consulta. Nos ayuda a garantizar que recibas la atención médica adecuada.</p>
               </div>
             </div>
 
@@ -257,7 +255,7 @@ export default function DiagnosticPreview() {
                   
                   <div className="flex items-center space-x-3 pt-4">
                     <ArrowRight className="w-5 h-5 text-purple-500" />
-                    <span className="text-gray-700">Evaluación Obligatoria Pre-Consulta.</span>
+                    <span className="text-gray-700">Evaluación opcional Pre-Consulta.</span>
                   </div>
                   <p className="text-sm text-gray-600 ml-8">Todos los pacientes deben completar este cuestionario antes de poder agendar cualquier cita médica, garantizando una atención apropiada y eficiente.</p>
                 </div>
@@ -277,7 +275,7 @@ export default function DiagnosticPreview() {
           <div className="relative z-10">
             <h3 className="text-4xl font-bold text-gray-900 mb-6">¿Listo Para Comenzar Tu Evaluación?</h3>
             <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-              Completa nuestro cuestionario médico obligatorio para acceder al agendamiento y recibir la atención especializada que necesitas.
+              Completa nuestro cuestionario médico opcional para acceder al agendamiento y recibir la atención especializada que necesitas.
             </p>
             
             <button
@@ -289,7 +287,7 @@ export default function DiagnosticPreview() {
             
             <div className="flex items-center justify-center space-x-2 text-gray-500 text-sm mt-6">
               <AlertTriangle className="w-4 h-4" />
-              <span>Obligatorio • Seguro • Clasificación Inmediata</span>
+              <span>Opcional • Seguro • Clasificación Inmediata</span>
             </div>
           </div>
         </div>
@@ -302,7 +300,7 @@ export default function DiagnosticPreview() {
             <Shield className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-amber-800">
               <p className="font-medium mb-1">Información Importante</p>
-              <p>Este cuestionario médico es obligatorio para todos los pacientes antes de agendar consultas. La información proporcionada se utiliza únicamente para fines de triage médico y derivación apropiada. Para emergencias médicas, dirígete inmediatamente al servicio de urgencias más cercano.</p>
+              <p>Este cuestionario médico es opcionals para todos los pacientes antes de agendar consultas. La información proporcionada se utiliza únicamente para fines de triage médico y derivación apropiada. Para emergencias médicas, dirígete inmediatamente al servicio de urgencias más cercano.</p>
             </div>
           </div>
         </div>

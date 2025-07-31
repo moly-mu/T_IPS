@@ -3,6 +3,8 @@ import { Save, Download, Send, Upload, UserCheck, User, Pill, ClipboardList } fr
 import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
 import TreatmentMedications from './TreatmentMedications';
+import { html2pdf } from 'html2pdf.js';
+import jsPDF from 'jspdf';
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -30,7 +32,15 @@ const ClinicalHistory = () => {
   };
 
   const handleDownload = () => {
-    alert('Descargando historia clínica...');
+    const element = document.getElementById('historia-clinica');
+    const opt = {
+      margin: 0.5,
+      filename: `historia_clinica_${formData.nombre}_${formData.apellido}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    };
+    html2pdf().set(opt).from(element).save();
   };
 
   const handleSendToPatient = () => {

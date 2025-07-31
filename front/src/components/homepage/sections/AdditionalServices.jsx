@@ -22,13 +22,13 @@ const AdditionalServices = () => {
       title: "Historia Clínica",
       subtitle: "Registro digital completo",
       code: "04",
-      route: "/Page404"
+      route: "/ServicioCuatro"
     },
     {
       title: "Satisfacción",
       subtitle: "Evaluación de experiencia",
       code: "05",
-      route: "/Page404"
+      route: "/ServicioCinco"
     },
     {
       title: "Soporte",
