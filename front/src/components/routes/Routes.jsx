@@ -47,6 +47,7 @@ const AppRoutes = () => {
         <Route path="/Sins" element={<Sinsesion />} />
         <Route path="/Sreg" element={<Sregistro />} />
         <Route path="/PrePerfiles" element={<MedicalProfilesSection />} />
+        <Route path="/ServicioTres" element={<DiagnosticPreview/>} />
 
         {/* medico */}
         <Route path="/pagusuario" element={<Pperfil />} />
