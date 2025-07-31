@@ -34,6 +34,7 @@ import TeleconsultaSurvey from "../company/AssistanceConsultation/TeleconsultaSu
 import GoDoctorAppointment from "../user/desis/doctorAppointment/GoDoctorAppointment";
 import PatientProfile from "../company/patientHome/PatientProfile";
 import ClinicalHistory from "../user/desis/clinicalHistory/ClinicalHistory";
+import AnalyticsDashboard from "../admin/DashboardAnalytics/AnalyDashboard";
 
 
 
@@ -82,6 +83,7 @@ const AppRoutes = () => {
         <Route path="/userD" element={<UserSection />} />
         <Route path="/specialistD" element={<SpecialistsSection/>} />
         <Route path="/serviceD" element={<ServicesSection/>} />
+        <Route path="/analytics" element={<AnalyticsDashboard/>} />
 
         {/* Extrahome*/}
         <Route path="/quans" element={<FAQSection/>} />

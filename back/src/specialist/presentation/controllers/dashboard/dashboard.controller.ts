@@ -113,13 +113,30 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 				return rest;
 			});
 
+		//Funcion para calcular edad 
+		function calcularEdad(birthdate: Date): number {
+  			const hoy = new Date();
+			let edad = hoy.getFullYear() - birthdate.getFullYear();
+			const m = hoy.getMonth() - birthdate.getMonth();
+			if (m < 0 || (m === 0 && hoy.getDate() < birthdate.getDate())) {
+				edad--;
+			}
+			return edad;
+		}
 		// Demografía por edad
 		const users = await prisma.user.findMany({
-			where: { status: "Activo" },
-			select: { age: true },
+		where: { status: "Activo" },
+		select: { birthdate: true },
 		});
 
-		const demografiaEdad = calculateAgeGroups(users);
+		// Mapear edades a partir de birthdate
+		const usersWithAge = users.map(user => ({
+		age: calcularEdad(user.birthdate),
+		}));
+
+const demografiaEdad = calculateAgeGroups(usersWithAge);
+
+
 
 		// Demografía por género
 		const genderStats = await prisma.user.groupBy({
@@ -235,6 +252,17 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 };
 
 // Funciones auxiliares
+function calculateAge(birthdate: Date): number {
+	const today = new Date();
+	const birthDate = new Date(birthdate);
+	let age = today.getFullYear() - birthDate.getFullYear();
+	const m = today.getMonth() - birthDate.getMonth();
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age--;
+	}
+	return age;
+}
+
 function getTimeAgo(date: Date): string {
 	const now = new Date();
 	const diffInMs = now.getTime() - date.getTime();

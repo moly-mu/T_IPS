@@ -50,36 +50,40 @@ const Pperfil = () => {
       try {
         console.log("🔄 Iniciando carga de datos...");
         
-        // Obtener datos del usuario principal
-        const userResponse = await axios.get("http://localhost:3000/api/getUser/me", {
+        // Obtener datos del usuario principal usando el endpoint correcto para usuarios
+        const userResponse = await axios.get("http://localhost:3000/specialist/appointments/getProfile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         console.log("✅ Usuario principal:", userResponse.data);
-        setUserData(userResponse.data);
+        
+        // El endpoint del especialista devuelve directamente los datos del usuario
+        const userData = userResponse.data;
+        setUserData(userData);
 
-        // Obtener información del perfil (getProfile)
-        const profileResponse = await axios.get("http://localhost:3000/specialist/appointments/getProfile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("✅ Información del perfil:", profileResponse.data);
-
-        // Obtener información profesional (dataProfessional)
-        const professionalResponse = await axios.get("http://localhost:3000/specialist/settings/dataProfessional", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("✅ Información profesional:", professionalResponse.data);
-
-        // Actualizar formData con ambas respuestas
-        setFormData({
-          profileInfo: profileResponse.data,
-          professionalInfo: professionalResponse.data
-        });
+        // Obtener información profesional adicional del especialista
+        try {
+          const professionalResponse = await axios.get("http://localhost:3000/specialist/settings/dataProfessional", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          console.log("✅ Información profesional:", professionalResponse.data);
+          
+          // Combinar información del perfil con información profesional
+          setFormData({
+            profileInfo: userData,
+            professionalInfo: { ...userData, ...professionalResponse.data }
+          });
+        } catch (profError) {
+          console.log("⚠️ No se pudo obtener información profesional específica:", profError.message);
+          // Si no hay información profesional específica, usar solo los datos del usuario
+          setFormData({
+            profileInfo: userData,
+            professionalInfo: userData
+          });
+        }
 
         setDataLoaded(true);
         console.log("✅ Datos cargados correctamente");
@@ -177,10 +181,18 @@ const Pperfil = () => {
     if (!formData.professionalInfo) return <p className="text-gray-600">No hay información profesional disponible</p>;
 
     const professionalInfo = formData.professionalInfo;
-    const profileInfo = formData.profileInfo;
 
     return (
       <div className="text-left space-y-3">
+        {/* Información básica del especialista */}
+        {professionalInfo.rol?.rol_name && (
+          <p><span className="font-medium text-gray-700">Tipo de Usuario:</span> <span className="text-gray-600">{professionalInfo.rol.rol_name}</span></p>
+        )}
+        {professionalInfo.status && (
+          <p><span className="font-medium text-gray-700">Estado de la Cuenta:</span> <span className="text-gray-600">{professionalInfo.status}</span></p>
+        )}
+        
+        {/* Información profesional específica si está disponible */}
         {professionalInfo.biography && (
           <p><span className="font-medium text-gray-700">Especialidad:</span> <span className="text-gray-600">{professionalInfo.biography}</span></p>
         )}
@@ -193,12 +205,16 @@ const Pperfil = () => {
         {professionalInfo.consultations && (
           <p><span className="font-medium text-gray-700">Consultas Realizadas:</span> <span className="text-gray-600">{professionalInfo.consultations}</span></p>
         )}
-        {profileInfo?.rol?.rol_name && (
-          <p><span className="font-medium text-gray-700">Rol:</span> <span className="text-gray-600">{profileInfo.rol.rol_name}</span></p>
+        
+        {/* Fechas */}
+        {professionalInfo.createdAt && (
+          <p><span className="font-medium text-gray-700">Fecha de Registro:</span> <span className="text-gray-600">{new Date(professionalInfo.createdAt).toLocaleDateString('es-ES')}</span></p>
         )}
-        {professionalInfo.joinDate && (
-          <p><span className="font-medium text-gray-700">Fecha de Registro:</span> <span className="text-gray-600">{new Date(professionalInfo.joinDate).toLocaleDateString('es-ES')}</span></p>
+        {professionalInfo.updatedAt && (
+          <p><span className="font-medium text-gray-700">Última Actualización:</span> <span className="text-gray-600">{new Date(professionalInfo.updatedAt).toLocaleDateString('es-ES')}</span></p>
         )}
+        
+        {/* Documentos profesionales */}
         {professionalInfo.degrees && Object.keys(professionalInfo.degrees).length > 0 && (
           <div>
             <span className="font-medium text-gray-700">Diplomas:</span>
@@ -217,6 +233,19 @@ const Pperfil = () => {
             <span className="text-gray-600 ml-2">Documento disponible</span>
           </div>
         )}
+        
+        {/* Información específica de especialista */}
+        <div className="mt-4 p-3 bg-green-50 rounded-lg">
+          <p className="font-medium text-green-700 mb-2">Información del Especialista</p>
+          <p className="text-sm text-green-600">
+            Como especialista registrado, puedes gestionar citas médicas, consultas y brindar servicios de telemedicina.
+          </p>
+          {professionalInfo.rol?.rol_name === 'profesional' && (
+            <p className="text-sm text-green-600 mt-1">
+              Tienes acceso completo a las funcionalidades para profesionales de la salud.
+            </p>
+          )}
+        </div>
       </div>
     );
   };
@@ -260,9 +289,8 @@ const Pperfil = () => {
                       : "Usuario"}
                   </h2>
                   <p className="text-gray-600 mt-2">
-                    {formData.professionalInfo?.biography 
-                      ? formData.professionalInfo.biography 
-                      : "Especialista Médico"}
+                    {/* Como estamos en el perfil de especialista, siempre mostrar como Especialista Médico */}
+                    Especialista Médico
                   </p>
                 </div>
               </div>

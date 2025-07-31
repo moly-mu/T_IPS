@@ -28,7 +28,9 @@ export const loginSpecialistController = async (req: Request, res: Response) => 
     }
 
     const { user } = result;
+    console.log("🔑 Creating token with SECRET_KEY:", SECRET_KEY); // Debug log
     const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: "1d" });
+    console.log("✅ Token created successfully for user:", user.id); // Debug log
 
     return res.status(200).json({
       message: "Login exitoso",

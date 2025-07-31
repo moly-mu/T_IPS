@@ -1,1 +1,1 @@
-export * from "./specialty.repository"
+export { GetAllSpecialtyPrismaRepository } from "./specialty.repository"

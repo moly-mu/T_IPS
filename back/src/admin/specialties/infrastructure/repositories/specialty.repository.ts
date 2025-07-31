@@ -1,10 +1,11 @@
 //src/admin/specialties/repositories/specialty.repository.ts
 
-import prisma from "@prisma";
+import { PrismaClient } from "@prisma/client";
 import { SpecialtyEntity } from "../../domain/entities/";
 import { SpecialtyRepository } from "../../domain/repositories/";
 
-export class etAllSpecialtyPrismaRepository implements SpecialtyRepository {
+const prisma = new PrismaClient();
+export class GetAllSpecialtyPrismaRepository implements SpecialtyRepository {
   async getAll(): Promise<SpecialtyEntity[]> {
     return await prisma.specialty.findMany({
       orderBy: {
