@@ -119,7 +119,8 @@ model SpecData {
   working_experience       String   @db.VarChar(45)
   consultations            Int      @default(0)
   joinDate                 DateTime @default(now()) @db.Timestamp(6)
-
+  workStartSchedule        DateTime @db.Timestamp(0) @default (now())
+  workEndSchedule          DateTime @db.Timestamp(0) @default (now())
   Specialist Specialist[]
 
   @@map("spec_data")
@@ -156,9 +157,7 @@ model Specialty {
   SpecialistHasSpecialty SpecialistHasSpecialty[]
   SpecialtyReview        SpecialtyReview[]
   Appointment            Appointment[]
-  Consents               Consent[]
-  workStartSchedule      DateTime @db.Timestamp(0) @default (now())
-  workEndSchedule        DateTime @db.Timestamp(0) @default (now())        
+  Consents               Consent[]        
 
   @@map("specialty")
 }

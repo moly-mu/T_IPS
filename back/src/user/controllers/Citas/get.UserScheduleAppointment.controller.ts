@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
-// Controlador para obtener especialistas disponibles según fecha
 export const UserScheduleAppointment = async (req: Request, res: Response) => {
   const { date } = req.query; // formato esperado: YYYY-MM-DD
 
@@ -20,6 +19,7 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
             Specialty: true,
           },
         },
+        spec_data: true,
       },
     });
 
@@ -28,19 +28,22 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
         const specialtyData = spec.SpecialistHasSpecialty[0]?.Specialty;
         const specialtyName = specialtyData?.name || "Sin especialidad";
         const price = specialtyData?.price || 0;
+        const duration = specialtyData?.duration || 30;
 
-        // Traer reseñas relacionadas con la especialidad
-        const reviews = await prisma.specialtyReview.findMany({
-          where: {
-            specialty_id: specialtyData?.id,
-          },
-        });
+        const startDate = spec.spec_data?.workStartSchedule;
+        const endDate = spec.spec_data?.workEndSchedule;
 
-        const avgRating = reviews.length
-          ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-          : null;
+        if (!startDate || !endDate) return null;
 
-        // Obtener citas del especialista en la fecha
+        const startHour = startDate.getHours();
+        const startMin = startDate.getMinutes();
+        const endHour = endDate.getHours();
+        const endMin = endDate.getMinutes();
+
+        const totalStartMinutes = startHour * 60 + startMin;
+        const totalEndMinutes = endHour * 60 + endMin;
+
+        // Obtener citas ya agendadas en la fecha
         const appointments = await prisma.appointment.findMany({
           where: {
             Specialist_idEspecialista: spec.id,
@@ -55,21 +58,33 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
           },
         });
 
-        // Generar horarios disponibles entre 8am y 6pm cada 30 minutos
+        // Generar horarios disponibles
         const availableHours: string[] = [];
-        for (let hour = 8; hour < 18; hour++) {
-          ["00", "30"].forEach((min) => {
-            const time = `${hour.toString().padStart(2, "0")}:${min}`;
-            const isTaken = appointments.some(app => {
-              const appHour = new Date(app.appoint_init).toTimeString().slice(0, 5);
-              return appHour === time;
-            });
-            if (!isTaken) availableHours.push(time);
+        for (let mins = totalStartMinutes; mins + duration <= totalEndMinutes; mins += duration) {
+          const hour = Math.floor(mins / 60);
+          const minute = mins % 60;
+          const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+
+          const isTaken = appointments.some(app => {
+            const appHour = new Date(app.appoint_init).toTimeString().slice(0, 5);
+            return appHour === time;
           });
+
+          if (!isTaken) availableHours.push(time);
         }
 
+        // Obtener reseñas de la especialidad
+        const reviews = await prisma.specialtyReview.findMany({
+          where: {
+            specialty_id: specialtyData?.id,
+          },
+        });
+
+        const avgRating = reviews.length
+          ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+          : null;
+
         return {
-          id: spec.id,
           name: `${spec.User.firstname} ${spec.User.lastname}`,
           specialty: specialtyName,
           price,
@@ -79,7 +94,7 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
       })
     );
 
-    return res.json({ specialists: formattedSpecialists });
+    return res.json({ specialists: formattedSpecialists.filter(Boolean) });
   } catch (error) {
     console.error("Error al obtener especialistas:", error);
     return res.status(500).json({ error: "Error al obtener especialistas disponibles." });
