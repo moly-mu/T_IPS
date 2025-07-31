@@ -19,10 +19,11 @@ const Ofertas = () => {
     metricas: {
       usuariosActivos: { valor: 0, cambio: 0, tipo: 'positivo' },
       especialistas: { valor: 0, cambio: 0, tipo: 'positivo' },
-      consultasHoy: { valor: 0, cambio: 0, tipo: 'positivo' },
+      consultasPeriodo: { valor: 0, cambio: 0, tipo: 'positivo' },
       ingresos: { valor: 0, cambio: 0, tipo: 'positivo' },
       rating: { valor: 0, cambio: 0, tipo: 'positivo' }
     },
+    periodo: 'mes',
     actividadReciente: [],
     demografiaEdad: [],
     visitasPorDia: [],
@@ -42,7 +43,7 @@ const Ofertas = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:3000/specialist/dashboard/metricas', {
+        const response = await axios.get(`http://localhost:3000/specialist/dashboard/metricas?periodo=${filtroTiempo}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           }
@@ -54,10 +55,11 @@ const Ofertas = () => {
           metricas: {
             usuariosActivos: data.metricas?.usuariosActivos || { valor: 0, cambio: 0, tipo: 'positivo' },
             especialistas: data.metricas?.especialistas || { valor: 0, cambio: 0, tipo: 'positivo' },
-            consultasHoy: data.metricas?.consultasHoy || { valor: 0, cambio: 0, tipo: 'positivo' },
+            consultasPeriodo: data.metricas?.consultasPeriodo || { valor: 0, cambio: 0, tipo: 'positivo' },
             ingresos: data.metricas?.ingresos || { valor: 0, cambio: 0, tipo: 'positivo' },
             rating: data.metricas?.rating || { valor: 0, cambio: 0, tipo: 'positivo' }
           },
+          periodo: data.periodo || filtroTiempo,
           actividadReciente: data.actividadReciente || [],
           demografiaEdad: data.demografiaEdad || [],
           visitasPorDia: data.visitasPorDia || [],
@@ -86,7 +88,26 @@ const Ofertas = () => {
     } else {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, filtroTiempo]); // Agregar filtroTiempo como dependencia
+
+  // Función para manejar cambio de filtro
+  const handleFiltroChange = (nuevoFiltro) => {
+    setFiltroTiempo(nuevoFiltro);
+  };
+
+  // Función para obtener etiqueta del período
+  const getPeriodoLabel = (periodo) => {
+    switch (periodo) {
+      case 'hoy':
+        return 'Hoy';
+      case 'semana':
+        return 'Esta Semana';
+      case 'año':
+        return 'Este Año';
+      default:
+        return 'Este Mes';
+    }
+  };
 
   const getActivityIcon = (tipo) => {
     switch (tipo) {
@@ -214,10 +235,10 @@ const Ofertas = () => {
           <div className="flex gap-3">
             <select 
               value={filtroTiempo} 
-              onChange={(e) => setFiltroTiempo(e.target.value)}
+              onChange={(e) => handleFiltroChange(e.target.value)}
               className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#00102D] focus:border-transparent"
             >
-              <option value="dia">Hoy</option>
+              <option value="hoy">Hoy</option>
               <option value="semana">Esta semana</option>
               <option value="mes">Este mes</option>
               <option value="año">Este año</option>
@@ -246,10 +267,10 @@ const Ofertas = () => {
             icono={Award}
           />
           <MetricaCard 
-            titulo="Consultas Hoy" 
-            valor={dashboardData.metricas.consultasHoy.valor} 
-            cambio={dashboardData.metricas.consultasHoy.cambio}
-            tipo={dashboardData.metricas.consultasHoy.tipo}
+            titulo={`Consultas ${getPeriodoLabel(filtroTiempo)}`}
+            valor={dashboardData.metricas.consultasPeriodo.valor} 
+            cambio={dashboardData.metricas.consultasPeriodo.cambio}
+            tipo={dashboardData.metricas.consultasPeriodo.tipo}
             icono={Calendar}
           />
           <MetricaCard 

@@ -5,47 +5,170 @@ const prisma = new PrismaClient();
 
 export const getDashboardMetrics = async (req: Request, res: Response) => {
 	try {
+		const { periodo = 'mes' } = req.query;
 		const now = new Date();
 		const today = new Date(now);
 		today.setHours(0, 0, 0, 0);
 		const endOfDay = new Date(now);
 		endOfDay.setHours(23, 59, 59, 999);
-		const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-		// Métricas principales
-		const [usuariosActivos, especialistas, consultasHoy, totalIngresos, promedioRating] =
-			await Promise.all([
-				prisma.user.count({
-					where: {
-						status: "Activo",
+		// Calcular fechas según el período
+		let startDate = new Date();
+		let previousStartDate = new Date();
+		
+		switch (periodo) {
+			case 'hoy':
+				startDate = new Date(today);
+				previousStartDate = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+				break;
+			case 'semana':
+				startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+				previousStartDate = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
+				break;
+			case 'año':
+				startDate = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
+				previousStartDate = new Date(today.getTime() - 730 * 24 * 60 * 60 * 1000);
+				break;
+			default: // mes
+				startDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+				previousStartDate = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000);
+		}
+
+		// Métricas actuales
+		const [
+			usuariosActivos, 
+			especialistas, 
+			consultasPeriodo, 
+			totalIngresos, 
+			promedioRating
+		] = await Promise.all([
+			prisma.user.count({
+				where: {
+					status: "Activo",
+					joinDate: {
+						gte: startDate,
+						lte: endOfDay
+					}
+				},
+			}),
+			prisma.specialist.count({
+				where: {
+					User: {
+						joinDate: {
+							gte: startDate,
+							lte: endOfDay
+						}
+					}
+				}
+			}),
+			prisma.appointment.count({
+				where: {
+					appoint_init: {
+						gte: startDate,
+						lte: endOfDay,
 					},
-				}),
-				prisma.specialist.count(),
-				prisma.appointment.count({
-					where: {
-						appoint_init: {
-							gte: today,
-							lt: endOfDay,
-						},
+				},
+			}),
+			prisma.invoice.aggregate({
+				where: {
+					issuedDate: {
+						gte: startDate,
+						lte: endOfDay
+					}
+				},
+				_sum: {
+					amount: true,
+				},
+			}),
+			prisma.userReview.aggregate({
+				where: {
+					createdAt: {
+						gte: startDate,
+						lte: endOfDay
+					}
+				},
+				_avg: {
+					rating: true,
+				},
+			}),
+		]);
+
+		// Métricas del período anterior para calcular cambios
+		const [
+			usuariosActivosPrevios,
+			especialistasPrevios,
+			consultasPrevias,
+			ingresosPrevios,
+			ratingPrevio
+		] = await Promise.all([
+			prisma.user.count({
+				where: {
+					status: "Activo",
+					joinDate: {
+						gte: previousStartDate,
+						lt: startDate
+					}
+				},
+			}),
+			prisma.specialist.count({
+				where: {
+					User: {
+						joinDate: {
+							gte: previousStartDate,
+							lt: startDate
+						}
+					}
+				}
+			}),
+			prisma.appointment.count({
+				where: {
+					appoint_init: {
+						gte: previousStartDate,
+						lt: startDate,
 					},
-				}),
-				prisma.invoice.aggregate({
-					_sum: {
-						amount: true,
-					},
-				}),
-				prisma.userReview.aggregate({
-					_avg: {
-						rating: true,
-					},
-				}),
-			]);
+				},
+			}),
+			prisma.invoice.aggregate({
+				where: {
+					issuedDate: {
+						gte: previousStartDate,
+						lt: startDate
+					}
+				},
+				_sum: {
+					amount: true,
+				},
+			}),
+			prisma.userReview.aggregate({
+				where: {
+					createdAt: {
+						gte: previousStartDate,
+						lt: startDate
+					}
+				},
+				_avg: {
+					rating: true,
+				},
+			}),
+		]);
+
+		// Calcular cambios porcentuales
+		const calcularCambio = (actual: number, previo: number) => {
+			if (previo === 0) return actual > 0 ? 100 : 0;
+			return Math.round(((actual - previo) / previo) * 100);
+		};
 
 		// Actividad reciente (últimas 5 actividades)
 		const [recentAppointments, recentPayments, recentReviews] = await Promise.all([
 			prisma.appointment.findMany({
 				take: 3,
 				orderBy: { appoint_init: "desc" },
+				where: {
+					appoint_init: {
+						gte: startDate,
+						lte: endOfDay
+					}
+				},
 				include: {
 					Paciente: {
 						include: {
@@ -62,6 +185,12 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 			prisma.invoice.findMany({
 				take: 2,
 				orderBy: { issuedDate: "desc" },
+				where: {
+					issuedDate: {
+						gte: startDate,
+						lte: endOfDay
+					}
+				},
 				include: {
 					Patient: {
 						include: {
@@ -73,6 +202,12 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 			prisma.userReview.findMany({
 				take: 1,
 				orderBy: { createdAt: "desc" },
+				where: {
+					createdAt: {
+						gte: startDate,
+						lte: endOfDay
+					}
+				},
 				include: {
 					reviewer: true,
 				},
@@ -113,35 +248,35 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 				return rest;
 			});
 
-		//Funcion para calcular edad 
-		function calcularEdad(birthdate: Date): number {
-  			const hoy = new Date();
-			let edad = hoy.getFullYear() - birthdate.getFullYear();
-			const m = hoy.getMonth() - birthdate.getMonth();
-			if (m < 0 || (m === 0 && hoy.getDate() < birthdate.getDate())) {
-				edad--;
-			}
-			return edad;
-		}
 		// Demografía por edad
 		const users = await prisma.user.findMany({
-		where: { status: "Activo" },
-		select: { birthdate: true },
+			where: { 
+				status: "Activo",
+				joinDate: {
+					gte: startDate,
+					lte: endOfDay
+				}
+			},
+			select: { birthdate: true },
 		});
 
 		// Mapear edades a partir de birthdate
 		const usersWithAge = users.map(user => ({
-		age: calcularEdad(user.birthdate),
+			age: calcularEdad(user.birthdate),
 		}));
 
-const demografiaEdad = calculateAgeGroups(usersWithAge);
-
-
+		const demografiaEdad = calculateAgeGroups(usersWithAge);
 
 		// Demografía por género
 		const genderStats = await prisma.user.groupBy({
 			by: ["gender"],
-			where: { status: "Activo" },
+			where: { 
+				status: "Activo",
+				joinDate: {
+					gte: startDate,
+					lte: endOfDay
+				}
+			},
 			_count: {
 				gender: true,
 			},
@@ -162,8 +297,8 @@ const demografiaEdad = calculateAgeGroups(usersWithAge);
 				)?._count.gender || 0,
 		};
 
-		// Visitas por día (últimos 30 días)
-		const visitasPorDia = await generateVisitsPerDay(thirtyDaysAgo, today);
+		// Visitas por día (según el período seleccionado)
+		const visitasPorDia = await generateVisitsPerDay(startDate, endOfDay);
 
 		// Próximas citas
 		const proximasCitas = await prisma.appointment.findMany({
@@ -214,30 +349,37 @@ const demografiaEdad = calculateAgeGroups(usersWithAge);
 			metricas: {
 				usuariosActivos: {
 					valor: usuariosActivos,
-					cambio: 5,
-					tipo: "positivo",
+					cambio: calcularCambio(usuariosActivos, usuariosActivosPrevios),
+					tipo: usuariosActivos >= usuariosActivosPrevios ? "positivo" : "negativo",
 				},
 				especialistas: {
 					valor: especialistas,
-					cambio: 3,
-					tipo: "positivo",
+					cambio: calcularCambio(especialistas, especialistasPrevios),
+					tipo: especialistas >= especialistasPrevios ? "positivo" : "negativo",
 				},
-				consultasHoy: {
-					valor: consultasHoy,
-					cambio: 7,
-					tipo: "positivo",
+				consultasPeriodo: {
+					valor: consultasPeriodo,
+					cambio: calcularCambio(consultasPeriodo, consultasPrevias),
+					tipo: consultasPeriodo >= consultasPrevias ? "positivo" : "negativo",
 				},
 				ingresos: {
 					valor: totalIngresos._sum.amount || 0,
-					cambio: 10,
-					tipo: "positivo",
+					cambio: calcularCambio(
+						totalIngresos._sum.amount || 0, 
+						ingresosPrevios._sum.amount || 0
+					),
+					tipo: (totalIngresos._sum.amount || 0) >= (ingresosPrevios._sum.amount || 0) ? "positivo" : "negativo",
 				},
 				rating: {
 					valor: parseFloat((promedioRating._avg.rating || 0).toFixed(1)),
-					cambio: 0.2,
-					tipo: "positivo",
+					cambio: calcularCambio(
+						Math.round((promedioRating._avg.rating || 0) * 10),
+						Math.round((ratingPrevio._avg.rating || 0) * 10)
+					),
+					tipo: (promedioRating._avg.rating || 0) >= (ratingPrevio._avg.rating || 0) ? "positivo" : "negativo",
 				},
 			},
+			periodo,
 			actividadReciente,
 			demografiaEdad,
 			demografiaGenero,
@@ -252,6 +394,16 @@ const demografiaEdad = calculateAgeGroups(usersWithAge);
 };
 
 // Funciones auxiliares
+function calcularEdad(birthdate: Date): number {
+	const hoy = new Date();
+	let edad = hoy.getFullYear() - birthdate.getFullYear();
+	const m = hoy.getMonth() - birthdate.getMonth();
+	if (m < 0 || (m === 0 && hoy.getDate() < birthdate.getDate())) {
+		edad--;
+	}
+	return edad;
+}
+
 function calculateAge(birthdate: Date): number {
 	const today = new Date();
 	const birthDate = new Date(birthdate);
