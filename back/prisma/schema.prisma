@@ -67,7 +67,6 @@ model User {
   Especialista        Specialist[]
   userReviewsGiven    UserReview[]        @relation("UserReviewReviewer")
   userReviewsReceived UserReview[]        @relation("UserReviewReviewed")
-  specialtyReviews    SpecialtyReview[]
   specialistRequests  SpecialistRequest[] @relation("UserToSpecialistRequests")
 
   @@unique([id, credential_users_idcredential_users, rol_idrol])
@@ -155,7 +154,6 @@ model Specialty {
   duration               Int                      @default(30) // duración promedio en minutos
   joinDate               DateTime                 @default(now()) @db.Timestamp(0)
   SpecialistHasSpecialty SpecialistHasSpecialty[]
-  SpecialtyReview        SpecialtyReview[]
   Appointment            Appointment[]
   Consents               Consent[]        
 
@@ -238,22 +236,7 @@ model UserReview {
   @@map("user_review")
 }
 
-model SpecialtyReview {
-  id           Int      @id @default(autoincrement()) @map("idspecialty_review")
-  user_id      Int
-  user_cred_id Int
-  user_rol_id  Int
-  specialty_id Int
-  rating       Float
-  comment      String?  @db.Text
-  createdAt    DateTime @default(now()) @db.Timestamp(6)
 
-  user      User      @relation(fields: [user_id, user_cred_id, user_rol_id], references: [id, credential_users_idcredential_users, rol_idrol])
-  specialty Specialty @relation(fields: [specialty_id], references: [id])
-
-  @@unique([user_id, user_cred_id, user_rol_id, specialty_id])
-  @@map("specialty_review")
-}
 
 model SpecialistRequest {
   id             Int      @id @default(autoincrement())
