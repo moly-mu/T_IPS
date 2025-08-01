@@ -1285,24 +1285,7 @@ async function main() {
     "Endocrinología muy actualizada",
   ];
 
-  const specialtyReviews = await Promise.all(
-    patientUsers.map((patient, index) =>
-      prisma.specialtyReview.create({
-        data: {
-          user_id: patient.id,
-          user_cred_id: patient.credential_users_idcredential_users,
-          user_rol_id: patient.rol_idrol,
-          specialty_id: specialties[index % specialties.length].id,
-          rating: 4.5 + (index % 6) * 0.1,
-          comment: specialtyComments[index % specialtyComments.length],
-          createdAt: new Date(2023, 4, 15 + index, 11, 5, 0),
-        },
-      })
-    )
-  );
-  */
-
-  // 19. Create Consents (records for all patients)
+  // 19. Create Consents (10 records)
   const consents = await Promise.all(
     patients.map((patient, index) =>
       prisma.consent.create({
@@ -1592,7 +1575,6 @@ async function main() {
   console.log(`- Prescriptions: ${prescriptions.length}`);
   console.log(`- Appointments: ${appointments.length} (distributed across different time periods)`);
   console.log(`- User Reviews: ${userReviews.length} (with recent dates and varied ratings)`);
-  // console.log(`- Specialty Reviews: ${specialtyReviews.length}`); // Comentado - modelo no existe
   console.log(`- Consents: ${consents.length}`);
   console.log(`- Invoices: ${invoices.length} (with varied amounts and payment statuses)`);
   console.log(`- Appointment Receipts: ${appointmentReceipts.length}`);

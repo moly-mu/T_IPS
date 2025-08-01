@@ -1,10 +1,10 @@
-import prisma from "../../../../shared/client";
+import prisma from "../../../../../node_modules/@prisma/client";
 import { SpecialistRepository } from "../../../domain/repositories/LoginSpecialist.Repository";
 import { Specialist } from "../../../domain/entities/EntityLogin";
 
 export class LoginSpecialistPrismaRepository implements SpecialistRepository {
   async findByEmail(email: string): Promise<Specialist | null> {
-    const credential = await prisma.credentialUser.findUnique({
+    const credential = await prisma.CredentialUser.findUnique({
       where: { email },
       include: {
         User: {
