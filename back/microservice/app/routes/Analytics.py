@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from ..service.get_conversation import get_conversaciones
-from ..analytics.analyzer import (
+from service.get_conversation import get_conversaciones
+from analytics.analyzer import (
     parse_data,
     total_conversaciones,
     total_mensajes,
