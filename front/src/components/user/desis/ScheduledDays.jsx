@@ -158,7 +158,6 @@ function ScheduledDays() {
                 <span>Nueva Cita</span>
               </button>
               
-              {/* Botones de navegación al lado de Add Event */}
               <div className="flex gap-2 ml-2">
                 <button
                   onClick={() => handleNavigation('/calendar')}
