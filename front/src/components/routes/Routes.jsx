@@ -31,11 +31,16 @@ import CancelAppointmentM from "../company/cancelAppointment/CancelAppointmentM"
 import PasswordRecovery from "../company/recoverPassword/PasswordRecovery";
 import NotFoundPage from "../NotFoundPage";
 import TeleconsultaSurvey from "../company/AssistanceConsultation/TeleconsultaSurvey";
+//
 import GoDoctorAppointment from "../user/desis/doctorAppointment/GoDoctorAppointment";
 import PatientProfile from "../company/patientHome/PatientProfile";
 import ClinicalHistory from "../user/desis/clinicalHistory/ClinicalHistory";
 import AnalyticsDashboard from "../admin/DashboardAnalytics/AnalyDashboard";
 import DiagnosticPreview from "../homepage/service/DiagnosticPreview";
+//
+import SatisfactionSurveyPreview from "../homepage/service/SatisfactionSurveyPreview";
+import HistoriaClinicaInfo from "../homepage/service/HistoriaClinicaInfo";
+import RecentActivityTable from "../admin/recentActivity/RecentActivityTable";
 
 
 
@@ -49,6 +54,8 @@ const AppRoutes = () => {
         <Route path="/Sreg" element={<Sregistro />} />
         <Route path="/PrePerfiles" element={<MedicalProfilesSection />} />
         <Route path="/ServicioTres" element={<DiagnosticPreview/>} />
+        <Route path="/ServicioCinco" element={<SatisfactionSurveyPreview />} />
+        <Route path="/ServicioCuatro" element={<HistoriaClinicaInfo />} />
 
         {/* medico */}
         <Route path="/pagusuario" element={<Pperfil />} />
@@ -86,6 +93,7 @@ const AppRoutes = () => {
         <Route path="/specialistD" element={<SpecialistsSection/>} />
         <Route path="/serviceD" element={<ServicesSection/>} />
         <Route path="/analytics" element={<AnalyticsDashboard/>} />
+        <Route path="/actividadReciente" element={<RecentActivityTable/>} />
 
         {/* Extrahome*/}
         <Route path="/quans" element={<FAQSection/>} />

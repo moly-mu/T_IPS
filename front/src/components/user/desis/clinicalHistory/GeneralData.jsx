@@ -4,32 +4,28 @@ import { User, FileText, Shield, Plus, Trash2, Edit3, Save, X } from 'lucide-rea
 const GeneralData = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
-  const [patientData, setPatientData] = useState({
-    idhistoria_medica: '',
-    patient_idPaciente: '',
-    patient_pac_data_idpac_data: '',
-    patient_User_idUser: '',
-    patient_User_credential_users_idcred: '',
-    patient_User_rol_idrol: '',
-    email: '',
-    eps_type: '',
-    emergency_contact: '',
-    contact_phone: ''
-  });
-
   const [formData, setFormData] = useState({
-    nombre: 'Juan Manuel Pérez Rodríguez',
-    edad: '40',
-    email: 'juan.perez@email.com',
-    telefono: '+57 300 123 4567',
+    primerNombre: 'Juan',
+    segundoNombre: 'Manuel',
+    primerApellido: 'Pérez',
+    segundoApellido: 'Rodríguez',
     fechaNacimiento: '1985-03-15',
+    genero: 'Masculino',
+    sexo: 'Masculino',
+    lenguaje: 'Español',
+    numeroDocumento: '1.098.765.432',
+    tipoDocumento: 'CC - Cédula de Ciudadanía',
+    telefono: '+57 300 123 4567',
+    contactoEmergencia: 'María Pérez - 300 765 4321',
+    email: 'juan.perez@email.com',
     direccion: 'Calle 123 #45-67, Bogotá',
     tipoSangre: 'O+',
     alergias: 'Penicilina, Mariscos',
-    contactoEmergencia: 'María Pérez - 300 765 4321',
-    gender: 'Masculino',
-
-
+    eps: 'Salud Total',
+    profesion: 'Minero',
+    estadoCivil: 'Casado',
+    grupoEtnico: 'N//A',
+    departamento: 'Bogotá',
   });
 
   const [medicalHistory, setMedicalHistory] = useState([
@@ -138,126 +134,329 @@ const GeneralData = () => {
           <h3 className="text-lg font-semibold text-blue-900">Información del Paciente</h3>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Nombres y Apellidos</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Primer Nombre </label>
             {isEditingProfile ? (
-              <input 
-              type="text"
-              value={formData.nombre} 
-              onChange={(e) => setFormData({...formData, nombre: e.target.value})}/>
+              <input
+                type="text"
+                value={formData.primerNombre}
+                onChange={(e) => setProfile({...formData, primerNombre: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
             ) : (
-              <p className="text-base text-blue-900 font-semibold">{formData.nombre}</p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Edad</label>
-            {isEditingProfile ? (
-            <input 
-            type="text"
-            value={formData.edad}
-            onChange={(e) => setFormData({...formData, nombre: e.target.value})}/>
-            ) : (
-              <p className="text-base text-blue-900 font-semibold">{formData.edad}</p>
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.primerNombre}</p>
             )}
           </div>
 
           <div>
-              <label className="block text-sm font-medium text-blue-700 mb-1 pt-1">Fecha de nacimiento</label>
-              {isEditingProfile ? (
+            <label className="block text-sm text-gray-500 mb-2">Primer Apellido </label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={formData.primerApellido}
+                onChange={(e) => setProfile({...formData, primerApellido: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.primerApellido}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Fecha de Nacimiento</label>
+            {isEditingProfile ? (
               <input
                 type="date"
                 value={formData.fechaNacimiento}
-                onChange={(e) => setFormData({...formData, fechaNacimiento: e.target.value})}
-                className="w-full px-3 py-2 border-b border-blue-300 pb-3 text-sm focus:border-blue-300 focus:outline-none transition-colors rounded-sm"/>
-              ) : (
-                <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.fechaNacimiento}</p>
-              )}
-            </div>
-
-          <div>
-            <label className="block text-sm font-medium text-blue-700 mb-2">Género</label>
-            {isEditingProfile ? (
-            <select
-              value={patientData.gender}
-              onChange={(e) => handlePatientDataChange('gender', e.target.value)}
-              className="w-full px-3 py-2 border border-blue-300 rounded-md"
-            >
-              <option value="">Selecciona</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Femenino">Femenino</option>
-              <option value="Otro">Otro</option>
-            </select>
-            ) : ( 
-              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.gender}</p>
+                onChange={(e) => setProfile({...formData, fechaNacimiento: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.fechaNacimiento}</p>
             )}
           </div>
-          
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Correo</label>
-            <p className="text-base text-blue-900 font-semibold">juan.perez@email.com</p>
-          </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Dirección</label>
-            <p className="text-base text-blue-900 font-semibold">Calle 123 #45-67, Bogotá</p>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Teléfono</label>
-            <p className="text-base text-blue-900 font-semibold">+57 300 123 4567</p>
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Sexo</label>
+            {isEditingProfile ? (
+              <select
+                value={formData.sexo}
+                onChange={(e) => setProfile({...formData, sexo: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              >
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+              </select>
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.sexo}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-blue-700 mb-2">Tipo de documento</label>
-            <select
-              value={patientData.gender}
-              onChange={(e) => handlePatientDataChange('gender', e.target.value)}
-              className="w-full px-3 py-2 border border-blue-300 rounded-md">
-              <option value="">Selecciona</option>
-              <option value="Cedula">Cédula de Ciudadanía</option>
-              <option value="TarjetaIdentidad">Tarjeta de Identidad</option>
-              <option value="Otro">Cédula de Extranjería</option>
-              <option value="Pasaporte">Pasaporte</option>
-              <option value="Otro">Otro</option>
-            </select>
+            <label className="block text-sm text-gray-500 mb-2">Tipo de Documento</label>
+            {isEditingProfile ? (
+              <select
+                value={formData.tipoDocumento}
+                onChange={(e) => setProfile({...formData, tipoDocumento: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              >
+                <option value="CC">CC - Cédula de ciudadania</option>
+                <option value="TI">TI - Tarjeta de Identidad</option>
+                <option value="CE">CE - Cédula de Extranjería</option>
+                <option value="PAS">PPT - Permiso por Protección Temporal</option>
+                <option value="NIT">RC - Registro Civil de Nacimiento</option>
+                <option value="RC">PAS - Registro Civil</option>
+              </select>
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.tipoDocumento}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Número de documento</label>
-            <p className="text-base text-blue-900 font-semibold">1.098.765.432</p>
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Teléfono</label>
+            {isEditingProfile ? (
+              <input
+                type="tel"
+                value={formData.telefono}
+                onChange={(e) => setProfile({...formData, telefono: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.telefono}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Alergias</label>
-            <p className="text-base text-blue-900 font-semibold">Penicilina, Mariscos</p>
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Email</label>
+            {isEditingProfile ? (
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setProfile({...formData, email: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.email}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Contacto de emergencia</label>
-            <p className="text-base text-blue-900 font-semibold">María Pérez - 300 765 4321</p>
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Alergias</label>
+            {isEditingProfile ? (
+              <textarea
+                value={formData.alergias}
+                onChange={(e) => setProfile({...formData, alergias: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent resize-none"
+                rows="2"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.alergias}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Profesión</label>
-            <p className="text-base text-blue-900 font-semibold">Maestro de obra</p>
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Eps</label>
+            {isEditingProfile ? (
+              <select
+                value={formData.eps}
+                onChange={(e) => setProfile({...formData, eps: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent">
+                <option value="sura">Sura</option>
+                <option value="sanitas">Sanitas</option>
+                <option value="compensar">Compensar</option>
+                <option value="famisanar">Famisanar</option>
+                <option value="saludTotal">Salud Total</option>
+                <option value="nuevaEps">Nueva Eps</option>
+                <option value="Coosalud">Coosalud</option>
+                <option value="mutualSer">MutualSer</option>
+                <option value="ninguna">Ninguna</option>
+                <option value="otra">Otra</option>
+              </select>
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.eps}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Estado civil</label>
-            <p className="text-base text-blue-900 font-semibold">Soltero</p>
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Estado Civil </label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={formData.estadoCivil}
+                onChange={(e) => setProfile({...formData, estadoCivil: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.estadoCivil}</p>
+            )}
+          </div>
+        </div>
+
+
+        <div className="space-y-6">
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Segundo Nombre</label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={formData.segundoNombre}
+                onChange={(e) => setProfile({...formData, segundoNombre: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.segundoNombre}</p>
+            )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-blue-700 mb-1">Grupo étnico</label>
-            <p className="text-base text-blue-900 font-semibold">N/A</p>
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Segundo Apellido </label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={formData.segundoApellido}
+                onChange={(e) => setProfile({...formData, segundoApellido: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.segundoApellido}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Género</label>
+            {isEditingProfile ? (
+              <select
+                value={formData.genero}
+                onChange={(e) => setProfile({...formData, genero: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              >
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.genero}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Lenguaje</label>
+            {isEditingProfile ? (
+              <select
+                value={formData.lenguaje}
+                onChange={(e) => setProfile({...formData, lenguaje: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              >
+                <option value="Español">Español</option>
+                <option value="Ingles">Inglés</option>
+                <option value="Frances">Frnacés</option>
+                <option value="Aleman">Alemán</option>
+                <option value="Portugues">Portugués</option>
+              </select>
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.lenguaje}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Número de Documento</label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={formData.numeroDocumento}
+                onChange={(e) => setProfile({...formData, numeroDocumento: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.numeroDocumento}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Contacto de Emergencia</label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={formData.contactoEmergencia}
+                onChange={(e) => setProfile({...formData, contactoEmergencia: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.contactoEmergencia}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Dirección</label>
+            {isEditingProfile ? (
+              <textarea
+                value={formData.direccion}
+                onChange={(e) => setProfile({...formData, direccion: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent resize-none"
+                rows="2"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.direccion}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Tipo de Sangre</label>
+            {isEditingProfile ? (
+              <select
+                value={formData.tipoSangre}
+                onChange={(e) => setProfile({...formData, tipoSangre: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent">
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.tipoSangre}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Profesión </label>
+            {isEditingProfile ? (
+              <input
+                type="text"
+                value={formData.profesion}
+                onChange={(e) => setProfile({...formData, profesion: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
+              />
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.profesion}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-500 mb-2">Grupo Étnico</label>
+            {isEditingProfile ? (
+              <select
+                value={formData.grupoEtnico}
+                onChange={(e) => setProfile({...formData, grupoEtnico: e.target.value})}
+                className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent">
+                <option value="noSabe">N/A</option>
+                <option value="otro">Otro</option>
+              </select>
+            ) : (
+              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.grupoEtnico}</p>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Antecedentes Médicos */}
+    </div>
+          {/* Antecedentes Médicos */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -309,11 +508,17 @@ const GeneralData = () => {
                     className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     <option value="">Seleccionar tipo</option>
-                    <option value="Familiar">Familiar</option>
-                    <option value="Personal">Personal</option>
+                    <option value="Medico">Médico</option>
+                    <option value="Hospitalario">Hospitalario</option>
+                    <option value="Ginecoobstétrico">Ginecoobstétrico - Solo en mujeres</option>
                     <option value="Quirúrgico">Quirúrgico</option>
-                    <option value="Alérgico">Alérgico</option>
                     <option value="Farmacológico">Farmacológico</option>
+                    <option value="NoFarmacológico">No Farmacológico</option>
+                    <option value="AlergiaMedicamento">Alergia a Medicamento</option>
+                    <option value="OtrasAlergias">Otras Alergias</option>
+                    <option value="Tóxico">Tóxico</option>
+                    <option value="Transfusional">Transfusional</option>
+                    <option value="Familiar">Familiar</option>
                   </select>
                 </div>
                 
@@ -324,7 +529,7 @@ const GeneralData = () => {
                     onChange={(e) => handleMedicalHistoryChange(index, 'description', e.target.value)}
                     rows={3}
                     className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Descripción detallada del antecedente..."
+                    placeholder="Descripción detallada del antecedente y cuando inicio este..."
                   />
                 </div>
               </div>

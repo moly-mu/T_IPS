@@ -17,6 +17,15 @@ const TreatmentFollowUp = () => {
     }
   ]);
 
+  const [formData, setFormData] = useState({
+    motivoConsulta: '',
+    enfermedadActual: '', 
+    codigoCie10: '',
+    fechadiagnostico: '',
+    condicionesPaciente: '',
+    ultimoAnalisis: '',
+  });
+
   const [diagnoses, setDiagnoses] = useState([
     {
       iddiagnostico: '1',
@@ -190,6 +199,98 @@ const TreatmentFollowUp = () => {
           </div>
         </div>
       ))}
+
+            {/* 2. ANAMNESIS */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+        <h3 className="text-lg font-bold text-blue-800 mb-6 flex items-center">
+          <FileText className="h-5 w-5 mr-2" />
+          ANAMNESIS
+        </h3>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Motivo de Consulta:</label>
+            <textarea
+              value={formData.motivoConsulta}
+              onChange={(e) => handleInputChange('motivoConsulta', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+              rows="3"
+              placeholder="Describa el motivo principal por el cual el paciente solicita la consulta médica..."
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Enfermedad Actual:</label>
+            <textarea
+              value={formData.enfermedadActual}
+              onChange={(e) => handleInputChange('enfermedadActual', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+              rows="6"
+              placeholder="Describa detalladamente la evolución cronológica de la enfermedad actual:
+
+              • Inicio de síntomas (cuándo, cómo comenzaron)
+              • Características de los síntomas (intensidad, duración, frecuencia)
+              • Factores que mejoran o empeoran los síntomas
+              • Tratamientos previos y su efectividad
+              • Evolución desde el inicio hasta la fecha actual"
+            />
+          </div>
+        </div>
+      </div>
+
+            {/* 2. DIAGNÓSTICO DEFINITIVO */}
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+        <h3 className="text-lg font-bold text-red-800 mb-6 flex items-center">
+          <Stethoscope className="h-5 w-5 mr-2" />
+          DIAGNÓSTICO 
+        </h3>
+        
+        <div className="grid grid-cols-2 gap-6 mb-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Código CIE-10:</label>
+            <input
+              type="text"
+              value={formData.codigoCie10}
+              onChange={(e) => handleInputChange('codigoCie10', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all"
+              placeholder="Ej: J44.1, K59.0, N18.6"
+              pattern="[A-Z]\d{2}\.\d"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Fecha de Diagnóstico:</label>
+            <input
+              type="date"
+              value={formData.fechadiagnostico}
+              onChange={(e) => handleInputChange('fechadiagnostico', e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all"
+              placeholder="Descripción completa del diagnóstico"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Descripción de Síntomas:</label>
+          <textarea
+            value={formData.condicionesPaciente}
+            onChange={(e) => handleInputChange('condicionesPaciente', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all"
+            rows="4"
+            placeholder="Describe el estado actual del paciente, síntomas relevantes, evolución clínica, complicaciones, pronóstico y cualquier información médica importante para el seguimiento..."
+          />
+        </div>
+        
+        <div className="mt-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Último Análisis:</label>
+          <input
+            type="date"
+            value={formData.ultimoAnalisis}
+            onChange={(e) => handleInputChange('ultimoAnalisis', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-all"
+          />
+        </div>
+      </div>
     </div>
   );
 
