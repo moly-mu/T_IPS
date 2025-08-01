@@ -1060,13 +1060,13 @@ async function main() {
       prisma.prescription.create({
         data: {
           medicalHistoryId: history.id,
-          medicine: medicineData[index].medicine,
-          dosage: medicineData[index].dosage,
-          frequency: medicineData[index].frequency,
-          duration: medicineData[index].duration,
+          medicine: medicineData[index % medicineData.length].medicine,
+          dosage: medicineData[index % medicineData.length].dosage,
+          frequency: medicineData[index % medicineData.length].frequency,
+          duration: medicineData[index % medicineData.length].duration,
           indications: "Tomar con alimentos",
           issuedAt: new Date(2023, 4, 15 + index, 10 + index, 45, 0),
-          sentBy: `Dr. ${specialistUsers[index].firstname} ${specialistUsers[index].lastname}`,
+          sentBy: `Dr. ${specialistUsers[index % specialistUsers.length].firstname} ${specialistUsers[index % specialistUsers.length].lastname}`,
         },
       })
     )
@@ -1270,7 +1270,8 @@ async function main() {
     )
   );
 
-  // 18. Create Specialty Reviews (10 records)
+  // 18. Create Specialty Reviews (Comentado - modelo no existe en schema)
+  
   const specialtyComments = [
     "Muy buen servicio de cardiología",
     "Excelente atención neurológica",
@@ -1295,18 +1296,18 @@ async function main() {
           patient_User_credential_users_idcred:
             patient.User_credential_users_idcredential_users,
           patient_User_rol_idrol: patient.User_rol_idrol,
-          especialidad_id: specialties[index].id,
+          especialidad_id: specialties[index % specialties.length].id,
           fecha_firma: new Date(2023, 4, 10 + index, 0, 0, 0),
-          firmado_por: `${patientUsers[index].firstname} ${patientUsers[index].lastname}`,
+          firmado_por: `${patientUsers[index % patientUsers.length].firstname} ${patientUsers[index % patientUsers.length].lastname}`,
           relacion_con_paciente:
             index % 3 === 0
               ? "Titular"
               : index % 3 === 1
               ? "Representante legal"
               : "Familiar",
-          documento_identidad: credentials[index].document.toString(),
+          documento_identidad: credentials[index % credentials.length].document.toString(),
           consentimiento_texto: `Consiento el tratamiento médico para ${specialties[
-            index
+            index % specialties.length
           ].name.toLowerCase()}...`,
           firmado: true,
         },
@@ -1357,22 +1358,22 @@ async function main() {
     })
   );
 
-  // 21. Create Appointment Receipts (10 records)
+  // 21. Create Appointment Receipts (for all appointments)
   const appointmentReceipts = await Promise.all(
     appointments.map((appointment, index) =>
       prisma.appointmentReceipt.create({
         data: {
           appointmentId: appointment.id,
-          patient_idPaciente: patients[index].id,
-          patient_pac_data_idpac_data: patients[index].pac_data_idpac_data,
-          patient_User_idUser: patients[index].User_idUser,
+          patient_idPaciente: patients[index % patients.length].id,
+          patient_pac_data_idpac_data: patients[index % patients.length].pac_data_idpac_data,
+          patient_User_idUser: patients[index % patients.length].User_idUser,
           patient_User_credential_users_idcred:
-            patients[index].User_credential_users_idcredential_users,
-          patient_User_rol_idrol: patients[index].User_rol_idrol,
+            patients[index % patients.length].User_credential_users_idcredential_users,
+          patient_User_rol_idrol: patients[index % patients.length].User_rol_idrol,
           issuedAt: new Date(2023, 4, 15 + index, 10, 45, 0),
           receiptUrl: `https://storage.example.com/receipts/${123 + index}.pdf`,
           notes: `Consulta de ${specialties[
-            index
+            index % specialties.length
           ].name.toLowerCase()} completada`,
         },
       })
@@ -1411,25 +1412,25 @@ async function main() {
       prisma.medicalOrder.create({
         data: {
           appointmentId: appointment.id,
-          specialist_idEspecialista: specialists[index].id,
+          specialist_idEspecialista: specialists[index % specialists.length].id,
           specialist_spec_data_idspec_data:
-            specialists[index].spec_data_idspec_data,
-          specialist_User_idUser: specialists[index].User_idUser,
+            specialists[index % specialists.length].spec_data_idspec_data,
+          specialist_User_idUser: specialists[index % specialists.length].User_idUser,
           specialist_User_credential_users_idcred:
-            specialists[index].User_credential_users_idcredential_users,
-          specialist_User_rol_idrol: specialists[index].User_rol_idrol,
-          patient_idPaciente: patients[index].id,
-          patient_pac_data_idpac_data: patients[index].pac_data_idpac_data,
-          patient_User_idUser: patients[index].User_idUser,
+            specialists[index % specialists.length].User_credential_users_idcredential_users,
+          specialist_User_rol_idrol: specialists[index % specialists.length].User_rol_idrol,
+          patient_idPaciente: patients[index % patients.length].id,
+          patient_pac_data_idpac_data: patients[index % patients.length].pac_data_idpac_data,
+          patient_User_idUser: patients[index % patients.length].User_idUser,
           patient_User_credential_users_idcred:
-            patients[index].User_credential_users_idcredential_users,
-          patient_User_rol_idrol: patients[index].User_rol_idrol,
+            patients[index % patients.length].User_credential_users_idcredential_users,
+          patient_User_rol_idrol: patients[index % patients.length].User_rol_idrol,
           issuedAt: new Date(2023, 4, 15 + index, 10, 45, 0),
-          description: orderDescriptions[index],
-          instructions: orderInstructions[index],
+          description: orderDescriptions[index % orderDescriptions.length],
+          instructions: orderInstructions[index % orderInstructions.length],
           status: ["Pendiente", "Activo", "Inactivo", "Pendiente"][
             index % 4
-          ] as "Pendiente" | "Activo" | "Inactivo", // Alternating status for demonstration
+          ] as "Pendiente" | "Activo" | "Inactivo",
         },
       })
     )
@@ -1455,11 +1456,11 @@ async function main() {
       prisma.diagnosticFile.create({
         data: {
           medicalHistoryId: history.id,
-          fileName: fileNames[index],
+          fileName: fileNames[index % fileNames.length],
           fileType: fileTypes[index % fileTypes.length],
           file: Buffer.from(`resultado_${index + 1}`),
           studyDate: new Date(2023, 4, 16 + index, 0, 0, 0),
-          specialty: specialties[index].name,
+          specialty: specialties[index % specialties.length].name,
           status: ["Completado", "En proceso", "Pendiente"][index % 3],
         },
       })
