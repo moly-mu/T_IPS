@@ -4,16 +4,19 @@ services:
   fastapi:
     build:
       context: .
-    container_name: fastapi
+    container_name: fastapi-analytics
     ports:
       - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - ENVIRONMENT=development
     depends_on:
       - redis
     networks:
       - backend
     volumes:
-      - ./:/app
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      - ./:/app  # Solo para desarrollo, quitar en producción
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload  # --reload solo en desarrollo
 
   redis:
     image: redis:7-alpine

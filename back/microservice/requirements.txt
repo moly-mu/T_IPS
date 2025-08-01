@@ -1,5 +1,6 @@
-fastapi
-uvicorn
-requests
-polars
-redis
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+requests==2.31.0
+polars==0.20.2
+redis==5.0.1
+python-multipart==0.0.6
