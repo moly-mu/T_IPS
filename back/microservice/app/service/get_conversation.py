@@ -1,6 +1,6 @@
 import requests
 import json
-from ..cache.redis import redis_client
+from cache.redis import redis_client
 from datetime import datetime
 import logging
 
