@@ -1,4 +1,4 @@
-// //src/admin/specialties/repositories/specialty.repository.ts
+//src/admin/specialties/repositories/specialty.repository.ts
 
 // import { PrismaClient } from "@prisma/client";
 // import { SpecialtyEntity } from "../../domain/entities/";
