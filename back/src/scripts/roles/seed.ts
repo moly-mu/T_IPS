@@ -1271,7 +1271,7 @@ async function main() {
   );
 
   // 18. Create Specialty Reviews (Comentado - modelo no existe en schema)
-  /*
+  
   const specialtyComments = [
     "Muy buen servicio de cardiología",
     "Excelente atención neurológica",
