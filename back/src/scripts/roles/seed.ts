@@ -829,8 +829,6 @@ async function main() {
           degrees: Buffer.from(`diplomas_${index + 1}`),
           working_experience: info.years,
           consultations: Math.floor(Math.random() * 500) + 50,
-          workStartSchedule: new Date('2025-01-01T08:00:00Z'),
-          workEndSchedule: new Date('2025-01-01T16:00:00Z'),
         },
       })
     )

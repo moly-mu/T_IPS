@@ -6,6 +6,7 @@ import {updateUserProfile } from '../controllers/Perfil/put.UserProfileEdit.cont
 import { getMedicalConsultations } from "../controllers/HistorialDeConsultas/getMedicalHistory.controller";
 import {UserScheduleAppointment} from "../controllers/Citas/get.UserScheduleAppointment.controller";
 import {UserScheduleAppointmentCreate} from "../controllers/Citas/Post.UserScheduleAppointment.controller";
+import { getUserAppointments } from "../controllers/Citas/get.UserAppointments.controller";
 import { getUserReviews } from "../controllers/Encuentas/getUserReviews.controller";
 import express from "express";
 
@@ -25,6 +26,8 @@ router.get("/User/Medicalhistory", validateToken,getMedicalConsultations);
 router.get("/User/scheduleAppointment", validateToken, UserScheduleAppointment);
 //* Ruta para crear una cita
 router.post("/User/scheduleAppointment", validateToken, UserScheduleAppointmentCreate);
+//* Ruta para obtener las citas del usuario
+router.get("/User/appointments", validateToken, getUserAppointments);
 // *Ruta para obtener las reseñas del usuario
 router.get("/User/Reviews", validateToken, getUserReviews);
 export default router;

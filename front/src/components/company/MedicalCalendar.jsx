@@ -309,6 +309,7 @@ const MedicalCalendar = () => {
           {isModalOpen && selectedDoctor && (
             <ConfirmationAppointment
               selectedDoctor={selectedDoctor}
+              selectedTime={selectedTime}
               onClose={() => setIsModalOpen(false)}
             />
           )}
@@ -394,6 +395,7 @@ const MedicalCalendar = () => {
             {isModalOpen && (
               <ConfirmationAppointment
               selectedTime={selectedTime}
+              selectedDoctor={selectedDoctor}
               onClose={() => setIsModalOpen(false)} />
             )}
           </div>

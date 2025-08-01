@@ -2,21 +2,99 @@ import { useRef, useState } from 'react';
 import html2pdf from 'html2pdf.js';
 import { CheckCircle, Download } from 'lucide-react';
 import PropTypes from 'prop-types';
+import { useAppointmentService } from '../../../services/appointmentService';
+import { useAuth } from '../../../context/AuthContext';
 
-export default function ConfirmationAppointment({ onClose = () => {}, selectedTime = "14:30" }) {
+export default function ConfirmationAppointment({ onClose = () => {}, selectedTime = "14:30", selectedDoctor = null }) {
   const [hasTechnicalMeans, setHasTechnicalMeans] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptData, setAcceptData] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState(null);
 
+  const { createAppointment } = useAppointmentService();
+  const { token, user } = useAuth();
   const pdfRef = useRef();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!hasTechnicalMeans || !acceptTerms || !acceptData) {
       alert('Debes aceptar todos los requisitos antes de confirmar.');
       return;
     }
-    alert('Teleconsulta confirmada exitosamente');
-    onClose();
+
+    if (!selectedDoctor) {
+      alert('No se ha seleccionado un doctor.');
+      return;
+    }
+
+    if (!token || !user) {
+      alert('Debes iniciar sesión para agendar una cita.');
+      return;
+    }
+
+    setIsCreating(true);
+    setError(null);
+
+    try {
+      // Crear la fecha de la cita (mañana por defecto)
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const fecha = tomorrow.toISOString().split('T')[0]; // YYYY-MM-DD
+
+      // Convertir la hora del formato "2:30 PM" a "14:30"
+      const hora = convertTimeFormat(selectedTime);
+
+      const appointmentData = {
+        specialistId: selectedDoctor.id,
+        fecha: fecha,
+        hora: hora,
+        specialtyId: null, // El backend usará la especialidad del doctor
+        duration: 30
+      };
+
+      const response = await createAppointment(appointmentData);
+      
+      if (response.appointment) {
+        alert(`¡Teleconsulta confirmada exitosamente! 
+        
+Detalles de tu cita:
+• Doctor: ${response.appointment.especialista}
+• Especialidad: ${response.appointment.especialidad}
+• Fecha: ${new Date(response.appointment.fecha).toLocaleDateString('es-ES')}
+• Hora: ${response.appointment.hora}
+• Estado: ${response.appointment.estado}
+
+Tu cita aparecerá en "Mis Citas".`);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error al crear la cita:', error);
+      setError('Error al confirmar la teleconsulta. Por favor, intenta nuevamente.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  // Función para convertir formato de hora de "2:30 PM" a "14:30"
+  const convertTimeFormat = (timeString) => {
+    if (!timeString) return "14:30";
+    
+    try {
+      const [time, period] = timeString.split(' ');
+      let [hours, minutes] = time.split(':');
+      hours = parseInt(hours);
+      
+      if (period === 'PM' && hours !== 12) {
+        hours += 12;
+      } else if (period === 'AM' && hours === 12) {
+        hours = 0;
+      }
+      
+      return `${hours.toString().padStart(2, '0')}:${minutes || '00'}`;
+    } catch (error) {
+      console.error('Error convirtiendo la hora:', error);
+      return "14:30";
+    }
   };
 
   const handleDownload = () => {
@@ -107,17 +185,35 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
           </label>
         </div>
 
+        {/* Mostrar error si existe */}
+        {error && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-700 text-sm">{error}</p>
+          </div>
+        )}
+
         {/* Botones */}
         <div className="flex flex-col sm:flex-row gap-3 mt-6">
           <button
             onClick={handleSubmit}
-            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-gray-900 text-white hover:bg-gray-800 font-medium text-sm"
+            disabled={isCreating}
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-gray-900 text-white hover:bg-gray-800 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <CheckCircle className="w-5 h-5" /> Confirmar teleconsulta
+            {isCreating ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Creando cita...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-5 h-5" /> Confirmar teleconsulta
+              </>
+            )}
           </button>
           <button
             onClick={handleDownload}
-            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm"
+            disabled={isCreating}
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-5 h-5" /> Descargar PDF
           </button>
@@ -130,4 +226,5 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
 ConfirmationAppointment.propTypes = {
   onClose: PropTypes.func,
   selectedTime: PropTypes.string,
+  selectedDoctor: PropTypes.object,
 };
