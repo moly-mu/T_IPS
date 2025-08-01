@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routes.Analytics import router as analytics_router
+from routes.Analytics import router as analytics_router
 from fastapi.middleware.cors import CORSMiddleware
 
 

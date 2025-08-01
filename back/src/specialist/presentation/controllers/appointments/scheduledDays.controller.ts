@@ -56,14 +56,17 @@ export const getScheduledAppointments = async (req: Request, res: Response) => {
     // Primero obtenemos el registro del especialista
     const specialist = await prisma.specialist.findFirst({
       where: {
-        User_idUser: numericUserId,
+        User: {
+          id: numericUserId,
+        }
       },
       include: {
         User: {
           include: {
             credential_users: true,
           }
-        }
+        },
+        spec_data: true,
       }
     });
 
@@ -170,7 +173,9 @@ export const confirmAppointment = async (req: Request, res: Response) => {
     // Verificar que la cita pertenece al especialista
     const specialist = await prisma.specialist.findFirst({
       where: {
-        User_idUser: numericUserId,
+        User: {
+          id: numericUserId,
+        }
       },
     });
 
