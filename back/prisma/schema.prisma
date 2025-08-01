@@ -50,24 +50,23 @@ model User {
   second_firstname                    String?    @db.VarChar(45)
   lastname                            String     @db.VarChar(45)
   second_lastname                     String?    @db.VarChar(45)
-  age                                 Int
-  gender                              String     @db.VarChar(45)
-  sex                                 String     @db.VarChar(10)
-  language                            String     @db.VarChar(45)
-  document_type                       String     @db.VarChar(45)
+  birthdate                           DateTime   
+  gender                              Gender
+  sex                                 Sex
+  language                            Language
+  document_type                       DocumentType
   phone                               String     @default("0000000000") @db.VarChar(20)
   credential_users_idcredential_users Int
   rol_idrol                           Int        @default(1)
   status                              UserStatus @default(Pendiente)
   joinDate                            DateTime   @default(now()) @db.Timestamp(0)
-
+  
   credential_users    CredentialUser      @relation(fields: [credential_users_idcredential_users], references: [id])
   rol                 Rol                 @relation(fields: [rol_idrol], references: [id])
   Paciente            Patient[]
   Especialista        Specialist[]
   userReviewsGiven    UserReview[]        @relation("UserReviewReviewer")
   userReviewsReceived UserReview[]        @relation("UserReviewReviewed")
-  specialtyReviews    SpecialtyReview[]
   specialistRequests  SpecialistRequest[] @relation("UserToSpecialistRequests")
 
   @@unique([id, credential_users_idcredential_users, rol_idrol])
@@ -78,11 +77,13 @@ model PacData {
   id                Int       @id @default(autoincrement()) @map("idpac_data")
   medical_history   Bytes
   Direction         String    @db.VarChar(100)
-  Blod_type         String    @db.VarChar(10)
+  bloodType         BloodType
   allergies         String?   @db.Text
   emergency_contact String?   @db.VarChar(100)
   Patient           Patient[]
-
+  eps_type          Eps @default(Ninguna)
+  profession        String? @db.VarChar(45)
+  ethnicgroup       String? @db.VarChar(45)
   @@map("pac_data")
 }
 
@@ -117,7 +118,8 @@ model SpecData {
   working_experience       String   @db.VarChar(45)
   consultations            Int      @default(0)
   joinDate                 DateTime @default(now()) @db.Timestamp(6)
-
+  workStartSchedule        DateTime @db.Timestamp(0) @default (now())
+  workEndSchedule          DateTime @db.Timestamp(0) @default (now())
   Specialist Specialist[]
 
   @@map("spec_data")
@@ -153,9 +155,8 @@ model Specialty {
   duration               Int                      @default(30) // duración promedio en minutos
   joinDate               DateTime                 @default(now()) @db.Timestamp(0)
   SpecialistHasSpecialty SpecialistHasSpecialty[]
-  SpecialtyReview        SpecialtyReview[]
   Appointment            Appointment[]
-  Consents               Consent[]
+  Consents               Consent[]        
 
   @@map("specialty")
 }
@@ -236,22 +237,7 @@ model UserReview {
   @@map("user_review")
 }
 
-model SpecialtyReview {
-  id           Int      @id @default(autoincrement()) @map("idspecialty_review")
-  user_id      Int
-  user_cred_id Int
-  user_rol_id  Int
-  specialty_id Int
-  rating       Float
-  comment      String?  @db.Text
-  createdAt    DateTime @default(now()) @db.Timestamp(6)
 
-  user      User      @relation(fields: [user_id, user_cred_id, user_rol_id], references: [id, credential_users_idcredential_users, rol_idrol])
-  specialty Specialty @relation(fields: [specialty_id], references: [id])
-
-  @@unique([user_id, user_cred_id, user_rol_id, specialty_id])
-  @@map("specialty_review")
-}
 
 model SpecialistRequest {
   id             Int      @id @default(autoincrement())
@@ -262,7 +248,7 @@ model SpecialistRequest {
   price          Float
   graduationYear Int
   workExperience String?
-  languages      String?
+  language       Language
   education      String?
   skills         String?
   references     String? // JSON string
@@ -289,7 +275,6 @@ model MedicalHistory {
   patient_User_credential_users_idcred Int
   patient_User_rol_idrol               Int
   email                                String @db.VarChar(100)
-  eps_type                             String @db.VarChar(45)
   emergency_contact                    String @db.VarChar(100)
   contact_phone                        String @db.VarChar(20)
 
@@ -462,7 +447,7 @@ model MedicalOrder {
   issuedAt                                DateTime @default(now()) @db.Timestamp
   description                             String   @db.Text
   instructions                            String?  @db.Text
-  status                                  String   @default("pendiente") @db.VarChar(45)
+  status                                  UserStatus  @default(Pendiente) 
 
   Appointment Appointment @relation(fields: [appointmentId], references: [id])
   Specialist  Specialist  @relation(fields: [specialist_idEspecialista, specialist_spec_data_idspec_data, specialist_User_idUser, specialist_User_credential_users_idcred, specialist_User_rol_idrol], references: [id, spec_data_idspec_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
@@ -480,4 +465,53 @@ enum UserStatus {
   Activo
   Inactivo
   Pendiente
+}
+enum Sex{ 
+  Masculino
+  Femenino
+}
+enum BloodType {
+  A_POS  @map("A+")
+  A_NEG  @map("A-")
+  B_POS  @map("B+")
+  B_NEG  @map("B-")
+  AB_POS @map("AB+")
+  AB_NEG @map("AB-")
+  O_POS  @map("O+")
+  O_NEG  @map("O-")
+}
+enum Gender {
+  Masculino
+  Femenino
+  Otro
+}
+
+enum Language {
+  Espanol   @map("Español")
+  Ingles    @map("Inglés")
+  Frances   @map("Francés")
+  Aleman    @map("Alemán")
+  Portugues @map("Portugués")
+}
+
+enum DocumentType {
+  CC   // Colombianos mayores de edad
+  TI   // Colombianos menores de edad
+  CE   // Extranjeros residentes legalmente
+  PPT  // Migrantes venezolanos
+  RC   // Para menores de 7 años
+  PAS  // Extranjeros no residentes o uso internacional
+}
+
+enum Eps {
+  Sura
+  Sanitas
+  Compensar
+  Famisanar
+  SaludTotal
+  NuevaEps
+  Coosalud
+  MutualSer
+  Otra
+  Ninguna
 }

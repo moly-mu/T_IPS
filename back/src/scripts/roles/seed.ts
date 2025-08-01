@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Gender,Language,DocumentType,Eps,UserStatus,SpecialtyStatus,Sex,BloodType, PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
@@ -32,6 +32,18 @@ async function main() {
     { username: "admin_compras", password: "compras123" },
   ];
 
+  
+
+  const bloodTypeMap: Record<string, BloodType> = {
+  'A+': BloodType.A_POS,
+  'A-': BloodType.A_NEG,
+  'B+': BloodType.B_POS,
+  'B-': BloodType.B_NEG,
+  'AB+': BloodType.AB_POS,
+  'AB-': BloodType.AB_NEG,
+  'O+': BloodType.O_POS,
+  'O-': BloodType.O_NEG,
+};
   const admins = await Promise.all(
     adminData.map(async (adminInfo) => {
       const hashedPassword = await hash(adminInfo.password, 12);
@@ -112,8 +124,15 @@ async function main() {
 
   const specialties = await Promise.all(
     specialtyData.map((spec) =>
-      prisma.specialty.create({
-        data: {
+      prisma.specialty.upsert({
+        where: { name: spec.name },
+        update: {
+          status: "Activo",
+          price: spec.price,
+          service: spec.service,
+          duration: spec.duration,
+        },
+        create: {
           name: spec.name,
           status: "Activo",
           price: spec.price,
@@ -124,16 +143,16 @@ async function main() {
     )
   );
 
-  // 4. Create Credential Users (10 additional for patients and 10 for specialists)
+  // 4. Create Credential Users (15 for patients and 13 for specialists = 28 total)
   const credentialData = [
-    // Patients
+    // Patients (15 credentials)
     {
       document: 123456789,
       email: "paciente@example.com",
       password: "patient123",
     },
     {
-      document: 234567890,
+      document: 234567890, 
       email: "maria.rodriguez@email.com",
       password: "maria123",
     },
@@ -173,7 +192,32 @@ async function main() {
       email: "carmen.ruiz@email.com",
       password: "carmen123",
     },
-    // Specialists
+    {
+      document: 113456789,
+      email: "alberto.vega@email.com",
+      password: "alberto123",
+    },
+    {
+      document: 114567890,
+      email: "isabel.moreno@email.com",
+      password: "isabel123",
+    },
+    {
+      document: 115678901,
+      email: "raul.castro@email.com",
+      password: "raul123",
+    },
+    {
+      document: 116789012,
+      email: "patricia.delgado@email.com",
+      password: "patricia123",
+    },
+    {
+      document: 117890123,
+      email: "fernando.ortiz@email.com",
+      password: "fernando123",
+    },
+    // Specialists (13 credentials)
     {
       document: 987654321,
       email: "especialista@example.com",
@@ -220,13 +264,33 @@ async function main() {
       email: "dr.reyes@hospital.com",
       password: "reyes123",
     },
+    {
+      document: 187654321,
+      email: "dra.paredes@clinica.com",
+      password: "paredes123",
+    },
+    {
+      document: 176543210,
+      email: "dr.navarro@medico.com",
+      password: "navarro123",
+    },
+    {
+      document: 165432109,
+      email: "dra.rojas@salud.com",
+      password: "rojas123",
+    },
   ];
 
   const credentials = await Promise.all(
     credentialData.map(async (cred) => {
       const hashedPassword = await hash(cred.password, 12);
-      return prisma.credentialUser.create({
-        data: {
+      return prisma.credentialUser.upsert({
+        where: { document: cred.document },
+        update: {
+          email: cred.email,
+          password: hashedPassword,
+        },
+        create: {
           document: cred.document,
           email: cred.email,
           password: hashedPassword,
@@ -235,12 +299,11 @@ async function main() {
     })
   );
 
-  // 5. Create Users (10 patients and 10 specialists)
+  // 5. Create Users (20 patients and 15 specialists with recent join dates)
   const patientUserData = [
     {
       firstname: "Juan",
       lastname: "Pérez",
-      age: 35,
       gender: "Masculino",
       phone: "3001234567",
     },
@@ -306,6 +369,42 @@ async function main() {
       age: 47,
       gender: "Femenino",
       phone: "3090123456",
+    },
+    // Additional patients for more dashboard data
+    {
+      firstname: "Alberto",
+      lastname: "Vega",
+      age: 35,
+      gender: "Masculino",
+      phone: "3091234567",
+    },
+    {
+      firstname: "Isabel",
+      lastname: "Moreno",
+      age: 29,
+      gender: "Femenino",
+      phone: "3092345678",
+    },
+    {
+      firstname: "Raúl",
+      lastname: "Castro",
+      age: 43,
+      gender: "Masculino",
+      phone: "3093456789",
+    },
+    {
+      firstname: "Patricia",
+      lastname: "Delgado",
+      age: 38,
+      gender: "Femenino",
+      phone: "3094567890",
+    },
+    {
+      firstname: "Fernando",
+      lastname: "Ortiz",
+      age: 55,
+      gender: "Masculino",
+      phone: "3095678901",
     },
   ];
 
@@ -380,121 +479,241 @@ async function main() {
       gender: "Masculino",
       phone: "3199876552",
     },
+    // Additional specialists
+    {
+      firstname: "Daniela",
+      lastname: "Paredes",
+      age: 34,
+      gender: "Femenino",
+      phone: "3200123456",
+    },
+    {
+      firstname: "Sergio",
+      lastname: "Navarro",
+      age: 40,
+      gender: "Masculino",
+      phone: "3201234567",
+    },
+    {
+      firstname: "Valentina",
+      lastname: "Rojas",
+      age: 36,
+      gender: "Femenino",
+      phone: "3202345678",
+    },
   ];
 
+  // Create patients with recent join dates
   const patientUsers = await Promise.all(
-    patientUserData.map((userData, index) =>
-      prisma.user.create({
+    patientUserData.map((userData, index) => {
+      const today = new Date();
+      const daysAgo = Math.floor(Math.random() * 180); // Joined within last 6 months
+      const joinDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 10, 0, 0);
+      
+      return prisma.user.create({
         data: {
           firstname: userData.firstname,
           lastname: userData.lastname,
-          age: userData.age,
-          gender: userData.gender,
-          sex: userData.gender === "Masculino" ? "Hombre" : "Mujer",
-          language: "Español",
-          document_type: "Cédula",
+          second_firstname: userData.firstname,
+          second_lastname: userData.lastname,
+          gender: userData.gender === "Masculino" ? Gender.Masculino : Gender.Femenino,
+          sex: userData.gender === "Masculino" ? Sex.Masculino : Sex.Femenino,
+          language: Language.Espanol,
+          document_type: DocumentType.CC,
           phone: userData.phone,
           credential_users_idcredential_users: credentials[index].id,
           rol_idrol: roles[1].id, // Paciente role
-          status: "Activo",
+          status: UserStatus.Activo,
+          birthdate: new Date("1990-01-01"),
+          joinDate: joinDate,
         },
-      })
-    )
+      });
+    })
   );
 
+  // Create specialists with recent join dates
   const specialistUsers = await Promise.all(
-    specialistUserData.map((userData, index) =>
-      prisma.user.create({
+    specialistUserData.map((userData, index) => {
+      const today = new Date();
+      const daysAgo = Math.floor(Math.random() * 365); // Joined within last year
+      const joinDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 10, 0, 0);
+      
+      return prisma.user.create({
         data: {
           firstname: userData.firstname,
           lastname: userData.lastname,
-          age: userData.age,
-          gender: userData.gender,
-          sex: userData.gender === "Masculino" ? "Hombre" : "Mujer",
-          language: "Español",
-          document_type: "Cédula",
+          second_firstname: userData.firstname,
+          second_lastname: userData.lastname,
+          gender: userData.gender === "Masculino" ? Gender.Masculino : Gender.Femenino,
+          sex: userData.gender === "Masculino" ? Sex.Masculino : Sex.Femenino,
+          language: Language.Espanol,
+          document_type: DocumentType.CC,
           phone: userData.phone,
-          credential_users_idcredential_users: credentials[index + 10].id,
+          credential_users_idcredential_users: credentials[index + patientUserData.length].id,
           rol_idrol: roles[0].id, // Especialista role
-          status: "Activo",
+          status: UserStatus.Activo,
+          birthdate: new Date("1985-01-01"),
+          joinDate: joinDate,
         },
-      })
-    )
+      });
+    })
   );
 
-  // 6. Create PacData (10 records)
-  const pacDataInfo = [
-    {
-      history: "Historia médica de ejemplo",
-      direction: "Calle 123 #45-67",
-      blood: "O+",
-      allergies: "Penicilina, Mariscos",
-      emergency: "Laura Pérez - 3201234567",
-    },
-    {
-      history: "Hipertensión controlada",
-      direction: "Carrera 45 #23-89",
-      blood: "A+",
-      allergies: "Ninguna",
-      emergency: "José Rodríguez - 3201234568",
-    },
-    {
-      history: "Diabetes tipo 2",
-      direction: "Avenida 68 #12-34",
-      blood: "B+",
-      allergies: "Aspirina",
-      emergency: "Carmen Martínez - 3201234569",
-    },
-    {
-      history: "Asma bronquial",
-      direction: "Calle 78 #56-12",
-      blood: "AB+",
-      allergies: "Polen, Ácaros",
-      emergency: "Luis López - 3201234570",
-    },
-    {
-      history: "Artritis reumatoide",
-      direction: "Carrera 12 #89-45",
-      blood: "O-",
-      allergies: "Antiinflamatorios",
-      emergency: "Rosa González - 3201234571",
-    },
-    {
-      history: "Migraña crónica",
-      direction: "Avenida 23 #67-90",
-      blood: "A-",
-      allergies: "Chocolate, Vino",
-      emergency: "Mario Fernández - 3201234572",
-    },
-    {
-      history: "Gastritis crónica",
-      direction: "Calle 34 #12-78",
-      blood: "B-",
-      allergies: "Picante",
-      emergency: "Ana Sánchez - 3201234573",
-    },
-    {
-      history: "Hipotiroidismo",
-      direction: "Carrera 56 #34-21",
-      blood: "AB-",
-      allergies: "Yodo",
-      emergency: "Carlos Ramírez - 3201234574",
-    },
-    {
-      history: "Osteoporosis",
-      direction: "Avenida 78 #45-67",
-      blood: "O+",
-      allergies: "Lactosa",
-      emergency: "Marta Torres - 3201234575",
-    },
-    {
-      history: "Anemia ferropénica",
-      direction: "Calle 90 #23-45",
-      blood: "A+",
-      allergies: "Mariscos",
-      emergency: "Pedro Ruiz - 3201234576",
-    },
-  ];
+  // 6. Create PacData (15 records to match patients)
+ const pacDataInfo = [
+  {
+    history: "Historia médica de ejemplo",
+    direction: "Calle 123 #45-67",
+    blood: "O+",
+    allergies: "Penicilina, Mariscos",
+    emergency: "Laura Pérez - 3201234567",
+    profession: "Ingeniero",
+    ethnicgroup: "Mestizo",
+    eps: "Sura",
+  },
+  {
+    history: "Hipertensión controlada",
+    direction: "Carrera 45 #23-89",
+    blood: "A+",
+    allergies: "Ninguna",
+    emergency: "José Rodríguez - 3201234568",
+    profession: "Contador",
+    ethnicgroup: "Afrocolombiano",
+    eps: "Sanitas",
+  },
+  {
+    history: "Diabetes tipo 2",
+    direction: "Avenida 68 #12-34",
+    blood: "B+",
+    allergies: "Aspirina",
+    emergency: "Carmen Martínez - 3201234569",
+    profession: "Profesor",
+    ethnicgroup: "Indígena",
+    eps: "Compensar",
+  },
+  {
+    history: "Asma bronquial",
+    direction: "Calle 78 #56-12",
+    blood: "AB+",
+    allergies: "Polen, Ácaros",
+    emergency: "Luis López - 3201234570",
+    profession: "Chef",
+    ethnicgroup: "Mestizo",
+    eps: "Famisanar",
+  },
+  {
+    history: "Artritis reumatoide",
+    direction: "Carrera 12 #89-45",
+    blood: "O-",
+    allergies: "Antiinflamatorios",
+    emergency: "Rosa González - 3201234571",
+    profession: "Médico",
+    ethnicgroup: "Palenquero",
+    eps: "SaludTotal",
+  },
+  {
+    history: "Migraña crónica",
+    direction: "Avenida 23 #67-90",
+    blood: "A-",
+    allergies: "Chocolate, Vino",
+    emergency: "Mario Fernández - 3201234572",
+    profession: "Diseñador",
+    ethnicgroup: "Raizal",
+    eps: "NuevaEps",
+  },
+  {
+    history: "Gastritis crónica",
+    direction: "Calle 34 #12-78",
+    blood: "B-",
+    allergies: "Picante",
+    emergency: "Ana Sánchez - 3201234573",
+    profession: "Abogado",
+    ethnicgroup: "Gitano",
+    eps: "Coosalud",
+  },
+  {
+    history: "Hipotiroidismo",
+    direction: "Carrera 56 #34-21",
+    blood: "AB-",
+    allergies: "Yodo",
+    emergency: "Carlos Ramírez - 3201234574",
+    profession: "Psicólogo",
+    ethnicgroup: "Negro",
+    eps: "MutualSer",
+  },
+  {
+    history: "Osteoporosis",
+    direction: "Avenida 78 #45-67",
+    blood: "O+",
+    allergies: "Lactosa",
+    emergency: "Marta Torres - 3201234575",
+    profession: "Técnico en sistemas",
+    ethnicgroup: "Otro",
+    eps: "Otra",
+  },
+  {
+    history: "Anemia ferropénica",
+    direction: "Calle 90 #23-45",
+    blood: "A+",
+    allergies: "Mariscos",
+    emergency: "Pedro Ruiz - 3201234576",
+    profession: "Estudiante",
+    ethnicgroup: "Mestizo",
+    eps: "Ninguna",
+  },
+  // Additional 5 records for new patients
+  {
+    history: "Hipertensión arterial",
+    direction: "Carrera 15 #30-50",
+    blood: "B+",
+    allergies: "Sulfa",
+    emergency: "Elena Vega - 3201234577",
+    profession: "Arquitecto",
+    ethnicgroup: "Mestizo",
+    eps: "Sura",
+  },
+  {
+    history: "Rinitis alérgica",
+    direction: "Calle 50 #20-30",
+    blood: "O-",
+    allergies: "Polen, Polvo",
+    emergency: "Roberto Moreno - 3201234578",
+    profession: "Enfermero",
+    ethnicgroup: "Afrocolombiano",
+    eps: "Sanitas",
+  },
+  {
+    history: "Lumbalgia crónica",
+    direction: "Avenida 40 #15-25",
+    blood: "A-",
+    allergies: "Ninguna",
+    emergency: "Gloria Castro - 3201234579",
+    profession: "Fisioterapeuta",
+    ethnicgroup: "Indígena",
+    eps: "Compensar",
+  },
+  {
+    history: "Síndrome de colon irritable",
+    direction: "Calle 60 #35-40",
+    blood: "AB+",
+    allergies: "Lactosa, Gluten",
+    emergency: "Mario Delgado - 3201234580",
+    profession: "Nutricionista",
+    ethnicgroup: "Mestizo",
+    eps: "Famisanar",
+  },
+  {
+    history: "Depresión leve",
+    direction: "Carrera 25 #40-55",
+    blood: "O+",
+    allergies: "Ninguna",
+    emergency: "Sandra Ortiz - 3201234581",
+    profession: "Trabajador Social",
+    ethnicgroup: "Palenquero",
+    eps: "SaludTotal",
+  },
+];
+
 
   const pacDataRecords = await Promise.all(
     pacDataInfo.map((info) =>
@@ -502,9 +721,12 @@ async function main() {
         data: {
           medical_history: Buffer.from(info.history),
           Direction: info.direction,
-          Blod_type: info.blood,
+          bloodType: bloodTypeMap[info.blood],
           allergies: info.allergies,
           emergency_contact: info.emergency,
+          eps_type: info.eps as Eps,
+          profession: info.profession,
+          ethnicgroup: info.ethnicgroup,
         },
       })
     )
@@ -525,57 +747,73 @@ async function main() {
     )
   );
 
-  // 8. Create SpecData (10 records)
+  // 8. Create SpecData (13 records to match specialists)
   const specDataInfo = [
     {
       bio: "Cardióloga con 15 años de experiencia",
-      exp: "Hospital Central, Clínica del Corazón",
+      exp: "Hospital Central",
       years: "15 años",
     },
     {
       bio: "Neurólogo especializado en epilepsia",
-      exp: "Hospital Universitario, Centro Neurológico",
+      exp: "Hospital Universitario",
       years: "12 años",
     },
     {
       bio: "Dermatóloga experta en cáncer de piel",
-      exp: "Instituto de Dermatología, Clínica Estética",
+      exp: "Instituto de Dermatología",
       years: "10 años",
     },
     {
       bio: "Pediatra con enfoque en crecimiento",
-      exp: "Hospital Infantil, Clínica Pediátrica",
+      exp: "Hospital Infantil",
       years: "18 años",
     },
     {
       bio: "Ginecóloga especialista en fertilidad",
-      exp: "Centro de Fertilidad, Clínica Mujer",
+      exp: "Centro de Fertilidad",
       years: "14 años",
     },
     {
       bio: "Traumatólogo deportivo",
-      exp: "Clínica Deportiva, Hospital Ortopédico",
+      exp: "Clínica Deportiva",
       years: "16 años",
     },
     {
       bio: "Psiquiatra infantil",
-      exp: "Hospital Mental, Centro Psiquiátrico",
+      exp: "Hospital Mental",
       years: "11 años",
     },
     {
       bio: "Oftalmólogo cirujano",
-      exp: "Instituto Oftalmológico, Clínica Visión",
+      exp: "Instituto Oftalmológico",
       years: "20 años",
     },
     {
       bio: "ORL especialista en audición",
-      exp: "Centro Auditivo, Hospital ENT",
+      exp: "Centro Auditivo",
       years: "13 años",
     },
     {
       bio: "Endocrinólogo diabetólogo",
-      exp: "Centro de Diabetes, Hospital Metabólico",
+      exp: "Centro de Diabetes",
       years: "17 años",
+    },
+    // Additional 3 records for new specialists
+    {
+      bio: "Anestesióloga con especialización en dolor",
+      exp: "Clínica del Dolor",
+      years: "9 años",
+    },
+    {
+      bio: "Radiólogo intervencionista",
+      exp: "Instituto de Radiología",
+      years: "14 años",
+    },
+    {
+      bio: "Oncóloga clínica especializada en mama",
+      exp: "Instituto Nacional de Cáncer",
+      years: "16 años",
     },
   ];
 
@@ -611,7 +849,7 @@ async function main() {
     )
   );
 
-  // 10. Associate Specialists with Specialties (10 records)
+  // 10. Associate Specialists with Specialties (13 records with cycling specialties)
   const specialistSpecialtyAssociations = await Promise.all(
     specialists.map((specialist, index) =>
       prisma.specialistHasSpecialty.create({
@@ -622,7 +860,7 @@ async function main() {
           Specialist_User_credential_users_idcredential_users:
             specialist.User_credential_users_idcredential_users,
           Specialist_User_rol_idrol: specialist.User_rol_idrol,
-          specialty_idspecialty: specialties[index].id,
+          specialty_idspecialty: specialties[index % specialties.length].id,
         },
       })
     )
@@ -640,13 +878,6 @@ async function main() {
             patient.User_credential_users_idcredential_users,
           patient_User_rol_idrol: patient.User_rol_idrol,
           email: credentials[index].email,
-          eps_type: [
-            "Sura",
-            "EPS Sanitas",
-            "Compensar",
-            "Famisanar",
-            "Salud Total",
-          ][index % 5],
           emergency_contact:
             pacDataRecords[index].emergency_contact || "DEFAULT_VALUE",
           contact_phone: patientUsers[index].phone,
@@ -673,21 +904,22 @@ async function main() {
     medicalHistories.map((history, index) => {
       const startDate = new Date(2023, 4, 15 + index, 10 + index, 0, 0);
       const endDate = new Date(startDate.getTime() + 45 * 60 * 1000); // 45 minutes later
+      const reasonIndex = index % consultationReasons.length;
 
       return prisma.medicalConsultation.create({
         data: {
           medicalHistoryId: history.id,
           startTime: startDate,
           endTime: endDate,
-          reason: consultationReasons[index],
+          reason: consultationReasons[reasonIndex],
           medicalNote: `Paciente presenta ${consultationReasons[
-            index
+            reasonIndex
           ].toLowerCase()}...`,
           vitalSigns: `TA: ${110 + index * 2}/${70 + index}, FC: ${70 + index}`,
           consultationMode: index % 2 === 0 ? "Presencial" : "Virtual",
           location: `Consultorio ${201 + index}`,
           summary: `Se recomienda tratamiento específico para ${consultationReasons[
-            index
+            reasonIndex
           ].toLowerCase()}`,
         },
       });
@@ -709,20 +941,21 @@ async function main() {
   ];
 
   const diagnoses = await Promise.all(
-    medicalHistories.map((history, index) =>
-      prisma.diagnosis.create({
+    medicalHistories.map((history, index) => {
+      const diagnosisIndex = index % diagnosisCodes.length;
+      return prisma.diagnosis.create({
         data: {
           medicalHistoryId: history.id,
-          cie10Code: diagnosisCodes[index].code,
-          symptomDesc: diagnosisCodes[index].symptom,
+          cie10Code: diagnosisCodes[diagnosisIndex].code,
+          symptomDesc: diagnosisCodes[diagnosisIndex].symptom,
           duration: `${index + 1} semanas`,
           evolution: ["Estable", "Mejoría", "Empeoramiento"][index % 3],
           diagnosisType: index % 2 === 0 ? "Presuntivo" : "Definitivo",
           isPrincipal: true,
           diagnosisDate: new Date(2023, 4, 15 + index, 10 + index, 45, 0),
         },
-      })
-    )
+      });
+    })
   );
 
   // 14. Create Medical Backgrounds (10 records)
@@ -752,7 +985,7 @@ async function main() {
         data: {
           medicalHistoryId: history.id,
           type: backgroundTypes[index % backgroundTypes.length],
-          description: backgroundDescs[index],
+          description: backgroundDescs[index % backgroundDescs.length],
         },
       })
     )
@@ -839,7 +1072,7 @@ async function main() {
     )
   );
 
-  // 16. Create Appointments (10 records)
+  // 16. Create Appointments (30 records with varied dates for dashboard)
   const appointmentStates = [
     "Completada",
     "Pendiente",
@@ -848,39 +1081,108 @@ async function main() {
     "Reagendada",
   ];
 
-  const appointments = await Promise.all(
-    patients.map((patient, index) => {
-      const startDate = new Date(2023, 4, 15 + index, 10 + index, 0, 0);
-      const endDate = new Date(
-        startDate.getTime() + specialties[index].duration * 60 * 1000
-      );
+  // Create appointments with dates distributed across different periods
+  const allAppointments = [];
+  
+  // Appointments for today (5 appointments)
+  for (let i = 0; i < 5; i++) {
+    const today = new Date();
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8 + i * 2, 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: i < 3 ? "Completada" : "Pendiente",
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/1234567${i}`,
+    });
+  }
 
-      return prisma.appointment.create({
+  // Appointments for this week (10 appointments)
+  for (let i = 0; i < 10; i++) {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 7); // Last 7 days
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 9 + (i % 8), 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: appointmentStates[i % appointmentStates.length],
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/12345${100 + i}`,
+    });
+  }
+
+  // Appointments for this month (15 appointments)
+  for (let i = 0; i < 15; i++) {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 30); // Last 30 days
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 8 + (i % 10), 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: appointmentStates[i % appointmentStates.length],
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/12345${200 + i}`,
+    });
+  }
+
+  // Appointments for this year (20 appointments)
+  for (let i = 0; i < 20; i++) {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 365); // Last year
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 8 + (i % 10), 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: appointmentStates[i % appointmentStates.length],
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/12345${300 + i}`,
+    });
+  }
+
+  const appointments = await Promise.all(
+    allAppointments.map((appointmentData) =>
+      prisma.appointment.create({
         data: {
-          state: appointmentStates[index % appointmentStates.length],
-          appoint_specialtyId: specialties[index].id,
-          Paciente_idPaciente: patient.id,
-          Paciente_pac_data_idpac_data: patient.pac_data_idpac_data,
-          Paciente_User_idUser: patient.User_idUser,
+          state: appointmentData.state,
+          appoint_specialtyId: appointmentData.appoint_specialtyId,
+          Paciente_idPaciente: appointmentData.patient.id,
+          Paciente_pac_data_idpac_data: appointmentData.patient.pac_data_idpac_data,
+          Paciente_User_idUser: appointmentData.patient.User_idUser,
           Paciente_User_credential_users_idcredential_users:
-            patient.User_credential_users_idcredential_users,
-          Paciente_User_rol_idrol: patient.User_rol_idrol,
-          Specialist_idEspecialista: specialists[index].id,
+            appointmentData.patient.User_credential_users_idcredential_users,
+          Paciente_User_rol_idrol: appointmentData.patient.User_rol_idrol,
+          Specialist_idEspecialista: appointmentData.specialist.id,
           Specialist_spec_data_idspec_data:
-            specialists[index].spec_data_idspec_data,
-          Specialist_User_idUser: specialists[index].User_idUser,
+            appointmentData.specialist.spec_data_idspec_data,
+          Specialist_User_idUser: appointmentData.specialist.User_idUser,
           Specialist_User_credential_users_idcredential_users:
-            specialists[index].User_credential_users_idcredential_users,
-          Specialist_User_rol_idrol: specialists[index].User_rol_idrol,
-          appoint_init: startDate,
-          appoint_finish: endDate,
-          linkZoom: `https://zoom.us/j/12345678${index}`,
+            appointmentData.specialist.User_credential_users_idcredential_users,
+          Specialist_User_rol_idrol: appointmentData.specialist.User_rol_idrol,
+          appoint_init: appointmentData.appoint_init,
+          appoint_finish: appointmentData.appoint_finish,
+          linkZoom: appointmentData.linkZoom,
         },
-      });
-    })
+      })
+    )
   );
 
-  // 17. Create User Reviews (10 records)
+  // 17. Create User Reviews (more reviews with recent dates and varied ratings)
   const reviewComments = [
     "Excelente atención, muy profesional",
     "Muy buen doctor, explica claramente",
@@ -892,22 +1194,45 @@ async function main() {
     "Doctor muy preparado y actualizado",
     "Excelente seguimiento del caso",
     "Muy satisfecho con la consulta",
+    "Puntual y organizado",
+    "Instalaciones muy limpias",
+    "Personal muy amable",
+    "Tiempo de espera razonable",
+    "Explicaciones muy claras",
   ];
 
+  // Create more reviews with recent dates and varied ratings
+  const allUserReviews = [];
+  
+  // Reviews from patients to specialists
+  for (let i = 0; i < 30; i++) {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 60); // Last 60 days
+    const reviewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 10 + (i % 12), 0, 0);
+    const rating = 3.5 + (Math.random() * 1.5); // Rating between 3.5 and 5.0
+    
+    allUserReviews.push({
+      reviewer: patientUsers[i % patientUsers.length],
+      reviewed: specialistUsers[i % specialistUsers.length],
+      rating: Math.round(rating * 10) / 10, // Round to 1 decimal
+      comment: reviewComments[i % reviewComments.length],
+      createdAt: reviewDate,
+    });
+  }
+
   const userReviews = await Promise.all(
-    patientUsers.map((patient, index) =>
+    allUserReviews.map((reviewData) =>
       prisma.userReview.create({
         data: {
-          reviewer_id: patient.id,
-          reviewer_cred_id: patient.credential_users_idcredential_users,
-          reviewer_rol_id: patient.rol_idrol,
-          reviewed_id: specialistUsers[index].id,
-          reviewed_cred_id:
-            specialistUsers[index].credential_users_idcredential_users,
-          reviewed_rol_id: specialistUsers[index].rol_idrol,
-          rating: 4.0 + (index % 10) * 0.1,
-          comment: reviewComments[index],
-          createdAt: new Date(2023, 4, 15 + index, 11, 0, 0),
+          reviewer_id: reviewData.reviewer.id,
+          reviewer_cred_id: reviewData.reviewer.credential_users_idcredential_users,
+          reviewer_rol_id: reviewData.reviewer.rol_idrol,
+          reviewed_id: reviewData.reviewed.id,
+          reviewed_cred_id: reviewData.reviewed.credential_users_idcredential_users,
+          reviewed_rol_id: reviewData.reviewed.rol_idrol,
+          rating: reviewData.rating,
+          comment: reviewData.comment,
+          createdAt: reviewData.createdAt,
         },
       })
     )
@@ -959,22 +1284,6 @@ async function main() {
     "Endocrinología muy actualizada",
   ];
 
-  const specialtyReviews = await Promise.all(
-    patientUsers.map((patient, index) =>
-      prisma.specialtyReview.create({
-        data: {
-          user_id: patient.id,
-          user_cred_id: patient.credential_users_idcredential_users,
-          user_rol_id: patient.rol_idrol,
-          specialty_id: specialties[index].id,
-          rating: 4.5 + (index % 6) * 0.1,
-          comment: specialtyComments[index],
-          createdAt: new Date(2023, 4, 15 + index, 11, 5, 0),
-        },
-      })
-    )
-  );
-
   // 19. Create Consents (10 records)
   const consents = await Promise.all(
     patients.map((patient, index) =>
@@ -1005,7 +1314,7 @@ async function main() {
     )
   );
 
-  // 20. Create Invoices (10 records)
+  // 20. Create Invoices (matching all appointments with varied amounts)
   const paymentMethods = [
     "Tarjeta crédito",
     "Tarjeta débito",
@@ -1016,25 +1325,36 @@ async function main() {
   const paymentStatuses = ["Pagado", "Pendiente", "Vencido", "Parcial"];
 
   const invoices = await Promise.all(
-    appointments.map((appointment, index) =>
-      prisma.invoice.create({
+    appointments.map((appointment, index) => {
+      const baseAmount = 80000; // Base amount
+      const variableAmount = Math.floor(Math.random() * 100000) + 50000; // Random between 50k-150k
+      const finalAmount = baseAmount + variableAmount;
+      
+      // Calculate paid date based on payment status
+      let paidDate = null;
+      const status = paymentStatuses[index % paymentStatuses.length];
+      if (status === "Pagado") {
+        const appointmentDate = new Date(appointment.appoint_init);
+        paidDate = new Date(appointmentDate.getTime() + (Math.random() * 5 + 1) * 24 * 60 * 60 * 1000); // 1-5 days after appointment
+      }
+
+      return prisma.invoice.create({
         data: {
           appointmentId: appointment.id,
-          patient_idPaciente: patients[index].id,
-          patient_pac_data_idpac_data: patients[index].pac_data_idpac_data,
-          patient_User_idUser: patients[index].User_idUser,
+          patient_idPaciente: appointment.Paciente_idPaciente,
+          patient_pac_data_idpac_data: appointment.Paciente_pac_data_idpac_data,
+          patient_User_idUser: appointment.Paciente_User_idUser,
           patient_User_credential_users_idcred:
-            patients[index].User_credential_users_idcredential_users,
-          patient_User_rol_idrol: patients[index].User_rol_idrol,
-          amount: specialties[index].price,
+            appointment.Paciente_User_credential_users_idcredential_users,
+          patient_User_rol_idrol: appointment.Paciente_User_rol_idrol,
+          amount: finalAmount,
           paymentMethod: paymentMethods[index % paymentMethods.length],
-          paymentStatus: paymentStatuses[index % paymentStatuses.length],
-          issuedDate: new Date(2023, 4, 15 + index, 11, 0, 0),
-          paidDate:
-            index % 4 === 0 ? new Date(2023, 4, 15 + index, 11, 30, 0) : null,
+          paymentStatus: status,
+          issuedDate: appointment.appoint_init,
+          paidDate: paidDate,
         },
-      })
-    )
+      });
+    })
   );
 
   // 21. Create Appointment Receipts (10 records)
@@ -1107,9 +1427,9 @@ async function main() {
           issuedAt: new Date(2023, 4, 15 + index, 10, 45, 0),
           description: orderDescriptions[index],
           instructions: orderInstructions[index],
-          status: ["Pendiente", "En proceso", "Completado", "Cancelado"][
+          status: ["Pendiente", "Activo", "Inactivo", "Pendiente"][
             index % 4
-          ],
+          ] as "Pendiente" | "Activo" | "Inactivo", // Alternating status for demonstration
         },
       })
     )
@@ -1186,19 +1506,6 @@ async function main() {
     "Instituto de Radiología",
   ];
 
-  const languages = [
-    "Español, Inglés",
-    "Español, Francés",
-    "Español, Italiano",
-    "Español, Alemán",
-    "Español, Portugués",
-    "Español, Inglés, Francés",
-    "Español",
-    "Español, Inglés",
-    "Español, Italiano, Inglés",
-    "Español, Alemán, Inglés",
-  ];
-
   const skills = [
     "Neurología clínica, EEG, EMG",
     "Oncología médica, Quimioterapia",
@@ -1224,7 +1531,7 @@ async function main() {
           price: 100000 + index * 10000,
           graduationYear: 2005 + index,
           workExperience: workExperiences[index],
-          languages: languages[index],
+          language:Language.Ingles,
           education: educationUniversities[index],
           skills: skills[index],
           references: JSON.stringify([
@@ -1239,7 +1546,7 @@ async function main() {
             address: pacDataRecords[index].Direction,
             phone: patientUsers[index].phone,
           }),
-          status: ["pendiente", "aprobado", "rechazado"][index % 3],
+          status: [UserStatus.Activo, UserStatus.Pendiente, UserStatus.Inactivo][index % 3],
         },
       })
     )
@@ -1265,16 +1572,23 @@ async function main() {
   console.log(`- Diagnoses: ${diagnoses.length}`);
   console.log(`- Medical Backgrounds: ${backgrounds.length}`);
   console.log(`- Prescriptions: ${prescriptions.length}`);
-  console.log(`- Appointments: ${appointments.length}`);
-  console.log(`- User Reviews: ${userReviews.length}`);
-  console.log(`- Specialist Reviews: ${specialistToPatientReviews.length}`);
-  console.log(`- Specialty Reviews: ${specialtyReviews.length}`);
+  console.log(`- Appointments: ${appointments.length} (distributed across different time periods)`);
+  console.log(`- User Reviews: ${userReviews.length} (with recent dates and varied ratings)`);
   console.log(`- Consents: ${consents.length}`);
-  console.log(`- Invoices: ${invoices.length}`);
+  console.log(`- Invoices: ${invoices.length} (with varied amounts and payment statuses)`);
   console.log(`- Appointment Receipts: ${appointmentReceipts.length}`);
   console.log(`- Medical Orders: ${medicalOrders.length}`);
   console.log(`- Diagnostic Files: ${diagnosticFiles.length}`);
   console.log(`- Specialist Requests: ${specialistRequests.length}`);
+  
+  console.log("\n🎯 Dashboard Optimization:");
+  console.log("✅ Added appointments for today, this week, this month, and this year");
+  console.log("✅ Added varied invoice amounts (50k-250k range)");
+  console.log("✅ Added recent user join dates for active user metrics");
+  console.log("✅ Added 30+ user reviews with varied ratings (3.5-5.0)");
+  console.log("✅ Added realistic payment statuses and dates");
+  console.log("✅ Increased total users for better demographic data");
+  console.log("\n🚀 Your dashboard should now display comprehensive data across all time periods!");
 }
 
 main()
@@ -1284,4 +1598,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  });
+  });  

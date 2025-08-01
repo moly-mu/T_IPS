@@ -22,53 +22,18 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
     });
 
     // Consultas completadas
-
-    // Fechas
-
-    const hoy = new Date();
-    hoy.setUTCHours(0, 0, 0, 0);
-
-    const tomorrow = new Date(hoy);
-    tomorrow.setUTCDate(hoy.getUTCDate() + 1);
-
-
     const totalConsultas = await prisma.appointment.count({
       where: {
         state: "Completada",
-        appoint_finish: {
-          gte: hoy,
-          lt: tomorrow,
-        }
       },
     });
 
     // Ingresos totales
-
-    const especialidadesConConsultas = await prisma.specialty.findMany({
-      select: {
-        price: true,
-        _count: {
-          select: {
-            Appointment: {
-              where: {
-                state: "Completada",
-                appoint_finish: {
-                  gte: hoy,
-                  lt: tomorrow,
-                },
-              },
-            },
-          },
-        },
+    const totalIngresos = await prisma.invoice.aggregate({
+      _sum: {
+        amount: true,
       },
     });
-
-    const ingresosCalculados = especialidadesConConsultas.reduce(
-      (total, especialidad) => {
-        return total + especialidad.price * especialidad._count.Appointment;
-      },
-      0
-    );
 
     // Obtener pacientes desde tabla user
     const allPatients = await prisma.user.findMany({
@@ -76,8 +41,8 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
         rol_idrol: 1, // Pacientes
       },
       select: {
-        age: true,
         gender: true,
+        birthdate: true,
       },
     });
 
@@ -96,18 +61,28 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
       Otro: 0,
     };
 
-    allPatients.forEach(({ age, gender }) => {
-      // Agrupación por edad
-      if (age >= 18 && age <= 30) ageGroups["18-30"]++;
-      else if (age >= 31 && age <= 45) ageGroups["31-45"]++;
-      else if (age >= 46 && age <= 60) ageGroups["46-60"]++;
-      else ageGroups["60+"]++;
-
-      // Conteo por género
+    
+      // Conteo por géner(o
+      
+    allPatients.forEach((patient) => {
+      const gender = patient.gender;
       const normalized = (gender ?? "Otro") as Gender;
       if (genderCounts[normalized] !== undefined) {
         genderCounts[normalized]++;
       }
+
+      const age = new Date().getFullYear() - new Date(patient.birthdate).getFullYear();
+      if (age >= 18 && age <= 30) {
+        ageGroups["18-30"]++;
+      } else if (age >= 31 && age <= 45) {
+        ageGroups["31-45"]++;
+      } else if (age >= 46 && age <= 60) {
+        ageGroups["46-60"]++;
+      } else if (age > 60) {
+        ageGroups["60+"]++;
+      }
+
+      // Conteo por
     });
 
     const totalPacientes = allPatients.length;
@@ -134,7 +109,7 @@ export const getDashboardStats = async (_req: Request, res: Response) => {
       usuariosActivos: totalUsuariosActivos,
       especialistas: totalEspecialistas,
       consultas: totalConsultas,
-      ingresos: ingresosCalculados,
+      ingresos: totalIngresos._sum.amount || 0,
       totalPacientes,
       edades,
       generos,

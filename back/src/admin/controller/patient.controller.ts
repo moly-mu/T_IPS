@@ -21,6 +21,7 @@ export const getAllPacientes = async (req: Request, res: Response) => {
             appoint_finish: "desc",
           },
         },
+        pac_data: true,
       },
     });
 
@@ -41,18 +42,31 @@ export const getAllPacientes = async (req: Request, res: Response) => {
         return {
           id: p.User.id,
           name: `${p.User.firstname} ${p.User.lastname}`,
+          secondName: p.User.second_firstname
+            ? `${p.User.second_firstname} ${p.User.second_lastname || ""}`
+            : undefined,
           email: p.User.credential_users.email,
           document: p.User.credential_users.document,
+          documentType: p.User.document_type,
           phone: p.User.phone,
-          age: p.User.age,
+          age: calculateAge(p.User.birthdate),
+          birthdate: p.User.birthdate.toISOString().split("T")[0],
           gender: p.User.gender,
+          sex: p.User.sex,
+          language: p.User.language,
           consultations: p.Appointments.length,
           lastConsultation:
             p.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] ||
             null,
           status: p.User.status,
-          rating, // 👈 usamos el cálculo real aquí
+          rating,
           joinDate: p.User.joinDate.toISOString().split("T")[0],
+          bloodType: p.pac_data.bloodType,
+          allergies: p.pac_data.allergies,
+          emergencyContact: p.pac_data.emergency_contact,
+          epsType: p.pac_data.eps_type,
+          profession: p.pac_data.profession,
+          ethnicGroup: p.pac_data.ethnicgroup,
         };
       })
       .filter((u) => {
@@ -61,7 +75,8 @@ export const getAllPacientes = async (req: Request, res: Response) => {
         const matchesSearch =
           !search ||
           u.name.toLowerCase().includes(String(search).toLowerCase()) ||
-          u.email.toLowerCase().includes(String(search).toLowerCase());
+          u.email.toLowerCase().includes(String(search).toLowerCase()) ||
+          u.document.toString().includes(String(search));
         return matchesStatus && matchesGender && matchesSearch;
       });
 
@@ -85,13 +100,29 @@ export const getPacienteById = async (req: Request, res: Response) => {
         User: {
           include: {
             credential_users: true,
+            userReviewsReceived: true,
           },
         },
         Appointments: {
           orderBy: {
             appoint_finish: "desc",
           },
+          include: {
+            Specialty: true,
+          },
         },
+        pac_data: true,
+        MedicalHistories: {
+          include: {
+            consultations: true,
+            diagnoses: true,
+            antecedents: true,
+            prescriptions: true,
+          },
+        },
+        Consents: true,
+        Invoices: true,
+        MedicalOrders: true,
       },
     });
 
@@ -100,21 +131,59 @@ export const getPacienteById = async (req: Request, res: Response) => {
       return;
     }
 
+    const reviews = paciente.User.userReviewsReceived || [];
+    const average =
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : 0;
+    const rating = parseFloat(average.toFixed(2));
+
     const response = {
       id: paciente.User.id,
       name: `${paciente.User.firstname} ${paciente.User.lastname}`,
+      secondName: paciente.User.second_firstname
+        ? `${paciente.User.second_firstname} ${
+            paciente.User.second_lastname || ""
+          }`
+        : undefined,
       email: paciente.User.credential_users.email,
       document: paciente.User.credential_users.document,
+      documentType: paciente.User.document_type,
       phone: paciente.User.phone,
-      age: paciente.User.age,
+      age: calculateAge(paciente.User.birthdate),
+      birthdate: paciente.User.birthdate.toISOString().split("T")[0],
       gender: paciente.User.gender,
+      sex: paciente.User.sex,
+      language: paciente.User.language,
       consultations: paciente.Appointments.length,
       lastConsultation:
         paciente.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] ||
         null,
       status: paciente.User.status,
-      rating: 4.5,
+      rating: Number(rating),
       joinDate: paciente.User.joinDate.toISOString().split("T")[0],
+      // Datos médicos
+      medicalData: {
+        bloodType: paciente.pac_data.bloodType,
+        allergies: paciente.pac_data.allergies,
+        emergencyContact: paciente.pac_data.emergency_contact,
+        epsType: paciente.pac_data.eps_type,
+        profession: paciente.pac_data.profession,
+        ethnicGroup: paciente.pac_data.ethnicgroup,
+      },
+      // Historial médico
+      medicalHistory: paciente.MedicalHistories.map((mh) => ({
+        consultations: mh.consultations,
+        diagnoses: mh.diagnoses,
+        antecedents: mh.antecedents,
+        prescriptions: mh.prescriptions,
+      })),
+      // Consents
+      consents: paciente.Consents,
+      // Facturas
+      invoices: paciente.Invoices,
+      // Órdenes médicas
+      medicalOrders: paciente.MedicalOrders,
     };
 
     res.json(response);
@@ -138,92 +207,18 @@ export const getPacienteRating = async (req: Request, res: Response) => {
     const avgRating =
       reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1);
 
-    res.json({ averageRating: avgRating.toFixed(1), total: reviews.length });
+    res.json({
+      averageRating: avgRating.toFixed(1),
+      total: reviews.length,
+      reviews: reviews.map((r) => ({
+        rating: r.rating,
+        comment: r.comment,
+        createdAt: r.createdAt,
+      })),
+    });
   } catch (error) {
     console.error("Error al obtener calificación:", error);
     res.status(500).json({ error: "Error interno del servidor" });
-  }
-};
-
-// ------------------ CREATE PACIENTE ------------------
-export const createPaciente = async (req: Request, res: Response) => {
-  try {
-    const {
-      firstname,
-      lastname,
-      age,
-      gender,
-      sex,
-      document,
-      document_type,
-      language,
-      phone,
-      email,
-      password,
-      rol_idrol,
-    } = req.body;
-
-    if (!rol_idrol || isNaN(Number(rol_idrol))) {
-      res.status(400).json({ error: "rol_idrol inválido o ausente" });
-      return;
-    }
-
-    const result = await prisma.$transaction(async (tx) => {
-      const credential = await tx.credentialUser.create({
-        data: { document, email, password },
-      });
-
-      const user = await tx.user.create({
-        data: {
-          firstname,
-          lastname,
-          age,
-          gender,
-          sex,
-          document_type,
-          language,
-          phone,
-          credential_users_idcredential_users: credential.id,
-          rol_idrol: Number(rol_idrol),
-          status: "Pendiente",
-        },
-      });
-
-      const pacData = await tx.pacData.create({
-        data: {
-          medical_history: Buffer.from(""),
-          Direction: "123 Main St",
-          Blod_type: "+O",
-        },
-      });
-
-      const paciente = await tx.patient.create({
-        data: {
-          User_idUser: user.id,
-          User_credential_users_idcredential_users: credential.id,
-          User_rol_idrol: user.rol_idrol,
-          pac_data_idpac_data: pacData.id,
-        },
-      });
-
-      return { paciente };
-    });
-
-    res.status(201).json({
-      message: "Paciente creado correctamente",
-      paciente: result.paciente,
-    });
-  } catch (error: any) {
-    console.error("Error al crear paciente:", error);
-    if (error.code === "P2002") {
-      res.status(400).json({ error: "El correo o documento ya existe" });
-    } else if (error.code === "P2003") {
-      res.status(400).json({
-        error: "Clave foránea inválida (revisa rol_idrol o credential_id)",
-      });
-    } else {
-      res.status(500).json({ error: "Error interno del servidor" });
-    }
   }
 };
 
@@ -231,21 +226,73 @@ export const createPaciente = async (req: Request, res: Response) => {
 export const updatePaciente = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { firstname, lastname, age, gender, status, phone } = req.body;
+    const {
+      firstname,
+      second_firstname,
+      lastname,
+      second_lastname,
+      birthdate,
+      gender,
+      sex,
+      document_type,
+      language,
+      phone,
+      status,
+      // Datos médicos
+      bloodType,
+      allergies,
+      emergency_contact,
+      eps_type,
+      profession,
+      ethnicgroup,
+    } = req.body;
 
-    const updated = await prisma.user.update({
+    // Actualizar datos de usuario
+    const updatedUser = await prisma.user.update({
       where: { id: Number(id) },
       data: {
         firstname,
+        second_firstname,
         lastname,
-        age,
+        second_lastname,
+        birthdate: birthdate ? new Date(birthdate) : undefined,
         gender,
+        sex,
+        document_type,
+        language,
+        phone,
         status,
-        ...(phone && { phone }),
       },
     });
 
-    res.json({ message: "Paciente actualizado", updated });
+    // Obtener el paciente para actualizar sus datos médicos
+    const paciente = await prisma.patient.findFirst({
+      where: { User_idUser: Number(id) },
+    });
+
+    if (!paciente) {
+      res.status(404).json({ error: "Paciente no encontrado" });
+      return;
+    }
+
+    // Actualizar datos médicos
+    const updatedPacData = await prisma.pacData.update({
+      where: { id: paciente.pac_data_idpac_data },
+      data: {
+        bloodType,
+        allergies,
+        emergency_contact,
+        eps_type,
+        profession,
+        ethnicgroup,
+      },
+    });
+
+    res.json({
+      message: "Paciente actualizado",
+      user: updatedUser,
+      medicalData: updatedPacData,
+    });
   } catch (error) {
     console.error("Error al actualizar paciente:", error);
     res.status(500).json({ error: "Error interno del servidor" });
@@ -257,17 +304,65 @@ export const deletePaciente = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    await prisma.patient.deleteMany({
+    // Primero obtener el paciente para eliminar datos relacionados
+    const paciente = await prisma.patient.findFirst({
       where: { User_idUser: Number(id) },
+      include: {
+        User: {
+          include: {
+            credential_users: true,
+          },
+        },
+      },
     });
 
-    await prisma.user.delete({
-      where: { id: Number(id) },
+    if (!paciente) {
+      res.status(404).json({ error: "Paciente no encontrado" });
+      return;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // Eliminar paciente
+      await tx.patient.deleteMany({
+        where: { User_idUser: Number(id) },
+      });
+
+      // Eliminar datos médicos
+      await tx.pacData.delete({
+        where: { id: paciente.pac_data_idpac_data },
+      });
+
+      // Eliminar usuario
+      await tx.user.delete({
+        where: { id: Number(id) },
+      });
+
+      // Eliminar credenciales
+      await tx.credentialUser.delete({
+        where: { id: paciente.User.credential_users.id },
+      });
     });
 
-    res.json({ message: "Paciente eliminado" });
+    res.json({ message: "Paciente eliminado completamente" });
   } catch (error) {
     console.error("Error al eliminar paciente:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
+// Función auxiliar para calcular edad
+function calculateAge(birthdate: Date): number {
+  const today = new Date();
+  const birthDate = new Date(birthdate);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
+}
