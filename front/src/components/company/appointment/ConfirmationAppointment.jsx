@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import html2pdf from 'html2pdf.js';
 import { CheckCircle, Download } from 'lucide-react';
 import PropTypes from 'prop-types';
-import { useAppointmentService } from '../../../services/appointmentService';
+import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function ConfirmationAppointment({ onClose = () => {}, selectedTime = "14:30", selectedDoctor = null }) {
@@ -12,9 +12,16 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
 
-  const { createAppointment } = useAppointmentService();
   const { token, user } = useAuth();
   const pdfRef = useRef();
+
+  const api = axios.create({
+    baseURL: 'http://tu-api.com/api', // Reemplaza con tu URL base
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
 
   const handleSubmit = async () => {
     if (!hasTechnicalMeans || !acceptTerms || !acceptData) {
@@ -49,27 +56,32 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
         fecha: fecha,
         hora: hora,
         specialtyId: null, // El backend usará la especialidad del doctor
-        duration: 30
+        duration: 30,
+        patientId: user.id // Asumiendo que el usuario tiene un id
       };
 
-      const response = await createAppointment(appointmentData);
+      const response = await api.post('/appointments', appointmentData);
       
-      if (response.appointment) {
+      if (response.data.appointment) {
+        const { appointment } = response.data;
         alert(`¡Teleconsulta confirmada exitosamente! 
         
 Detalles de tu cita:
-• Doctor: ${response.appointment.especialista}
-• Especialidad: ${response.appointment.especialidad}
-• Fecha: ${new Date(response.appointment.fecha).toLocaleDateString('es-ES')}
-• Hora: ${response.appointment.hora}
-• Estado: ${response.appointment.estado}
+• Doctor: ${appointment.especialista}
+• Especialidad: ${appointment.especialidad}
+• Fecha: ${new Date(appointment.fecha).toLocaleDateString('es-ES')}
+• Hora: ${appointment.hora}
+• Estado: ${appointment.estado}
 
 Tu cita aparecerá en "Mis Citas".`);
         onClose();
       }
     } catch (error) {
       console.error('Error al crear la cita:', error);
-      setError('Error al confirmar la teleconsulta. Por favor, intenta nuevamente.');
+      const errorMessage = error.response?.data?.message || 
+                         error.message || 
+                         'Error al confirmar la teleconsulta. Por favor, intenta nuevamente.';
+      setError(errorMessage);
     } finally {
       setIsCreating(false);
     }
@@ -124,18 +136,18 @@ Tu cita aparecerá en "Mis Citas".`);
           <div className="flex flex-col gap-6 text-sm text-gray-700 mb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-2">Información de la consulta</h2>
-              <p><strong>Especialidad:</strong> Consulta de Dermatología</p>
-              <p><strong>Profesional:</strong> Dra. María González - Dermatóloga</p>
-              <p><strong>Fecha y hora:</strong> Martes 16 de julio, {selectedTime}</p>
+              <p><strong>Especialidad:</strong> {selectedDoctor?.specialty || 'Consulta de Dermatología'}</p>
+              <p><strong>Profesional:</strong> {selectedDoctor?.name || 'Dra. María González'} - {selectedDoctor?.specialty || 'Dermatóloga'}</p>
+              <p><strong>Fecha y hora:</strong> {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {selectedTime}</p>
               <p><strong>Duración estimada:</strong> 30 minutos</p>
               <p><strong>Modalidad:</strong> Videollamada</p>
             </div>
 
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-2">Datos del paciente</h2>
-              <p><strong>Nombre completo:</strong> Juan Pérez</p>
-              <p><strong>Correo electrónico:</strong> juan.perez@example.com</p>
-              <p><strong>Teléfono de contacto:</strong> +57 300 123 4567</p>
+              <p><strong>Nombre completo:</strong> {user?.name || 'Juan Pérez'}</p>
+              <p><strong>Correo electrónico:</strong> {user?.email || 'juan.perez@example.com'}</p>
+              <p><strong>Teléfono de contacto:</strong> {user?.phone || '+57 300 123 4567'}</p>
             </div>
           </div>
 
@@ -150,7 +162,9 @@ Tu cita aparecerá en "Mis Citas".`);
         {/* boton cerrar */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
+          aria-label="Cerrar modal"
+        >
           ✕
         </button>
 
@@ -226,5 +240,9 @@ Tu cita aparecerá en "Mis Citas".`);
 ConfirmationAppointment.propTypes = {
   onClose: PropTypes.func,
   selectedTime: PropTypes.string,
-  selectedDoctor: PropTypes.object,
+  selectedDoctor: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string,
+    specialty: PropTypes.string,
+  }),
 };
