@@ -1,4 +1,4 @@
-// src/admin/specialties/controllerr/specialties.controller.ts
+// src/admin/specialties/controllers/specialties.controller.ts
 
 import { Request, Response } from "express";
 import { GetAllSpecialtiesService } from "@adminSpecialties/application/use-cases/specialty";

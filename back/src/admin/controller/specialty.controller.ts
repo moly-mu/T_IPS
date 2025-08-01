@@ -64,14 +64,14 @@ export const getSpecialtyById = async (req: Request, res: Response) => {
   }
 
   try {
-    const specialty = await prisma.specialty.findUnique({ 
-		where: { id },
-		include:{
-			_count: {
-				select: {Appointment: true}
-			}
-		}
-	 });
+    const specialty = await prisma.specialty.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { Appointment: true },
+        },
+      },
+    });
     if (!specialty) {
       res.status(404).json({ error: "Especialidad no encontrada" });
       return;
@@ -98,12 +98,19 @@ export const updateSpecialty = async (req: Request, res: Response) => {
     const updated = await prisma.specialty.update({
       where: { id },
       data: { name, status, price, service, duration },
+      include: {
+        _count: {
+          select: { Appointment: true },
+        },
+      },
     });
+
     res.json(updated);
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: "Error al actualizar la especialidad", details: error });
+    res.status(400).json({
+      error: "Error al actualizar la especialidad",
+      details: error,
+    });
   }
 };
 

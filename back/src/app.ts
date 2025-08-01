@@ -1,6 +1,11 @@
 import express from "express";
 import cors from "cors";
+import dotenv from 'dotenv';
+
+// Importaciondes rutas de User
 import userRoutes from "./user/routes/user.routes";
+
+// Importaciones de rutas de administrador
 import adminProfRoutes from "./admin/routes/profesional.routes";
 import adminSpecialRoutes from "./admin/routes/specialty.routes";
 import adminPatientRoutes from "./admin/routes/patient.routes";
@@ -10,9 +15,9 @@ import specialistSettings from "./specialist/presentation/routes/specialistSetti
 import specialistAppointments from './specialist/presentation/routes/specialistAppointments.routes';
 import specialistDashboard from './specialist/presentation/routes/specialisttDashboard.routes';
 import specialistCalendar from './specialist/presentation/routes/specialistCalendar.routes';
-import dotenv from 'dotenv';
 import specialistAuthRoutes from "./specialist/presentation/routes/specialistAuth.routes";
 import getAllSpecialties from "./admin/specialties/presentation/routes/specialties.routes";
+import specialistRequestRoutes from "./admin/routes/specialistRequest.routes";
 
 const app = express();
 
@@ -30,6 +35,7 @@ app.use("/admin/specialty", adminSpecialRoutes);
 app.use("/admin/patient", adminPatientRoutes);
 app.use("/admin/stats", adminStatsRoutes);
 app.use("/admin/test", getAllSpecialties);
+app.use("/admin/specialist-requests", specialistRequestRoutes);
 
 //*Rutas de especialista
 app.use("/specialist", specialistRequest);

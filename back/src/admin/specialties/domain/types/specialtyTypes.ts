@@ -1,16 +1,16 @@
-import { z } from "zod";
+// src/admin/specialties/domain/types/specialtyTypes.ts
 
-export const SpecialtySchema = z.object({
-  id: z.number,
-  name: z.string,
-  status: z.enum(["Activo", "Inactivo"]),
-  price: z.number,
-  service: z.string,
-  duration: z.number,
-  joinDate: z.coerce.date(),
-  _count: z.object({
-    Appointment: z.number(),
-  }),
-});
+export type SpecialtyStatus = "Activo" | "Inactivo";
 
-export type SpecialtyType = z.infer<typeof SpecialtySchema>
+export interface SpecialtyType {
+  id: number,
+  name: string,
+  status: SpecialtyStatus,
+  price: number,
+  service: string,
+  duration: number,
+  joinDate: Date,
+  _count: {
+    Appointment: number,
+  },
+};
