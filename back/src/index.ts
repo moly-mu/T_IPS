@@ -1,10 +1,8 @@
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import prisma from "./shared/client";
 import app from "./app";
 
 dotenv.config();
-
-const prisma = new PrismaClient();
 
 // Endpoint de prueba para la DB
 app.get("/ping", async (_req, res) => {

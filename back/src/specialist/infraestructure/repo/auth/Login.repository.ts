@@ -1,4 +1,4 @@
-import prisma from "../../prisma/client";
+import prisma from "../../../../shared/client";
 import { SpecialistRepository } from "../../../domain/repositories/LoginSpecialist.Repository";
 import { Specialist } from "../../../domain/entities/EntityLogin";
 
