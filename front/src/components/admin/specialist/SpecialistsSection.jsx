@@ -125,7 +125,7 @@ const SpecialistsSection = () => {
 					Especialistas
 				</h1>
 				<p className="text-gray-600">
-					Revisa y gestiona las solicitudes de registro de especialistas
+					Revisa y gestiona las solicitudes de los especialistas registrados en la plataforma.
 				</p>
 			</div>
 
@@ -309,7 +309,7 @@ const SpecialistsSection = () => {
 										onClick={() => handleReject(s.id)}
 										className="flex items-center px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
 									>
-										<XCircle className="w-4 h-4" />
+										<XCircle className="w-4 h-4"/>
 										Rechazar
 									</button>
 								</div>

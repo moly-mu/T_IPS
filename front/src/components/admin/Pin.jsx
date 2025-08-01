@@ -12,8 +12,7 @@ import {
   Filter,
   Bell,
   Settings,
-  ChevronDown,
-  Eye,
+  ChevronDown,  
   CheckCircle,
   XCircle,
   Clock,
@@ -291,7 +290,7 @@ const GenderChart = ({ generos }) => {
   }`;
 
   return (
-    <ChartCard title="Distribución por Género">
+    <ChartCard title="Distribución por Género (Pacientes)">
       <div className="flex items-center justify-center h-40">
         <div className="relative w-32 h-32">
           <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
@@ -454,9 +453,6 @@ const SpecialistRequests = () => {
               >
                 <XCircle className="w-4 h-4 mr-1" />
                 Rechazar
-              </button>
-              <button className="p-2 text-gray-400 hover:text-gray-600">
-                <Eye className="w-4 h-4" />
               </button>
             </div>
           </div>
