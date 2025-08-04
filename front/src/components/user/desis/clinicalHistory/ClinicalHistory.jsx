@@ -80,9 +80,8 @@ const ClinicalHistory = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-8 bg-gray-50 min-h-screen">
-      <div className="border border-teal-200 mb-8 bg-white rounded-lg shadow-sm">
-        {/* Sección superior */}
-        <div className="border-b border-teal-100 p-8 bg-gradient-to-r from-teal-50 to-blue-50 rounded-t-lg">
+      <div className="border border-black-200 mb-8 bg-white rounded-lg shadow-sm">
+        <div className="border-b border-teal-100 p-8 bg-[#00102D] rounded-t-lg">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-12">
               <div className="w-20 h-20 flex items-center justify-center overflow-hidden rounded">
@@ -91,10 +90,9 @@ const ClinicalHistory = () => {
                 alt="IPS" />
               </div>
               
-              {/* Información de la entidad */}
               <div>
-                <h1 className="text-xl font-medium text-teal-900 mb-4">TELECONSULTAS IPS UNIVERSITARIA DE COLOMBIA</h1>
-                <div className="space-y-1 text-sm text-teal-700">
+                <h1 className="text-xl font-medium text-white mb-4">TELECONSULTAS IPS UNIVERSITARIA DE COLOMBIA</h1>
+                <div className="space-y-1 text-sm text-gray-300">
                   <div>NIT: 000.000.000-0</div>
                   <div>Teléfono: (+57) 310-8731876</div>
                   <div>Dirección: Calle 34 5 89, Bogotá</div>
@@ -103,77 +101,75 @@ const ClinicalHistory = () => {
               </div>
             </div>
             
-            {/* Título del documento */}
             <div className="text-right">
-              <h2 className="text-2xl font-light text-blue-900 mb-2">HISTORIA CLÍNICA</h2>
-              <p className="text-blue-600 text-sm">Sistema Integrado de Salud</p>
-              <div className="mt-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+              <h2 className="text-2xl font-light text-gray-300 mb-2">HISTORIA CLÍNICA</h2>
+              <p className="text-white text-sm">Sistema Integrado de Salud</p>
+              <div className="mt-2 text-white px-3 py-1 rounded text-xs font-medium">
                 10746583
               </div>
             </div>
           </div>
         </div>
-        
-        {/* Fila de información básica */}
+
         <div className="p-6">
           <div className="grid grid-cols-6 gap-6">
             <div>
-              <label className="block text-xs font-medium text-teal-600 mb-2 uppercase tracking-wider">Ingreso</label>
+              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Ingreso</label>
               <input
                 type="text"
                 value={formData.ingreso}
                 onChange={(e) => handleInputChange('ingreso', e.target.value)}
-                className="w-full border-b border-teal-200 pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
+                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
                 placeholder="N° Ingreso"
               />
             </div>
             
             <div>
-              <label className="block text-xs font-medium text-teal-600 mb-2 uppercase tracking-wider">Fecha de Impresión</label>
+              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Fecha de Impresión</label>
               <input
                 type="date"
                 value={formData.fechaImpresion}
                 onChange={(e) => handleInputChange('fechaImpresion', e.target.value)}
-                className="w-full border-b border-teal-200 pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
+                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
               />
             </div>
             
             <div>
-              <label className="block text-xs font-medium text-teal-600 mb-2 uppercase tracking-wider">Página</label>
-              <div className="text-sm font-medium text-blue-800 pb-2 border-b border-teal-200 bg-blue-50 px-2 py-1 rounded-t">
+              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Página</label>
+              <div className="text-sm font-medium text-blue-800 pb-2 border-b border-[#00102D] bg-blue-50 px-2 py-1 rounded-t">
                 1 / 3
               </div>
             </div>
             
             <div>
-              <label className="block text-xs font-medium text-teal-600 mb-2 uppercase tracking-wider">Identificación</label>
+              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Identificación</label>
               <input
                 type="text"
                 value={formData.identificacion}
                 onChange={(e) => handleInputChange('identificacion', e.target.value)}
-                className="w-full border-b border-teal-200 pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
+                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
                 placeholder="N° Documento"
               />
             </div>
             
             <div>
-              <label className="block text-xs font-medium text-teal-600 mb-2 uppercase tracking-wider">Nombre</label>
+              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Nombres</label>
               <input
                 type="text"
                 value={formData.nombre}
                 onChange={(e) => handleInputChange('nombre', e.target.value)}
-                className="w-full border-b border-teal-200 pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
+                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
                 placeholder="Nombres"
               />
             </div>
             
             <div>
-              <label className="block text-xs font-medium text-teal-600 mb-2 uppercase tracking-wider">Apellidos</label>
+              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Apellidos</label>
               <input
                 type="text"
                 value={formData.apellidos}
                 onChange={(e) => handleInputChange('apellidos', e.target.value)}
-                className="w-full border-b border-teal-200 pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
+                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
                 placeholder="Apellidos"
               />
             </div>
@@ -181,7 +177,6 @@ const ClinicalHistory = () => {
         </div>
       </div>
 
-      {/* navegación de pestaña*/}
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
         <div className="border-b border-gray-200">
           <nav className="flex space-x-0" aria-label="Tabs">
@@ -213,7 +208,6 @@ const ClinicalHistory = () => {
           </nav>
         </div>
 
-        {/* Contenido de la pestaña activa */}
         <div className="p-6">
           {ActiveComponent && <ActiveComponent />}
         </div>

@@ -101,12 +101,6 @@ const Hero = () => {
           </div>
 
           <div ref={imageRef} className="opacity-0 transform translate-y-8 transition-all duration-1000 delay-600">
-            <img
-              src={homeImage} 
-              alt="home"
-              className="rounded-sm w-2/3 h-auto object-cover"
-            />
-
             <div className="absolute -bottom-4 -right-4 bg-white p-6 shadow-lg rounded-sm">
               <div className="text-center">
                 <div className="text-2xl font-light text-gray-900">24/7</div>
