@@ -33,6 +33,74 @@ const GeneralData = () => {
     setFormData({ ...formData, eps: value});
   }
 
+  //antecedentes
+  const [antecedentes, setAntecedentes] = useState ([
+    {
+      idAntecedente: 1,
+      antecedente: 'Ingreso Hospitalario por Apendicitis Aguda',
+      tipo: 'Hospitalario',
+      descripcion: ' El paciente fue ingresado en el Hospital XYZ el 15 de marzo de 2019 debido a un cuadro de dolor abdominal intenso en el lado derecho. Tras realizar los exámenes pertinentes, se diagnosticó apendicitis aguda. Fue sometido a una apendicectomía laparoscópica, que fue exitosa. No se presentaron complicaciones postoperatorias y fue dado de alta al segundo día.s'
+    }
+  ]);
+
+    const [antecedenteData, setAntecedenteData] = useState({
+    idAntecedente: '',
+    antecedenteP: '',
+    tipo: '',
+    descripcion: ''
+  })
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
+    const handleInputChange = (field, value) => {
+    antecedenteData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAdd = () => {
+    setIsEditing(true);
+    setEditingId(null);
+    setAntecedenteData({
+      idAntecedente: '',
+      antecedente: '',
+      tipo: '',
+      descripcion: ''
+    });
+  };
+
+  const handleEdit = (antecedentes) => {
+    setIsEditing(true);
+    setEditingId(antecedentes.idAntecedente);
+    setAntecedenteData(antecedentes);
+  };
+
+  const handleSave = () => {
+    if(editingId) {
+      setAntecedentes(prev => prev.map(item =>
+        item.idAntecedente === editingId ? { ...antecedenteData, idAntecedente: editingId } : item
+      ));
+    } else {
+      const newId = Math.max(...antecedentes.map(r => r.idAntecedente), 0) + 1;
+      setAntecedentes(prev => [...prev, { ...antecedenteData, idAntecedente: newId }]);
+    }
+    setIsEditing(false);
+    setEditingId(null);
+  };
+
+  const handleCancel = () => {
+    setEditingId(false);
+    setEditingId(null);
+  }
+
+  const handleDelete = () => {
+    if (window.confirm('¿Está seguro de eliminar este antecedente?')) {
+      setAntecedentes(prev => prev.filter(item => item.idAntecedente !== id));
+    }
+  };
+
   const [medicalHistory, setMedicalHistory] = useState([
     {
       idantecedente: '',
@@ -46,33 +114,12 @@ const GeneralData = () => {
     setIsEditingProfile(false);
   }
 
-    //agregar en datos del paciente:
-  //causa de atención, edad, tipo de paciente
-
-  //agregar en datos generales:
-  //notas medicas, signos vitales 
-
-  const handlePatientDataChange = (field, value) => {
-    setPatientData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
   const handleMedicalHistoryChange = (index, field, value) => {
     const updated = [...medicalHistory];
     updated[index] = { ...updated[index], [field]: value };
     setMedicalHistory(updated);
   };
 
-  const addMedicalHistory = () => {
-    setMedicalHistory([...medicalHistory, {
-      idantecedente: '',
-      medicalHistoryId: '',
-      type: '',
-      description: ''
-    }]);
-  };
 
   const removeMedicalHistory = (index) => {
     if (medicalHistory.length > 1) {
@@ -461,46 +508,32 @@ const GeneralData = () => {
             <h3 className="text-lg font-semibold text-green-900">Antecedentes Médicos</h3>
           </div>
           <button
-            onClick={addMedicalHistory}
+            onClick={handleAdd}
             className="flex items-center space-x-2 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
             <Plus className="h-4 w-4" />
             <span>Agregar</span>
           </button>
         </div>
-        
-        <div className="space-y-4">
-          {medicalHistory.map((history, index) => (
-            <div key={index} className="bg-white p-4 rounded-lg border border-green-200">
-              <div className="flex justify-between items-start mb-4">
-                <h4 className="text-sm font-medium text-green-800">Antecedente #{index + 1}</h4>
-                {medicalHistory.length > 1 && (
-                  <button
-                    onClick={() => removeMedicalHistory(index)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                )}
+
+        {isEditing && (
+          <div className='bg-white-50 p-6'>
+            <div className='grid grid-cols-1 md:grid-cols3 gap-4 mb-6'> 
+              <div>
+                <label className='block text-sm font-medium text-green-700 mb-2'>Antecedente</label>
+                <input 
+                type="text"
+                value={antecedenteData.antecedenteP}
+                onChange={(e) => handleInputChange('antecedente', e.target.value)}
+                className='w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                placeholder='Indica el nombre o el diagnóstico relacionado' />
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-green-700 mb-2">Antecedente</label>
-                  <input
-                    type="text"
-                    value={history.idantecedente}
-                    onChange={(e) => handleMedicalHistoryChange(index, 'idantecedente', e.target.value)}
-                    className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
+
+              <div>
                   <label className="block text-sm font-medium text-green-700 mb-2">Tipo</label>
                   <select
-                    value={history.type}
-                    onChange={(e) => handleMedicalHistoryChange(index, 'type', e.target.value)}
-                    className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  >
+                    value={antecedenteData.tipo}
+                    onChange={(e) => handleInputChange(index, 'tipo', e.target.value)}
+                    className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">Seleccionar tipo</option>
                     <option value="Medico">Médico</option>
                     <option value="Hospitalario">Hospitalario</option>
@@ -515,21 +548,60 @@ const GeneralData = () => {
                     <option value="Familiar">Familiar</option>
                   </select>
                 </div>
-                
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-green-700 mb-2">Descripción</label>
                   <textarea
-                    value={history.description}
-                    onChange={(e) => handleMedicalHistoryChange(index, 'description', e.target.value)}
+                    value={antecedenteData.descripcion}
+                    onChange={(e) => handleInputChange(index, 'descripcion', e.target.value)}
                     rows={3}
                     className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Descripción detallada del antecedente y cuando inicio este..."
                   />
                 </div>
+            </div>
+
+             <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleCancel}
+                className="flex items-center space-x-2 px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm">
+                <X className="h-4 w-4" />
+                <span>Cancelar</span>
+              </button>
+              <button
+                onClick={handleSave}
+                className="flex items-center space-x-2 px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600 transition-colors text-sm">
+                <Save className="h-4 w-4" />
+                <span>Guardar</span>
+              </button>
+            </div>
+
+            <div className='border borde-gray-200 rounded-lg overflow-hidden'>
+              <div className='bg-gray-100 px-4 py-3 border-b border-gray-200'>
+                <h3 className='font-medium text-gray-900 flex items-center space-x-2'>
+                  <FileText className='h-5 w-5 text-green' />
+                  <span>Antecedentes Registrados({antecedenteData.length})</span>
+                </h3>
+              </div>
+
+              <div className='divide-y divide-gray-200'>
+                {antecedenteData.map((antecedentes, index) => (
+                  <div key={antecedentes.idAntecedente} className='p-4 hover:bg-gray-50 transition-colors'>
+                    <div className='flex items-start justify-between mb-3'>
+                      <div className='flex items-center space-x-3'>
+                        <div>
+                          {index + 1}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+
+          </div>
+        )}
+        
       </div>
     </div>
   );

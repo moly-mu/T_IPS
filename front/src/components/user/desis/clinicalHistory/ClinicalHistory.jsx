@@ -4,7 +4,6 @@ import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
 import TreatmentMedications from './TreatmentMedications';
 import { html2pdf } from 'html2pdf.js';
-import jsPDF from 'jspdf';
 
 const today = new Date().toISOString().split('T')[0];
 
