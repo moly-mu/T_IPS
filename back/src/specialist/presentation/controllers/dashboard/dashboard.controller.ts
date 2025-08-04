@@ -298,7 +298,7 @@ export const getDashboardMetrics = async (req: Request, res: Response) => {
 		};
 
 		// Visitas por día (según el período seleccionado)
-		const visitasPorDia = await generateVisitsPerDay(startDate, endOfDay);
+		const visitasPorDia = await generateVisitsPerDay(startDate, endOfDay, periodo as string);
 
 		// Próximas citas
 		const proximasCitas = await prisma.appointment.findMany({
@@ -467,29 +467,115 @@ function calculateAgeGroups(users: { age: number }[]) {
 }
 
 // Función para generar visitas por día
-async function generateVisitsPerDay(startDate: Date, endDate: Date) {
+async function generateVisitsPerDay(startDate: Date, endDate: Date, periodo: string) {
 	const visits = [];
-	const currentDate = new Date(startDate);
+	
+	// Determinar el intervalo y la cantidad máxima de puntos según el período
+	let interval = 1; // días
+	let maxPoints = 30;
+	
+	switch (periodo) {
+		case 'hoy':
+			// Para hoy, mostrar por horas (24 puntos)
+			maxPoints = 24;
+			interval = 1; // horas
+			break;
+		case 'semana':
+			// Para semana, mostrar 7 días
+			maxPoints = 7;
+			interval = 1; // días
+			break;
+		case 'mes':
+			// Para mes, mostrar 30 días
+			maxPoints = 30;
+			interval = 1; // días
+			break;
+		case 'año':
+			// Para año, mostrar 12 meses
+			maxPoints = 12;
+			interval = 30; // aproximadamente un mes
+			break;
+		default:
+			maxPoints = 30;
+			interval = 1;
+	}
 
-	while (currentDate <= endDate) {
-		const nextDate = new Date(currentDate);
-		nextDate.setDate(nextDate.getDate() + 1);
+	if (periodo === 'hoy') {
+		// Para el día actual, generar datos por hora
+		const currentHour = new Date(startDate);
+		currentHour.setMinutes(0, 0, 0);
+		
+		for (let i = 0; i < 24; i++) {
+			const nextHour = new Date(currentHour);
+			nextHour.setHours(nextHour.getHours() + 1);
 
-		const count = await prisma.appointment.count({
-			where: {
-				appoint_init: {
-					gte: currentDate,
-					lt: nextDate,
+			const count = await prisma.appointment.count({
+				where: {
+					appoint_init: {
+						gte: currentHour,
+						lt: nextHour,
+					},
 				},
-			},
-		});
+			});
 
-		visits.push({
-			fecha: formatDate(currentDate),
-			visitas: count,
-		});
+			visits.push({
+				fecha: currentHour.getHours().toString().padStart(2, '0') + ':00',
+				visitas: count,
+			});
 
-		currentDate.setDate(currentDate.getDate() + 1);
+			currentHour.setHours(currentHour.getHours() + 1);
+		}
+	} else if (periodo === 'año') {
+		// Para el año, generar datos por mes
+		const currentDate = new Date(startDate);
+		currentDate.setDate(1); // Primer día del mes
+		
+		for (let i = 0; i < 12; i++) {
+			const nextMonth = new Date(currentDate);
+			nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+			const count = await prisma.appointment.count({
+				where: {
+					appoint_init: {
+						gte: currentDate,
+						lt: nextMonth,
+					},
+				},
+			});
+
+			visits.push({
+				fecha: currentDate.toLocaleDateString("es-ES", { month: 'short' }),
+				visitas: count,
+			});
+
+			currentDate.setMonth(currentDate.getMonth() + 1);
+		}
+	} else {
+		// Para semana y mes, generar datos por día
+		const currentDate = new Date(startDate);
+		const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+		const totalDays = Math.min(daysDiff, maxPoints);
+
+		for (let i = 0; i < totalDays; i++) {
+			const nextDate = new Date(currentDate);
+			nextDate.setDate(nextDate.getDate() + 1);
+
+			const count = await prisma.appointment.count({
+				where: {
+					appoint_init: {
+						gte: currentDate,
+						lt: nextDate,
+					},
+				},
+			});
+
+			visits.push({
+				fecha: formatDate(currentDate),
+				visitas: count,
+			});
+
+			currentDate.setDate(currentDate.getDate() + 1);
+		}
 	}
 
 	return visits;

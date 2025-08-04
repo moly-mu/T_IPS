@@ -408,23 +408,49 @@ const Ofertas = () => {
           {/* Visitas por dia */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Visitas por Día</h3>
-              <div className="text-sm text-gray-600">Últimos 30 días</div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {filtroTiempo === 'hoy' ? 'Visitas por Hora' : 
+                 filtroTiempo === 'año' ? 'Visitas por Mes' : 
+                 'Visitas por Día'}
+              </h3>
+              <div className="text-sm text-gray-600">
+                {filtroTiempo === 'hoy' ? 'Últimas 24 horas' :
+                 filtroTiempo === 'semana' ? 'Últimos 7 días' :
+                 filtroTiempo === 'mes' ? 'Últimos 30 días' :
+                 'Últimos 12 meses'}
+              </div>
             </div>
-            <div className="flex items-end justify-between h-48 gap-1">
+            <div className="flex items-end justify-between h-48 gap-1 overflow-x-auto">
               {dashboardData.visitasPorDia.length > 0 ? (
                 dashboardData.visitasPorDia.map((dia, index) => (
-                  <div key={index} className="flex flex-col items-center">
+                  <div key={index} className="flex flex-col items-center min-w-[8px]">
                     <div 
-                      className="w-2 bg-[#003366] rounded-t-sm hover:bg-[#00102D] transition-colors cursor-pointer"
+                      className="bg-[#003366] rounded-t-sm hover:bg-[#00102D] transition-colors cursor-pointer"
                       style={{ 
+                        width: filtroTiempo === 'año' ? '20px' : 
+                               filtroTiempo === 'hoy' ? '6px' : '8px',
                         height: `${(dia.visitas / maxVisitas) * 180}px`,
-                        minHeight: dia.visitas === 0 ? '2px' : ''
+                        minHeight: dia.visitas === 0 ? '2px' : '4px'
                       }}
                       title={`${dia.fecha}: ${dia.visitas} visitas`}
                     ></div>
-                    {index % 5 === 0 && (
-                      <span className="text-xs text-gray-400 mt-2">{dia.fecha.split('/')[0]}</span>
+                    {/* Mostrar etiquetas según el período */}
+                    {filtroTiempo === 'hoy' ? (
+                      index % 4 === 0 && (
+                        <span className="text-xs text-gray-400 mt-2 transform -rotate-45 origin-center w-8 text-center">
+                          {dia.fecha}
+                        </span>
+                      )
+                    ) : filtroTiempo === 'año' ? (
+                      <span className="text-xs text-gray-400 mt-2 transform -rotate-45 origin-center w-8 text-center">
+                        {dia.fecha}
+                      </span>
+                    ) : (
+                      index % (filtroTiempo === 'semana' ? 1 : 5) === 0 && (
+                        <span className="text-xs text-gray-400 mt-2 text-center">
+                          {dia.fecha.split('/')[0]}
+                        </span>
+                      )
                     )}
                   </div>
                 ))
