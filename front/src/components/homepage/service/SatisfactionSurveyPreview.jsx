@@ -1,0 +1,269 @@
+import { Star, Heart, ThumbsUp, ArrowRight, Shield, Mail, CheckCircle, AlertCircle, Award, Target, Zap } from 'lucide-react';
+import { Link } from "react-router-dom";
+
+export default function SatisfactionSurveyPreview() {
+  const handleStartSurvey = () => {
+    window.location.href = '/EncuestaSatisfaccion';
+  };
+
+  const Navbar = () => {
+    return (
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="text-2xl font-light tracking-wide text-gray-900">
+              TELECONSULTAS<span className="font-medium">IPS</span>
+            </Link>
+            
+            <div className="hidden md:flex items-center space-x-12">
+              <a href="/Tins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
+                ADMINISTRADOR
+              </a>
+              <a href="/Pins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
+                MÉDICO
+              </a>
+              <a href="/Sreg" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
+                REGISTRARME
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  };
+
+  return (
+    <>
+      <Navbar/>
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="relative bg-white">
+          <div className="relative max-w-6xl mx-auto px-6 py-24">
+            <div className="text-center space-y-8">
+              <div className="inline-flex items-center bg-blue-50 rounded-full px-6 py-3 text-sm font-medium text-blue-700 border border-blue-200">
+                <Star className="w-5 h-5 mr-2 text-blue-300" />
+                Encuesta de Satisfacción Post-Consulta
+              </div>
+              
+              <h1 className="text-5xl md:text-6xl font-bold">
+                Tu Experiencia
+                <br />
+                <span className="text-blue-700">Construye Mejores</span>
+                <br />
+                Servicios Médicos
+              </h1>
+              
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Cada opinión que compartes nos ayuda a perfeccionar la atención médica virtual 
+                y garantizar la mejor experiencia para todos nuestros pacientes.
+              </p>
+              
+              <button
+                onClick={handleStartSurvey}
+                className="bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-500 transition-all transform hover:scale-105 shadow-lg text-lg">
+                Evaluar Mi Consulta
+                <ArrowRight className="w-5 h-5 inline-block ml-2" />
+              </button>
+            </div>
+          </div>
+          </div>
+
+          <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full"></div>
+          <div className="absolute bottom-20 right-10 w-32 h-32 bg-blue-400/20 rounded-full"></div>
+          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-indigo-300/30 rounded-full"></div>
+
+        <div className="py-20 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                ¿Cómo Funciona la <span className="text-blue-600">Evaluación</span>?
+              </h2>
+              <p className="text-xl text-gray-600">Un proceso simple y rápido para capturar tu experiencia</p>
+            </div>
+            
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Consulta Finalizada</h3>
+                <p className="text-gray-600 text-sm">Al terminar tu sesión médica, se activa automáticamente el proceso</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Evaluación Rápida</h3>
+                <p className="text-gray-600 text-sm">Completas una evaluación estructurada de 5 minutos</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Mejora Continua</h3>
+                <p className="text-gray-600 text-sm">Tu feedback se convierte en mejoras reales del servicio</p>
+              </div>
+
+               <div className="text-center">
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Notificación Inmediata</h3>
+                <p className="text-gray-600 text-sm">Recibes un email confirmando que realizaste la encuesta</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="py-20">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid lg:grid-cols-1 gap-16 items-center">
+              <div className="space-y-8">
+                <h2 className="text-4xl font-bold text-gray-900">
+                  ¿Qué Evaluamos <span className="text-blue-600">Juntos</span>?
+                </h2>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4 p-6 bg-blue-50 rounded-2xl">
+                    <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <ThumbsUp className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 mb-2">Satisfacción General</h3>
+                      <p className="text-gray-600">Evalúa tu nivel de satisfacción con la consulta médica recibida y si cumplió tus expectativas.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4 p-6 bg-indigo-50 rounded-2xl">
+                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Award className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 mb-2">Calidad del Médico</h3>
+                      <p className="text-gray-600">Califica el profesionalismo, claridad en explicaciones, empatía y resolución de dudas del especialista.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4 p-6 bg-blue-50 rounded-2xl">
+                    <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 mb-2">Experiencia Técnica</h3>
+                      <p className="text-gray-600">Valora la calidad de video/audio, facilidad de uso de la plataforma y estabilidad de conexión.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="py-20 bg-gradient-to-r from-slate-50 to-blue-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Tu <span className="text-blue-600">Participación</span> Transforma Vidas
+              </h2>
+              <p className="text-xl text-gray-600">Descubre cómo tu opinión genera cambios reales en la atención médica</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-l-4 border-green-500 transform hover:scale-105 transition-all duration-300">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Ayudas a Otros Pacientes</h3>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4 mb-4">
+                  <div className="text-2xl font-bold text-green-600 mb-1">95%</div>
+                  <p className="text-sm text-green-700">de las mejoras implementadas provienen de feedback de pacientes</p>
+                </div>
+                <p className="text-gray-600">Tu experiencia se convierte en mejores consultas para futuros pacientes como tú.</p>
+              </div>
+              
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-l-4 border-blue-500 transform hover:scale-105 transition-all duration-300">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Solo 5 Minutos</h3>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                  <div className="text-2xl font-bold text-indigo-600 mb-1">⚡</div>
+                  <p className="text-sm text-indigo-600">Proceso rápido y sencillo desde cualquier dispositivo</p>
+                </div>
+                <p className="text-gray-600">Una inversión mínima de tiempo que genera un impacto máximo en la calidad del servicio.</p>
+              </div>
+              
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-l-4 border-purple-500 transform hover:scale-105 transition-all duration-300">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                    <Target className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">Cambios Reales</h3>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-4 mb-4">
+                  <div className="text-2xl font-bold text-purple-600 mb-1">✨</div>
+                  <p className="text-sm text-purple-700">Vemos resultados implementados en promedio cada 30 días</p>
+                </div>
+                <p className="text-gray-600">Cada sugerencia es revisada y las más impactantes se implementan rápidamente.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="py-20">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-400/30 rounded-full translate-y-12 -translate-x-12"></div>
+              
+              <div className="relative">
+                <h2 className="text-4xl font-bold mb-6">¿Tu Consulta Terminó?</h2>
+                <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                  Tu evaluación nos ayuda a seguir mejorando la calidad de atención médica para todos.
+                </p>
+                
+                <button
+                  onClick={handleStartSurvey}
+                  className="bg-white text-blue-700 px-10 py-4 rounded-xl font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl text-lg">
+                  Completar Encuesta Ahora
+                </button>
+                
+                <div className="flex items-center justify-center space-x-4 text-blue-200 text-sm mt-6">
+                  <Shield className="w-4 h-4" />
+                  <span>5 minutos</span>
+                  <span>•</span>
+                  <span>100% Confidencial</span>
+                  <span>•</span>
+                  <span>Mejora Real</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 py-12">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+              <div className="flex items-start space-x-3">
+                <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-blue-800">
+                  <h4 className="font-semibold mb-2">Información sobre tu Privacidad</h4>
+                  <p className="text-sm leading-relaxed">
+                    La encuesta se envía automáticamente tras cada consulta finalizada. Tu participación es voluntaria 
+                    y toda la información es tratada confidencialmente. Los datos se utilizan exclusivamente para 
+                    mejorar la calidad de nuestros servicios médicos y experiencia de usuario.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -46,6 +46,23 @@ const Sregistro = () => {
   }
 };
 
+  const [formData, setFormData] = useState({
+    genero: "",
+    genroOtro:"",
+    idioma: "",
+    idiomaOtro: "",
+    fechaNacimiento: ""
+  })
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+
       const Navbar = () => {
     return (
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
@@ -154,6 +171,126 @@ const Sregistro = () => {
                     placeholder="Introduce tu segundo apellido"
                   />
                 </div>
+
+                {/* genero */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Género
+                  </label>
+                  <select
+                    name="genero"
+                    value={formData.genero}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled>
+                    Selecciona tu género
+                    </option>
+                    <option value="M" className="text-black bg-white">
+                    Masculino
+                    </option>
+                    <option value="F" className="text-black bg-white">
+                    Femenino
+                    </option>
+                    <option value="Otro" className="text-black bg-white">
+                    Otro
+                    </option>
+                  </select>
+
+                  {formData.genero === "Otro" && (
+                    <div className="mt-4">
+                      <label className="text-gray-300 text-sm block mb-2">Especifica tu género</label>
+                      <input 
+                      type="text"
+                      name="generoOtro"
+                      value={formData.generoOtro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Escribe tu género"
+                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
+                      />
+                    </div>
+                  )}
+                </div>
+  
+                {/* Sexo */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Sexo
+                  </label>
+                  <select
+                    name="sexo"
+                    required
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled selected>
+                    Selecciona tu sexo
+                    </option>
+                    <option value="M" className="text-black bg-white">
+                    Masculino
+                    </option>
+                    <option value="F" className="text-black bg-white">
+                    Femenino
+                    </option>
+                  </select>
+                </div>
+
+                {/* lenguaje */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Idioma
+                  </label>
+                  <select
+                    name="idioma"
+                    value={formData.idioma}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
+                    <option value="" disabled>
+                    Selecciona tu idioma
+                    </option>
+                    <option value="Español" className="text-black bg-white">Español</option>
+                    <option value="Portugues" className="text-black bg-white">Portugués</option>
+                    <option value="Frances" className="text-black bg-white">Francés</option>
+                    <option value="Aleman" className="text-black bg-white">Alemén</option>
+                    <option value="Ingles" className="text-black bg-white">Inglés</option>
+                    <option value="Otro" className="text-black bg-white">
+                    Otro
+                    </option>
+                  </select>
+
+                  {formData.idioma === "Otro" && (
+                    <div className="mt-4">
+                      <label className="text-gray-300 text-sm block mb-2">Especifica tu idioma</label>
+                      <input 
+                      type="text"
+                      name="idiomaOtro"
+                      value={formData.idiomaOtro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Escribe tu idioma"
+                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
+                      />
+                    </div>
+                  )}
+                </div>
+  
+                {/* telefono */}
+                <div>
+                  <label className="text-gray-300 text-sm block mb-2">
+                    Teléfono
+                  </label>
+                  <input
+                    name="telefono"
+                    type="tel"
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                    placeholder="Introduce tu teléfono (ej: +35 325 125 4587)"
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['Backspace', 'Delte', 'ArrowLeft', 'ArrowRight', 'Tab', '+'];
+                      const isNumber = /^[0-9]$/.test(e.key);
+                      if (!isNumber && !allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                </div>
   
                 {/* tipo de documento */}
                 <div>
@@ -213,6 +350,18 @@ const Sregistro = () => {
                     onChange={handleChange}
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
                     placeholder="Introduce tu correo electrónico"
+                  />
+                </div>
+
+                {/* Fecha de Nacimiento */}
+                <div className="text-gray-300 text-sm block mb-2">
+                  <label className="font-medium mb-2">Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    name="fechaNacimiento"
+                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                    value={handleInputChange.fechaNacimiento}
+                    onChange={handleInputChange}
                   />
                 </div>
   

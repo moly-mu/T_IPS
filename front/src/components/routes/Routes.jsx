@@ -23,11 +23,24 @@ import DoctorProfile from "../company/DoctorProfile";
 import DoctorProfileAfterLogin from "../company/DoctorProfileAfterLogin";
 import MedicalCalendar from "../company/MedicalCalendar";
 import DoctorSearchPage from "../company/DoctorSearchPage";
-import PatientDashboard from "../company/PatientDashboard ";
 import MedicalPaymentSystem from "../company/paymentService/MedicalPaymentSystem";
 import MedicalProfilesSection from "../homepage/sections/MedicalProfilesSection";
 import SymptomQuestionnaire from "../company/AssistanceConsultation/SymptomQuestionnaire ";
 import MedicalAppointmentSection from "../company/AssistanceConsultation/MedicalAppointmentSection";
+import CancelAppointmentM from "../company/cancelAppointment/CancelAppointmentM";
+import PasswordRecovery from "../company/recoverPassword/PasswordRecovery";
+import NotFoundPage from "../NotFoundPage";
+import TeleconsultaSurvey from "../company/AssistanceConsultation/TeleconsultaSurvey";
+//
+import GoDoctorAppointment from "../user/desis/doctorAppointment/GoDoctorAppointment";
+import PatientProfile from "../company/patientHome/PatientProfile";
+import ClinicalHistory from "../user/desis/clinicalHistory/ClinicalHistory";
+import DiagnosticPreview from "../homepage/service/DiagnosticPreview";
+//
+import SatisfactionSurveyPreview from "../homepage/service/SatisfactionSurveyPreview";
+import HistoriaClinicaInfo from "../homepage/service/HistoriaClinicaInfo";
+import RecentActivityTable from "../admin/recentActivity/RecentActivityTable";
+
 
 
 const AppRoutes = () => {
@@ -39,6 +52,9 @@ const AppRoutes = () => {
         <Route path="/Sins" element={<Sinsesion />} />
         <Route path="/Sreg" element={<Sregistro />} />
         <Route path="/PrePerfiles" element={<MedicalProfilesSection />} />
+        <Route path="/ServicioTres" element={<DiagnosticPreview/>} />
+        <Route path="/ServicioCinco" element={<SatisfactionSurveyPreview />} />
+        <Route path="/ServicioCuatro" element={<HistoriaClinicaInfo />} />
 
         {/* medico */}
         <Route path="/pagusuario" element={<Pperfil />} />
@@ -48,13 +64,15 @@ const AppRoutes = () => {
         <Route path="/ajus" element={<Ajustes />} />
         <Route path="/calendar" element={<Calendar/>} />
         <Route path="/listopc" element={<ScheduledDays/>} />
+        <Route path="/IrCita" element={<GoDoctorAppointment/>} />
+        <Route path="/EdicionHistoriaC" element={<ClinicalHistory/>} />
 
         
         {/* usuario*/}
         <Route path="/Pins" element={<PinSesion />} />
         <Route path="/Preg" element={<Pregistro />} />
         <Route path="/pagempresa" element={<Pins />} />
-        <Route path="/perfilPaciente" element={<PatientDashboard/>} />
+        <Route path="/perfilPaciente" element={<PatientProfile/>} />
         <Route path="/perfilDoctor" element={<DoctorProfile/>} />
         <Route path="/perfilDoctorDes" element={<DoctorProfileAfterLogin/>} />
         <Route path="/calendarQuotes" element={<MedicalCalendar/>} />
@@ -62,6 +80,9 @@ const AppRoutes = () => {
         <Route path="/pago" element={<MedicalPaymentSystem/>} />
         <Route path="/DiagnosticoPrevio" element={<SymptomQuestionnaire/>} />
         <Route path="/AsistirAConsulta" element={<MedicalAppointmentSection/>} />
+        <Route path="/CancelarCitaM" element={<CancelAppointmentM/>} />
+        <Route path="/RecuperarContraseña" element={<PasswordRecovery/>} />
+        <Route path="/EncuestaSatisfaccion" element={<TeleconsultaSurvey/>} />
 
 
         {/* Administrador*/}
@@ -70,9 +91,11 @@ const AppRoutes = () => {
         <Route path="/userD" element={<UserSection />} />
         <Route path="/specialistD" element={<SpecialistsSection/>} />
         <Route path="/serviceD" element={<ServicesSection/>} />
+        <Route path="/actividadReciente" element={<RecentActivityTable/>} />
 
         {/* Extrahome*/}
         <Route path="/quans" element={<FAQSection/>} />
+        <Route path="/Page404" element={<NotFoundPage/>} />
       </Routes>
     </div>
   );

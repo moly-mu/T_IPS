@@ -25,6 +25,10 @@ const Cards = () => {
   const [foto, setFoto] = useState(null);
   const [biografia, setBiografia] = useState("");
 
+  //Agregar campo para horario laboral
+  //Franja horaria por cantidades especialidades
+  
+
   const { token } = useAuth();
 
   // Información Personal
