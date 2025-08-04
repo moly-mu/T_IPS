@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Save, Download, Send, Upload, UserCheck, User, Pill, ClipboardList } from 'lucide-react';
-import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
+import GeneralData from './general/GeneralData';
 import TreatmentMedications from './TreatmentMedications';
 import { html2pdf } from 'html2pdf.js';
 
