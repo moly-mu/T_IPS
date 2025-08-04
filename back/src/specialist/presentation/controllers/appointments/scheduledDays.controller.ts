@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { number } from "zod";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +13,6 @@ export const getScheduledAppointments = async (req: Request, res: Response) => {
     console.log('Tipo de userId:', typeof specialistUserId);
     
     // Convertir a número si es string
-    const numericUserId = typeof specialistUserId === 'string' ? parseInt(specialistUserId) : specialistUserId;
     
     // Debug: Ver todos los especialistas
     const allSpecialists = await prisma.specialist.findMany({
@@ -39,7 +39,7 @@ export const getScheduledAppointments = async (req: Request, res: Response) => {
     // También busquemos el usuario que está haciendo la petición
     const requestingUser = await prisma.user.findUnique({
       where: {
-        id: numericUserId,
+        id: specialistUserId,
       },
       include: {
         credential_users: {
@@ -57,7 +57,7 @@ export const getScheduledAppointments = async (req: Request, res: Response) => {
     const specialist = await prisma.specialist.findFirst({
       where: {
         User: {
-          id: numericUserId,
+          id: specialistUserId,
         }
       },
       include: {
@@ -76,7 +76,7 @@ export const getScheduledAppointments = async (req: Request, res: Response) => {
       return res.status(404).json({
         message: "Especialista no encontrado",
         debug: {
-          searchedUserId: numericUserId,
+          searchedUserId: specialistUserId,
           originalUserId: specialistUserId,
           requestingUser: requestingUser,
           availableSpecialists: allSpecialists,
@@ -88,7 +88,7 @@ export const getScheduledAppointments = async (req: Request, res: Response) => {
     // Obtenemos todas las citas del especialista
     const appointments = await prisma.appointment.findMany({
       where: {
-        Specialist_idEspecialista: specialist.id,
+        Specialist_idEspecialista: specialist.id as number,
       },
       include: {
         Paciente: {

@@ -81,7 +81,7 @@ function ScheduledDays() {
     if (!token) return null;
     
     try {
-      const response = await axios.get(`/specialist/appointments/details/${appointmentId}`, {
+      const response = await axios.get(`http://localhost:3000/specialist/appointments/details/${appointmentId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

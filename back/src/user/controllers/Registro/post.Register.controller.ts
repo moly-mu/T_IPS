@@ -145,6 +145,7 @@ for (const { value, valid, name } of enums as { value: any, valid: string[], nam
     const token = jwt.sign({ id: result.user.id }, process.env.JWT_SECRET || "secret", {
       expiresIn: "1d",
     });
+    console.log("Usuario registrado:", result.user);
 
     return res.status(201).json({ token, user: result.user });
   } catch (err: any) {

@@ -17,6 +17,7 @@ export const loginSpecialistController = async (req: Request, res: Response) => 
   try {
     const result = await loginSpecialistService(parseResult.data);
 
+    console.log(result)
     if (result.error) {
       if (
         result.error === "No estás registrado como especialista" ||
