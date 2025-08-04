@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 // Importaciondes rutas de User
 import userRoutes from "./user/routes/user.routes";
+import clinicalHistoryRoutes from "./user/presentation/routes/clinicalHistory";
 
 // Importaciones de rutas de administrador
 import adminProfRoutes from "./admin/routes/profesional.routes";
@@ -27,6 +28,7 @@ dotenv.config();
 
 // *Rutas de usuario
 app.use("/api", userRoutes); // /api/register, /api/login, /api/request-specialist
+app.use("/api/clinical-history", clinicalHistoryRoutes); // Rutas de Historia Clínica
 
 
 // *Rutas de administración
