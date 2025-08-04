@@ -470,6 +470,7 @@ enum UserStatus {
 enum Sex{ 
   Masculino
   Femenino
+  Otro
 }
 enum BloodType {
   A_POS  @map("A+")
