@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Save, Download, Send, Upload, UserCheck, User, Pill, ClipboardList } from 'lucide-react';
+import { Save, Download, Send, UserCheck, User, Pill, ClipboardList } from 'lucide-react';
 import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
 import TreatmentMedications from './TreatmentMedications';

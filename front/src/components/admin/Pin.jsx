@@ -1,12 +1,30 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { Users, UserCheck,FolderClock , Calendar, BanknoteArrowUp , TrendingUp, Star, Filter,Bell,Settings,ChevronDown,Eye,CheckCircle,XCircle,Home,User,FileText} from 'lucide-react';
-import UserSection from '../admin/user/UserSection';
-import SpecialistsSection from '../admin/specialist/SpecialistsSection';
-import ServicesSection from '../admin/service/ServicesSection';
-import RecentActivityTable from './recentActivity/RecentActivityTable';
+import {
+  Users,
+  UserCheck,
+  Activity,
+  FolderClock,
+  Calendar,
+  BanknoteArrowUp,
+  TrendingUp,
+  Star,
+  Filter,
+  Bell,
+  Settings,
+  ChevronDown,
+  CheckCircle,
+  XCircle,
+  Home,
+  User,
+  FileText,
+} from "lucide-react";
+import UserSection from "../admin/user/UserSection";
+import SpecialistsSection from "../admin/specialist/SpecialistsSection";
+import ServicesSection from "../admin/service/ServicesSection";
+import RecentActivityTable from "./recentActivity/RecentActivityTable";
 
 const Layout = ({ children, activeTab, setActiveTab }) => {
   return (
@@ -67,11 +85,13 @@ const Layout = ({ children, activeTab, setActiveTab }) => {
             Servicios
           </button>
 
-          <button 
-            onClick={() => setActiveTab('recentActivity')}
+          <button
+            onClick={() => setActiveTab("recentActivity")}
             className={`flex hover:bg-gray-100 px-6 py-2 items-center gap-2 ${
-              activeTab === 'recentActivity' ? 'bg-gray-100 text-gray-800' : ''}`}>
-            <FolderClock  size={16} />
+              activeTab === "recentActivity" ? "bg-gray-100 text-gray-800" : ""
+            }`}
+          >
+            <FolderClock size={16} />
             Actividad Reciente
           </button>
         </div>
@@ -100,7 +120,7 @@ const Layout = ({ children, activeTab, setActiveTab }) => {
                 {activeTab === "users" && "Gestión de Usuarios"}
                 {activeTab === "specialists" && "Gestión de Especialistas"}
                 {activeTab === "services" && "Gestión de Servicios"}
-                {activeTab === 'recentActivity' && 'Actividad Reciente'}
+                {activeTab === "recentActivity" && "Actividad Reciente"}
               </span>
             </div>
 
@@ -203,29 +223,66 @@ StatsCard.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   icon: PropTypes.elementType.isRequired,
   trend: PropTypes.string,
-  color: PropTypes.oneOf(['blue', 'green', 'purple', 'black']),
+  color: PropTypes.oneOf(["blue", "green", "purple", "black"]),
 };
 
 const IncomeCard = ({ color = "black" }) => {
-  const [selectedSpecialty, setSelectedSpecialty] = useState('todas');
+  IncomeCard.propTypes = {
+    color: PropTypes.oneOf(["blue", "green", "purple", "black"]),
+  };
+
+  IncomeCard.defaultProps = {
+    color: "black",
+  };
+  const [selectedSpecialty, setSelectedSpecialty] = useState("todas");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const specialties = [
-    { id: 'todas', name: 'Todas las especialidades', income: '$45,670', trend: '+15% este mes' },
-    { id: 'medicina-general', name: 'Medicina General', income: '$12,850', trend: '+18% este mes' },
-    { id: 'medicina-alternativa', name: 'Medicina Alternativa', income: '$8,920', trend: '+8% este mes' },
-    { id: 'psicologia', name: 'Psicología', income: '$10,340', trend: '+22% este mes' },
-    { id: 'nutricion', name: 'Nutrición', income: '$7,650', trend: '+12% este mes' },
-    { id: 'ortopedia', name: 'Ortopedia', income: '$5,910', trend: '+6% este mes' }
+    {
+      id: "todas",
+      name: "Todas las especialidades",
+      income: "$45,670",
+      trend: "+15% este mes",
+    },
+    {
+      id: "medicina-general",
+      name: "Medicina General",
+      income: "$12,850",
+      trend: "+18% este mes",
+    },
+    {
+      id: "medicina-alternativa",
+      name: "Medicina Alternativa",
+      income: "$8,920",
+      trend: "+8% este mes",
+    },
+    {
+      id: "psicologia",
+      name: "Psicología",
+      income: "$10,340",
+      trend: "+22% este mes",
+    },
+    {
+      id: "nutricion",
+      name: "Nutrición",
+      income: "$7,650",
+      trend: "+12% este mes",
+    },
+    {
+      id: "ortopedia",
+      name: "Ortopedia",
+      income: "$5,910",
+      trend: "+6% este mes",
+    },
   ];
 
-  const currentSpecialty = specialties.find(s => s.id === selectedSpecialty);
+  const currentSpecialty = specialties.find((s) => s.id === selectedSpecialty);
 
   const colorClasses = {
     blue: "bg-blue-50 text-blue-600",
     green: "bg-green-50 text-green-600",
     purple: "bg-purple-50 text-purple-600",
-    black: "bg-black-600 text-black-600"
+    black: "bg-black-600 text-black-600",
   };
 
   const handleSpecialtyChange = (specialtyId) => {
@@ -237,18 +294,26 @@ const IncomeCard = ({ color = "black" }) => {
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Ingresos</p>
+          <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+            Ingresos
+          </p>
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
             >
               <span className="text-gray-600 max-w-20 truncate">
-                {selectedSpecialty === 'todas' ? 'Todas' : currentSpecialty?.name}
+                {selectedSpecialty === "todas"
+                  ? "Todas"
+                  : currentSpecialty?.name}
               </span>
-              <ChevronDown className={`w-3 h-3 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`w-3 h-3 text-gray-500 transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
-            
+
             {isDropdownOpen && (
               <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                 {specialties.map((specialty) => (
@@ -256,7 +321,9 @@ const IncomeCard = ({ color = "black" }) => {
                     key={specialty.id}
                     onClick={() => handleSpecialtyChange(specialty.id)}
                     className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                      selectedSpecialty === specialty.id ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                      selectedSpecialty === specialty.id
+                        ? "bg-gray-50 text-gray-900"
+                        : "text-gray-700"
                     }`}
                   >
                     {specialty.name}
@@ -266,13 +333,17 @@ const IncomeCard = ({ color = "black" }) => {
             )}
           </div>
         </div>
-        <div className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center`}
+        >
           <BanknoteArrowUp className="w-6 h-6" />
         </div>
       </div>
-      
+
       <div>
-        <p className="text-3xl font-light text-gray-900 mb-2">{currentSpecialty?.income}</p>
+        <p className="text-3xl font-light text-gray-900 mb-2">
+          {currentSpecialty?.income}
+        </p>
         <p className="text-sm text-green-600 flex items-center">
           <TrendingUp className="w-4 h-4 mr-1" />
           {currentSpecialty?.trend}
@@ -565,8 +636,8 @@ const Pin = () => {
         return <SpecialistsSection />;
       case "services":
         return <ServicesSection />;
-      case 'recentActivity':
-        return <RecentActivityTable/>;
+      case "recentActivity":
+        return <RecentActivityTable />;
       default:
         return stats ? (
           <>
