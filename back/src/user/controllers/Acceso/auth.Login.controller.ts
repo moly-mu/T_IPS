@@ -12,6 +12,7 @@ export const loginUser = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Correo y contraseña son requeridos." });
   }
 
+  
   try {
     const credential = await prisma.credentialUser.findUnique({
       where: { email },
