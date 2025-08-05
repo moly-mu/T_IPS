@@ -37,6 +37,8 @@ import PatientProfile from "../company/patientHome/PatientProfile";
 import ClinicalHistory from "../user/desis/clinicalHistory/ClinicalHistory";
 import AnalyticsDashboard from "../admin/DashboardAnalytics/AnalyDashboard";
 import DiagnosticPreview from "../homepage/service/DiagnosticPreview";
+import SpecialistAppointmentView from "../specialist/appointments/SpecialistAppointmentView";
+import SpecialistSchedule from "../specialist/appointments/SpecialistSchedule";
 //
 import SatisfactionSurveyPreview from "../homepage/service/SatisfactionSurveyPreview";
 import HistoriaClinicaInfo from "../homepage/service/HistoriaClinicaInfo";
@@ -65,7 +67,10 @@ const AppRoutes = () => {
         <Route path="/ajus" element={<Ajustes />} />
         <Route path="/calendar" element={<Calendar/>} />
         <Route path="/listopc" element={<ScheduledDays/>} />
-        <Route path="/IrCita" element={<GoDoctorAppointment/>} />
+        <Route path="/IrCita" element={<ScheduledDays/>} />
+        <Route path="/IrCita/:appointmentId" element={<GoDoctorAppointment/>} />
+        <Route path="/especialista/cita/:appointmentId" element={<SpecialistAppointmentView/>} />
+        <Route path="/especialista/citas" element={<SpecialistSchedule/>} />
         <Route path="/EdicionHistoriaC" element={<ClinicalHistory/>} />
 
         

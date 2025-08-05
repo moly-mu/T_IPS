@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Save, Download, Send, Upload, UserCheck, User, Pill, ClipboardList } from 'lucide-react';
+import { Save, Download, Send, UserCheck, User, Pill, ClipboardList } from 'lucide-react';
 import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
 import TreatmentMedications from './TreatmentMedications';
 import { html2pdf } from 'html2pdf.js';
-import jsPDF from 'jspdf';
 import { medicalHistoryService } from '../../../../services/clinicalHistory/clinicalHistoryService';
 
 const today = new Date().toISOString().split('T')[0];
@@ -110,10 +109,6 @@ const ClinicalHistory = () => {
         setLoading(false);
       }
     }
-  };
-
-  const handleViewPatientData = () => {
-    alert('Mostrando datos del paciente...');
   };
 
   const tabs = [

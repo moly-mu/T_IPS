@@ -115,8 +115,9 @@ function ScheduledDays() {
   };
 
   const handleAddEvent = () => {
-    // Redirigir a la página de creación de citas
-    navigate('/IrCita');
+    // Redirigir a la página de creación de citas (cambiar por la ruta correcta)
+    // En lugar de ir a GoDoctorAppointment sin ID, va a una página de crear nueva cita
+    navigate('/especialista/citas'); // Ir a la lista de citas del especialista
   };
 
   const handleNavigation = (path) => {
@@ -500,9 +501,9 @@ function ScheduledDays() {
                 )}
                 <button
                   onClick={() => {
-                    handleReschedule(selectedPatient.id);
                     closeModal();
-                    navigate('/IrCita');
+                    // Navegar a la cita específica con el ID real
+                    navigate(`/IrCita/${selectedPatient.id}`);
                   }}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
                 >
