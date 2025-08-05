@@ -193,7 +193,7 @@ model Request {
 
 model Appointment {
   id                                                  Int      @id @default(autoincrement()) @map("idappointments")
-  state                                               String   @db.VarChar(20)
+  state                                               stateAppointment   @default(Pendiente)
   appoint_specialtyId                                 Int
   Paciente_idPaciente                                 Int
   Paciente_pac_data_idpac_data                        Int
@@ -534,4 +534,12 @@ model CalendarEvent {
   User User @relation(fields: [userId], references: [id])
 
   @@map("calendar_events")
+}
+
+enum stateAppointment{
+  Completada
+  EnCurso
+  Pendiente
+  Reagendada
+  Cancelada
 }
