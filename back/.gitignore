@@ -7,6 +7,7 @@ prisma/migrations/
 *.db
 
 
+
 # Environment variables
 .env
 .env.*
