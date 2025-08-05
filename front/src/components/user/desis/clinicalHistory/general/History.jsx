@@ -186,7 +186,7 @@ const History = () => {
                 <div className="flex items-center space-x-1">
                   <button
                     onClick={() => handleEdit(history)}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    className="p-2 text-green-600 hover:bg-green-50 rounded transition-colors"
                     title="Editar">
                     <Edit2 className="h-4 w-4" />
                   </button>
@@ -217,7 +217,7 @@ const History = () => {
               {history.descripcion && (
                 <div className="mb-3">
                   <span className="font-medium text-gray-500 text-sm">Descripción:</span>
-                  <p className="text-sm text-gray-700 mt-1 p-2 bg-blue-50 border-l-4 border-blue-400 rounded">
+                  <p className="text-sm text-gray-700 mt-1 p-2 bg-green-50 border-l-4 border-green-700 rounded">
                     {history.descripcion}
                   </p>
                 </div>
