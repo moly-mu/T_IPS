@@ -10,6 +10,7 @@ prisma/migrations/
 .env
 .env.*
 
+
 # Build outputs (por si usas TypeScript o herramientas de compilación)
 dist/
 build/
