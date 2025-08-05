@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Download, Send, Upload, UserCheck, User, Pill, ClipboardList } from 'lucide-react';
 import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
 import TreatmentMedications from './TreatmentMedications';
 import { html2pdf } from 'html2pdf.js';
 import jsPDF from 'jspdf';
+import { medicalHistoryService } from '../../../../services/clinicalHistory/clinicalHistoryService';
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -18,6 +19,41 @@ const ClinicalHistory = () => {
   });
 
   const [activeTab, setActiveTab] = useState('general');
+  const [medicalHistory, setMedicalHistory] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Mock patient ID - en la aplicación real esto vendrá del contexto o props
+  const patientId = 1;
+
+  useEffect(() => {
+    loadMedicalHistory();
+  }, []);
+
+  const loadMedicalHistory = async () => {
+    try {
+      setLoading(true);
+      const response = await medicalHistoryService.getByPatient(patientId);
+      if (response.success) {
+        setMedicalHistory(response.data);
+        // Actualizar form data con información del paciente
+        if (response.data.Patient) {
+          const patient = response.data.Patient;
+          setFormData(prev => ({
+            ...prev,
+            identificacion: patient.User.credential_users.document?.toString() || prev.identificacion,
+            nombre: patient.User.firstname || prev.nombre,
+            apellidos: `${patient.User.lastname} ${patient.User.second_lastname || ''}`.trim() || prev.apellidos
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error loading medical history:', error);
+      setError('Error al cargar la historia clínica');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -26,9 +62,23 @@ const ClinicalHistory = () => {
     }));
   };
 
-  const handleSave = () => {
-    console.log('Datos guardados:', formData);
-    alert('Historia clínica guardada exitosamente');
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      if (medicalHistory) {
+        await medicalHistoryService.update(medicalHistory.id, {
+          email: formData.email || medicalHistory.email,
+          emergency_contact: formData.emergency_contact || medicalHistory.emergency_contact,
+          contact_phone: formData.contact_phone || medicalHistory.contact_phone
+        });
+      }
+      alert('Historia clínica guardada exitosamente');
+    } catch (error) {
+      console.error('Error saving medical history:', error);
+      alert('Error al guardar la historia clínica');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDownload = () => {
@@ -47,8 +97,19 @@ const ClinicalHistory = () => {
     alert('Enviando historia clínica al paciente...');
   };
 
-  const handleEndConsultation = () => {
-    alert('Finalizando consulta...');
+  const handleEndConsultation = async () => {
+    if (window.confirm('¿Está seguro de finalizar la consulta?')) {
+      try {
+        setLoading(true);
+        // Aquí podrías agregar lógica adicional para finalizar la consulta
+        alert('Consulta finalizada exitosamente');
+      } catch (error) {
+        console.error('Error ending consultation:', error);
+        alert('Error al finalizar la consulta');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const handleViewPatientData = () => {
@@ -77,6 +138,35 @@ const ClinicalHistory = () => {
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component;
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto p-8 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando historia clínica...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto p-8 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <p>{error}</p>
+            <button 
+              onClick={loadMedicalHistory}
+              className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-8 bg-gray-50 min-h-screen">
@@ -215,7 +305,7 @@ const ClinicalHistory = () => {
 
         {/* Contenido de la pestaña activa */}
         <div className="p-6">
-          {ActiveComponent && <ActiveComponent />}
+          {ActiveComponent && <ActiveComponent medicalHistory={medicalHistory} patientId={patientId} />}
         </div>
       </div>
 
@@ -224,9 +314,10 @@ const ClinicalHistory = () => {
         <div className="flex justify-center flex-wrap gap-4">
           <button
             onClick={handleSave}
-            className="flex flex-col items-center space-y-2 px-4 py-3 text-sm font-medium text-teal-700 hover:text-teal-900 hover:bg-teal-50 transition-colors rounded-md">
+            disabled={loading}
+            className="flex flex-col items-center space-y-2 px-4 py-3 text-sm font-medium text-teal-700 hover:text-teal-900 hover:bg-teal-50 transition-colors rounded-md disabled:opacity-50">
             <Save className="h-6 w-6" />
-            <span>Guardar</span>
+            <span>{loading ? 'Guardando...' : 'Guardar'}</span>
           </button>
           
           <button

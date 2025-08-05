@@ -18,20 +18,18 @@ export const loginSpecialistService = async (
   const specialist = await specialistRepository.findByEmail(SpecialistLoginInput.email);
 
   if (!specialist) {
-    return { error: "Usuario no encontrado" };
+    return { error: "Usuario no encontrado o no es un especialista" };
   }
 
-  // Aquí deberías obtener el hash de la contraseña real desde la base de datos.
-  // Si tu entidad Specialist no tiene el hash, ajusta el repositorio para incluirlo.
-  // Por ejemplo, specialist.passwordHash
+  // Comparar la contraseña proporcionada con el hash almacenado en la base de datos
   const passwordMatch = await bcrypt.compare(SpecialistLoginInput.password, specialist.passwordHash);
 
   if (!passwordMatch) {
-  return { error: "Contraseña incorrecta" };
-   }
+    return { error: "Contraseña incorrecta" };
+  }
 
   if (specialist.status !== "Activo") {
-    return { error: "Tu cuenta aún no ha sido aprobada" };
+    return { error: "Tu cuenta aún no ha sido aprobada. Estado actual: " + specialist.status };
   }
 
   return { user: specialist };

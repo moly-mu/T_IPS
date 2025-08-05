@@ -1,8 +1,8 @@
-// src/admin/specialties/controllerr/specialties.controller.ts
+// src/admin/specialties/controllers/specialties.controller.ts
 
 import { Request, Response } from "express";
 import { GetAllSpecialtiesService } from "@adminSpecialties/application/use-cases/specialty";
-import { GetAllSpecialtyPrismaRepository } from "../../infrastructure/repositories/";
+//import { GetAllSpecialtyPrismaRepository } from "../../infrastructure/repositories/";
 import { HttpStatus, Message, ErrorCode } from "@constants"
 
 

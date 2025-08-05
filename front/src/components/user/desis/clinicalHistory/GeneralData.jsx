@@ -1,106 +1,170 @@
-import React, { useState } from 'react';
-import { User, FileText, Shield, Plus, Trash2, Edit3, Save, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, FileText, Plus, Trash2, Edit3, Save, X } from 'lucide-react';
+import { generalDataService } from '../../../../services/clinicalHistory/clinicalHistoryService';
 
-const GeneralData = () => {
+const GeneralData = ({ medicalHistory, patientId }) => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [patientData, setPatientData] = useState(null);
+  
   const [formData, setFormData] = useState({
-    primerNombre: 'Juan',
-    segundoNombre: 'Manuel',
-    primerApellido: 'Pérez',
-    segundoApellido: 'Rodríguez',
-    fechaNacimiento: '1985-03-15',
+    primerNombre: '',
+    segundoNombre: '',
+    primerApellido: '',
+    segundoApellido: '',
+    fechaNacimiento: '',
     genero: 'Masculino',
     sexo: 'Masculino',
     lenguaje: 'Español',
-    numeroDocumento: '1.098.765.432',
-    tipoDocumento: 'CC - Cédula de Ciudadanía',
-    telefono: '+57 300 123 4567',
-    contactoEmergencia: 'María Pérez - 300 765 4321',
-    email: 'juan.perez@email.com',
-    direccion: 'Calle 123 #45-67, Bogotá',
+    numeroDocumento: '',
+    tipoDocumento: 'CC',
+    telefono: '',
+    contactoEmergencia: '',
+    email: '',
+    direccion: '',
     tipoSangre: 'O+',
-    alergias: 'Penicilina, Mariscos',
-    eps: 'Salud Total',
-    profesion: 'Minero',
-    estadoCivil: 'Casado',
-    grupoEtnico: 'N//A',
-    departamento: 'Bogotá',
+    alergias: '',
+    eps: 'Ninguna',
+    profesion: '',
+    estadoCivil: '',
+    grupoEtnico: 'N/A',
   });
 
-  const [medicalHistory, setMedicalHistory] = useState([
+  const [medicalBackgrounds, setMedicalBackgrounds] = useState([
     {
-      idantecedente: '',
+      id: null,
       medicalHistoryId: '',
       type: '',
       description: ''
     }
   ]);
 
-  const [consent, setConsent] = useState({
-    idconsentimiento: '',
-    patient_idPaciente: '',
-    patient_pac_data_idpac_data: '',
-    patient_User_idUser: '',
-    patient_User_credential_users_idcred: '',
-    patient_User_rol_idrol: '',
-    especialidad_id: '',
-    fecha_firma: '',
-    firmado_por: '',
-    relacion_con_paciente: '',
-    documento_identidad: '',
-    consentimiento_texto: '',
-    firmado: false,
-    firma_digital: '',
-    observaciones: '',
-    fecha_creacion: '',
-    fecha_actualizacion: ''
-  });
+  useEffect(() => {
+    if (patientId) {
+      loadPatientData();
+    }
+  }, [patientId]);
 
-  const handleSaveProfile = () => {
-    setIsEditingProfile(false);
-  }
+  useEffect(() => {
+    if (medicalHistory?.id) {
+      loadMedicalBackgrounds();
+    }
+  }, [medicalHistory]);
 
-    //agregar en datos del paciente:
-  //causa de atención, edad, tipo de paciente
-
-  //agregar en datos generales:
-  //notas medicas, signos vitales 
-
-  const handlePatientDataChange = (field, value) => {
-    setPatientData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleMedicalHistoryChange = (index, field, value) => {
-    const updated = [...medicalHistory];
-    updated[index] = { ...updated[index], [field]: value };
-    setMedicalHistory(updated);
-  };
-
-  const addMedicalHistory = () => {
-    setMedicalHistory([...medicalHistory, {
-      idantecedente: '',
-      medicalHistoryId: '',
-      type: '',
-      description: ''
-    }]);
-  };
-
-  const removeMedicalHistory = (index) => {
-    if (medicalHistory.length > 1) {
-      setMedicalHistory(medicalHistory.filter((_, i) => i !== index));
+  const loadPatientData = async () => {
+    try {
+      setLoading(true);
+      const response = await generalDataService.getPatientData(patientId);
+      if (response.success) {
+        const patient = response.data;
+        setPatientData(patient);
+        
+        setFormData({
+          primerNombre: patient.User.firstname || '',
+          segundoNombre: patient.User.second_firstname || '',
+          primerApellido: patient.User.lastname || '',
+          segundoApellido: patient.User.second_lastname || '',
+          fechaNacimiento: patient.User.birthdate ? new Date(patient.User.birthdate).toISOString().split('T')[0] : '',
+          genero: patient.User.gender || 'Masculino',
+          sexo: patient.User.sex || 'Masculino',
+          lenguaje: patient.User.language || 'Español',
+          numeroDocumento: patient.User.credential_users.document?.toString() || '',
+          tipoDocumento: patient.User.document_type || 'CC',
+          telefono: patient.User.phone || '',
+          contactoEmergencia: patient.pac_data.emergency_contact || '',
+          email: patient.User.credential_users.email || '',
+          direccion: patient.pac_data.Direction || '',
+          tipoSangre: patient.pac_data.bloodType || 'O+',
+          alergias: patient.pac_data.allergies || '',
+          eps: patient.pac_data.eps_type || 'Ninguna',
+          profesion: patient.pac_data.profession || '',
+          estadoCivil: '',
+          grupoEtnico: patient.pac_data.ethnicgroup || 'N/A',
+        });
+      }
+    } catch (error) {
+      console.error('Error loading patient data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleConsentChange = (field, value) => {
-    setConsent(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const loadMedicalBackgrounds = async () => {
+    try {
+      const response = await generalDataService.getBackgroundsByHistory(medicalHistory.id);
+      if (response.success) {
+        setMedicalBackgrounds(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading medical backgrounds:', error);
+    }
   };
+
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true);
+      await generalDataService.updatePatientData(patientId, formData);
+      setIsEditingProfile(false);
+      alert('Datos actualizados exitosamente');
+    } catch (error) {
+      console.error('Error updating patient data:', error);
+      alert('Error al actualizar los datos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleMedicalBackgroundChange = (index, field, value) => {
+    const updated = [...medicalBackgrounds];
+    updated[index] = { ...updated[index], [field]: value };
+    setMedicalBackgrounds(updated);
+  };
+
+  const addMedicalBackground = async () => {
+    const newBackground = {
+      medicalHistoryId: medicalHistory?.id || '',
+      type: '',
+      description: ''
+    };
+    
+    try {
+      const response = await generalDataService.createBackground(newBackground);
+      if (response.success) {
+        setMedicalBackgrounds([...medicalBackgrounds, response.data]);
+      }
+    } catch (error) {
+      console.error('Error creating medical background:', error);
+      setMedicalBackgrounds([...medicalBackgrounds, { ...newBackground, id: Date.now() }]);
+    }
+  };
+
+  const removeMedicalBackground = async (index) => {
+    const background = medicalBackgrounds[index];
+    if (background.id && window.confirm('¿Está seguro de eliminar este antecedente?')) {
+      try {
+        await generalDataService.deleteBackground(background.id);
+        setMedicalBackgrounds(medicalBackgrounds.filter((_, i) => i !== index));
+      } catch (error) {
+        console.error('Error deleting medical background:', error);
+        alert('Error al eliminar el antecedente');
+      }
+    } else {
+      setMedicalBackgrounds(medicalBackgrounds.filter((_, i) => i !== index));
+    }
+  };
+
+  if (loading && !patientData) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+        <span className="ml-2">Cargando datos del paciente...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -143,7 +207,7 @@ const GeneralData = () => {
               <input
                 type="text"
                 value={formData.primerNombre}
-                onChange={(e) => setProfile({...formData, primerNombre: e.target.value})}
+                onChange={(e) => setFormData({...formData, primerNombre: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -466,7 +530,7 @@ const GeneralData = () => {
             <h3 className="text-lg font-semibold text-green-900">Antecedentes Médicos</h3>
           </div>
           <button
-            onClick={addMedicalHistory}
+            onClick={addMedicalBackground}
             className="flex items-center space-x-2 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
@@ -475,13 +539,13 @@ const GeneralData = () => {
         </div>
         
         <div className="space-y-4">
-          {medicalHistory.map((history, index) => (
+          {medicalBackgrounds.map((history, index) => (
             <div key={index} className="bg-white p-4 rounded-lg border border-green-200">
               <div className="flex justify-between items-start mb-4">
                 <h4 className="text-sm font-medium text-green-800">Antecedente #{index + 1}</h4>
-                {medicalHistory.length > 1 && (
+                {medicalBackgrounds.length > 1 && (
                   <button
-                    onClick={() => removeMedicalHistory(index)}
+                    onClick={() => removeMedicalBackground(index)}
                     className="text-red-500 hover:text-red-700 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -495,7 +559,7 @@ const GeneralData = () => {
                   <input
                     type="text"
                     value={history.idantecedente}
-                    onChange={(e) => handleMedicalHistoryChange(index, 'idantecedente', e.target.value)}
+                    onChange={(e) => handleMedicalBackgroundChange(index, 'idantecedente', e.target.value)}
                     className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
@@ -504,7 +568,7 @@ const GeneralData = () => {
                   <label className="block text-sm font-medium text-green-700 mb-2">Tipo</label>
                   <select
                     value={history.type}
-                    onChange={(e) => handleMedicalHistoryChange(index, 'type', e.target.value)}
+                    onChange={(e) => handleMedicalBackgroundChange(index, 'type', e.target.value)}
                     className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     <option value="">Seleccionar tipo</option>
@@ -526,7 +590,7 @@ const GeneralData = () => {
                   <label className="block text-sm font-medium text-green-700 mb-2">Descripción</label>
                   <textarea
                     value={history.description}
-                    onChange={(e) => handleMedicalHistoryChange(index, 'description', e.target.value)}
+                    onChange={(e) => handleMedicalBackgroundChange(index, 'description', e.target.value)}
                     rows={3}
                     className="w-full px-3 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Descripción detallada del antecedente y cuando inicio este..."

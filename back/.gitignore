@@ -1,6 +1,5 @@
 # Node/Bun dependencies
 node_modules/
-bun.lock
 
 # Prisma
 prisma/migrations/

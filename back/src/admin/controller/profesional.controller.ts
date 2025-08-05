@@ -1,218 +1,395 @@
-// src/admin/controller/profesional.controller.ts
-
-import type { Request, Response } from "express";
+import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Obtener todos los especialistas (opcionalmente útil para admin)
+// ------------------ GET TODOS LOS ESPECIALISTAS ------------------
 export const getAllProfessionals = async (_req: Request, res: Response) => {
-	try {
-		const professionals = await prisma.specialist.findMany({
-			include: {
-				spec_data: true,
-				User: true,
-				SpecialistHasSpecialty: {
-					include: {
-						Specialty: true,
-					},
-				},
-			},
-		});
-		res.json(professionals);
-	} catch (error) {
-		res.status(500).json({ error: "Error al obtener los especialistas", details: error });
-	}
+  try {
+    const professionals = await prisma.specialist.findMany({
+      include: {
+        spec_data: true,
+        User: {
+          include: {
+            credential_users: true,
+            userReviewsReceived: true,
+          },
+        },
+        SpecialistHasSpecialty: {
+          include: {
+            Specialty: true,
+          },
+        },
+        Appointments: {
+          orderBy: {
+            appoint_finish: "desc",
+          },
+        },
+      },
+    });
+
+    const response = await Promise.all(
+      professionals.map(async (pro) => {
+        const reviews = pro.User.userReviewsReceived || [];
+        const avgRating =
+          reviews.length > 0
+            ? parseFloat(
+                (
+                  reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+                ).toFixed(2)
+              )
+            : 0;
+
+        return {
+          id: pro.id,
+          userId: pro.User.id,
+          name: `${pro.User.firstname} ${pro.User.lastname}`,
+          email: pro.User.credential_users.email,
+          specialties: pro.SpecialistHasSpecialty.map((shs) => ({
+            id: shs.Specialty.id,
+            name: shs.Specialty.name,
+            price: shs.Specialty.price,
+            duration: shs.Specialty.duration,
+          })),
+          biography: pro.spec_data.biography,
+          experience: pro.spec_data.working_experience,
+          consultations: pro.spec_data.consultations,
+          rating: Number(avgRating),
+          status: pro.User.status,
+          schedule: {
+            start: pro.spec_data.workStartSchedule,
+            end: pro.spec_data.workEndSchedule,
+          },
+          lastAppointment:
+            pro.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] ||
+            null,
+          joinDate: pro.spec_data.joinDate.toISOString().split("T")[0],
+        };
+      })
+    );
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error al obtener especialistas:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 
-// Obtener un especialista por ID (admin)
+// ------------------ GET ESPECIALISTA POR ID ------------------
 export const getProfessionalById = async (req: Request, res: Response) => {
-	const id = Number(req.params.id);
-	try {
-		const professional = await prisma.specialist.findUnique({
-			where: { id },
-			include: {
-				spec_data: true,
-				User: true,
-				SpecialistHasSpecialty: {
-					include: {
-						Specialty: true,
-					},
-				},
-			},
-		});
+  try {
+    const { id } = req.params;
 
-		if (!professional) {
-			res.status(404).json({ error: "Especialista no encontrado" });
-			return;
-		}
-		res.json(professional);
-	} catch (error) {
-		res.status(500).json({ error: "Error al buscar el especialista", details: error });
-	}
+    const professional = await prisma.specialist.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        spec_data: true,
+        User: {
+          include: {
+            credential_users: true,
+            userReviewsReceived: true,
+          },
+        },
+        SpecialistHasSpecialty: {
+          include: {
+            Specialty: true,
+          },
+        },
+        Appointments: {
+          orderBy: {
+            appoint_finish: "desc",
+          },
+          include: {
+            Specialty: true,
+          },
+        },
+        MedicalOrders: true,
+      },
+    });
+
+    if (!professional) {
+      res.status(404).json({ error: "Especialista no encontrado" });
+      return;
+    }
+
+    const reviews = professional.User.userReviewsReceived || [];
+    const avgRating =
+      reviews.length > 0
+        ? parseFloat(
+            (
+              reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            ).toFixed(2)
+          )
+        : 0;
+
+    const response = {
+      id: professional.id,
+      userId: professional.User.id,
+      name: `${professional.User.firstname} ${professional.User.lastname}`,
+      email: professional.User.credential_users.email,
+      document: professional.User.credential_users.document,
+      phone: professional.User.phone,
+      status: professional.User.status,
+      rating: avgRating,
+      // Datos profesionales
+      professionalData: {
+        biography: professional.spec_data.biography,
+        experience: professional.spec_data.working_experience,
+        consultations: professional.spec_data.consultations,
+        schedule: {
+          start: professional.spec_data.workStartSchedule,
+          end: professional.spec_data.workEndSchedule,
+        },
+        certificates: {
+          cv: professional.spec_data.cv
+            ? Buffer.from(professional.spec_data.cv).toString("base64")
+            : null,
+          degrees: professional.spec_data.degrees
+            ? Buffer.from(professional.spec_data.degrees).toString("base64")
+            : null,
+          educationalCertificates: professional.spec_data
+            .educational_certificates
+            ? Buffer.from(
+                professional.spec_data.educational_certificates
+              ).toString("base64")
+            : null,
+        },
+      },
+      // Especialidades
+      specialties: professional.SpecialistHasSpecialty.map((shs) => ({
+        id: shs.Specialty.id,
+        name: shs.Specialty.name,
+        price: shs.Specialty.price,
+        duration: shs.Specialty.duration,
+        status: shs.Specialty.status,
+      })),
+      // Últimas citas
+      lastAppointments: professional.Appointments.map((app) => ({
+        id: app.id,
+        date: app.appoint_finish.toISOString().split("T")[0],
+        specialty: app.Specialty.name,
+        status: app.state,
+      })),
+      // Órdenes médicas recientes
+      recentMedicalOrders: professional.MedicalOrders.slice(0, 5).map((mo) => ({
+        id: mo.id,
+        date: mo.issuedAt.toISOString().split("T")[0],
+        description: mo.description,
+        status: mo.status,
+      })),
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error al obtener especialista:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 
-// Crear nuevo especialista
-export const createProfessional = async (req: Request, res: Response) => {
-	const {
-		User_idUser,
-		User_credential_users_idcredential_users,
-		User_rol_idrol,
-		spec_data_idspec_data,
-		specialty_idspecialty,
-	} = req.body;
-
-	try {
-		const profesional = await prisma.specialist.create({
-			data: {
-				User_idUser,
-				User_credential_users_idcredential_users,
-				User_rol_idrol,
-				spec_data_idspec_data,
-				SpecialistHasSpecialty: {
-					create: {
-						specialty_idspecialty,
-					},
-				},
-			},
-		});
-		res.status(201).json(profesional);
-	} catch (error) {
-		res.status(400).json({ error: "Error al crear el especialista", details: error });
-	}
-};
-
-// Actualizar el estado del Especialista (en tabla USER)
+// ------------------ UPDATE ESTADO ------------------
 export const updateProfessionalStatus = async (req: Request, res: Response) => {
-	const id = Number(req.params.id);
-	const { status } = req.body;
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
 
-	try {
-		const professional = await prisma.specialist.findUnique({
-			where: { id },
-			include: {
-				User: true,
-			},
-		});
+    // Verificar que el especialista existe
+    const professional = await prisma.specialist.findUnique({
+      where: { id: Number(id) },
+      include: { User: true },
+    });
 
-		if (!professional) {
-			res.status(404).json({ error: "Especialista no encontrado" });
-			return;
-		}
+    if (!professional) {
+      res.status(404).json({ error: "Especialista no encontrado" });
+      return;
+    }
 
-		const updatedUser = await prisma.user.update({
-			where: {
-				id: professional.User.id,
-			},
-			data: {
-				status: status,
-			},
-		});
+    // Actualizar estado en la tabla User
+    const updatedUser = await prisma.user.update({
+      where: { id: professional.User.id },
+      data: { status },
+    });
 
-		res.json({ message: "Estado actualizado", user: updatedUser });
-	} catch (error) {
-		res.status(400).json({
-			error: "Error al actualizar estado del especialista",
-			details: error,
-		});
-	}
+    res.json({
+      message: "Estado actualizado correctamente",
+      professionalId: professional.id,
+      userId: updatedUser.id,
+      newStatus: updatedUser.status,
+    });
+  } catch (error) {
+    console.error("Error al actualizar estado:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 
-// Eliminar Especialista
+// ------------------ DELETE ESPECIALISTA ------------------
 export const deleteProfessional = async (req: Request, res: Response) => {
-	const id = Number(req.params.id);
+  try {
+    const { id } = req.params;
 
-	try {
-		await prisma.specialist.delete({ where: { id } });
-		res.json({ message: "Especialista eliminado correctamente" });
-	} catch (error) {
-		res.status(400).json({ error: "Error al eliminar el especialista", details: error });
-	}
+    // Obtener el especialista primero para eliminar relaciones
+    const professional = await prisma.specialist.findUnique({
+      where: { id: Number(id) },
+      include: {
+        User: {
+          include: {
+            credential_users: true,
+          },
+        },
+        spec_data: true,
+      },
+    });
+
+    if (!professional) {
+      res.status(404).json({ error: "Especialista no encontrado" });
+      return;
+    }
+
+    // Usar transacción para eliminar todo relacionado
+    await prisma.$transaction([
+      // Eliminar relaciones de especialidades
+      prisma.specialistHasSpecialty.deleteMany({
+        where: {
+          Specialist_idEspecialista: professional.id,
+        },
+      }),
+      // Eliminar especialista
+      prisma.specialist.delete({
+        where: { id: professional.id },
+      }),
+      // Eliminar datos profesionales
+      prisma.specData.delete({
+        where: { id: professional.spec_data.id },
+      }),
+      // Eliminar usuario
+      prisma.user.delete({
+        where: { id: professional.User.id },
+      }),
+      // Eliminar credenciales
+      prisma.credentialUser.delete({
+        where: { id: professional.User.credential_users.id },
+      }),
+    ]);
+
+    res.json({ message: "Especialista eliminado completamente" });
+  } catch (error) {
+    console.error("Error al eliminar especialista:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 
-// Obtener Especialistas por especialidad (con datos mapeados para el frontend)
-export const getProfessionalsBySpecialty = async (req: Request, res: Response) => {
-	const specialtyId = Number(req.params.specialtyId);
+// ------------------ GET POR ESPECIALIDAD ------------------
+export const getProfessionalsBySpecialty = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { specialtyId } = req.params;
 
-	try {
-		const professionals = await prisma.specialist.findMany({
-			where: {
-				SpecialistHasSpecialty: {
-					some: {
-						specialty_idspecialty: specialtyId,
-					},
-				},
-			},
-			include: {
-				spec_data: true,
-				User: true,
-				SpecialistHasSpecialty: {
-					include: {
-						Specialty: true,
-					},
-				},
-			},
-		});
+    const professionals = await prisma.specialist.findMany({
+      where: {
+        SpecialistHasSpecialty: {
+          some: {
+            specialty_idspecialty: Number(specialtyId),
+          },
+        },
+        User: {
+          status: "Activo", // Solo especialistas activos
+        },
+      },
+      include: {
+        spec_data: true,
+        User: {
+          include: {
+            userReviewsReceived: true,
+          },
+        },
+        SpecialistHasSpecialty: {
+          where: {
+            specialty_idspecialty: Number(specialtyId),
+          },
+          include: {
+            Specialty: true,
+          },
+        },
+      },
+    });
 
-		// Mapear datos para el frontend
-		const mapped = await Promise.all(
-			professionals.map(async (pro) => {
-				const reviews = await prisma.specialtyReview.findMany({
-					where: {
-						specialty_id: specialtyId,
-						user_id: pro.User.id,
-						user_cred_id: pro.User.credential_users_idcredential_users,
-						user_rol_id: pro.User.rol_idrol,
-					},
-				});
+    const response = professionals.map((pro) => {
+      const reviews = pro.User.userReviewsReceived || [];
+      const avgRating =
+        reviews.length > 0
+          ? parseFloat(
+              (
+                reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+              ).toFixed(2)
+            )
+          : 0;
 
-				const avgRating =
-					reviews.length > 0
-						? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(
-								1
-						  )
-						: "0.0";
+      const specialty = pro.SpecialistHasSpecialty[0]?.Specialty;
 
-				return {
-					id: pro.id,
-					name: `${pro.User.firstname} ${pro.User.lastname}`,
-					specialty: pro.SpecialistHasSpecialty[0]?.Specialty.name ?? "Sin especialidad",
-					experience: pro.spec_data.working_experience,
-					rating: avgRating,
-					education: Buffer.from(pro.spec_data.educational_certificates).toString("utf8"),
-					certifications: [Buffer.from(pro.spec_data.degrees).toString("utf8")],
-					consultations: pro.spec_data.consultations,
-					status: pro.User.status.toLowerCase(),
-				};
-			})
-		);
+      return {
+        id: pro.id,
+        name: `${pro.User.firstname} ${pro.User.lastname}`,
+        specialty: {
+          id: specialty?.id,
+          name: specialty?.name,
+          price: specialty?.price,
+          duration: specialty?.duration,
+        },
+        rating: avgRating,
+        experience: pro.spec_data.working_experience,
+        biography: pro.spec_data.biography,
+        consultations: pro.spec_data.consultations,
+        picture: pro.spec_data.picture
+          ? Buffer.from(pro.spec_data.picture).toString("base64")
+          : null,
+        schedule: {
+          start: pro.spec_data.workStartSchedule,
+          end: pro.spec_data.workEndSchedule,
+        },
+      };
+    });
 
-		res.json(mapped);
-	} catch (error) {
-		res.status(500).json({
-			error: "Error al obtener Especialistas por especialidad",
-			details: error,
-		});
-	}
+    res.json(response);
+  } catch (error) {
+    console.error("Error al obtener especialistas por especialidad:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 
 export const getProfessionalRating = async (req: Request, res: Response) => {
-	const id = Number(req.params.id);
-	try {
-		const reviews = await prisma.specialtyReview.findMany({
-			where: {
-				user_id: id,
-			},
-		});
+  try {
+    const { id } = req.params;
 
-		const avg =
-			reviews.length > 0
-				? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-				: "0.0";
+    const reviews = await prisma.userReview.findMany({
+      where: {
+        reviewed_id: Number(id),
+      },
+    });
 
-		res.json({ avg });
-	} catch (err) {
-		res.status(500).json({ error: "Error al obtener el rating" });
-	}
+    const avgRating =
+      reviews.length > 0
+        ? parseFloat(
+            (
+              reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            ).toFixed(2)
+          )
+        : 0;
+
+    res.json({
+      averageRating: avgRating,
+      totalReviews: reviews.length,
+      reviews: reviews.map((r) => ({
+        rating: r.rating,
+        comment: r.comment,
+        createdAt: r.createdAt,
+      })),
+    });
+  } catch (error) {
+    console.error("Error al obtener calificación:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 

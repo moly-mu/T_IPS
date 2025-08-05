@@ -1,31 +1,67 @@
-import prisma from "../../../../../node_modules/@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { SpecialistRepository } from "../../../domain/repositories/LoginSpecialist.Repository";
 import { Specialist } from "../../../domain/entities/EntityLogin";
 
+const prisma = new PrismaClient();
+
 export class LoginSpecialistPrismaRepository implements SpecialistRepository {
   async findByEmail(email: string): Promise<Specialist | null> {
-    const credential = await prisma.CredentialUser.findUnique({
-      where: { email },
-      include: {
-        User: {
-          include: {
-            Especialista: true,
-            rol: true,
+    try {
+      const credential = await prisma.credentialUser.findUnique({
+        where: { email },
+        include: {
+          User: {
+            include: {
+              Especialista: {
+                select: {
+                  User_idUser: true,
+                  spec_data: true,
+                }
+              },
+              rol: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    if (!credential || !credential.User?.[0]?.Especialista?.[0]) return null;
+      console.log('Credential found:', JSON.stringify(credential, null, 2));
 
-    const especialista = credential.User[0].Especialista[0];
+      if (!credential) {
+        console.log('No credential found for email:', email);
+        return null;
+      }
 
-    return new Specialist(
-      especialista.id,
-      credential.email,
-      credential.User[0].status,
-      credential.password
-    );
+      if (!credential.User || credential.User.length === 0) {
+        console.log('No user found for credential:', email);
+        return null;
+      }
+
+      const user = credential.User[0];
+
+      // Verificar que el usuario tenga rol de "Especialista"
+      if (user.rol.rol_name !== "Especialista") {
+        console.log('User does not have Especialista role:', user.rol.rol_name);
+        return null;
+      }
+
+      // Verificar que el usuario tenga un registro de especialista
+      if (!user.Especialista || user.Especialista.length === 0) {
+        console.log('User does not have Especialista record');
+        return null;
+      }
+
+      const especialista = user.Especialista[0];
+
+      return new Specialist(
+        especialista.User_idUser,
+        credential.email,
+        user.status,
+        credential.password
+      );
+    } catch (error) {
+      console.error('Error in findByEmail:', error);
+      return null;
+    }
   }
   
 }

@@ -1,6 +1,6 @@
 // src/admin/specialties/domain/entities/specialtyEntities.ts
 
-export type SpecialtyStatus = "Activo" | "Inactivo";
+import { SpecialtyStatus } from "../types/";
 
 export class SpecialtyEntity {
   constructor(
@@ -15,4 +15,8 @@ export class SpecialtyEntity {
       Appointment :number;
     }
   ) {}
+  
+  isActive(): boolean{
+    return this.status === "Activo";
+  }
 }
