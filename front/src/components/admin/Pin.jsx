@@ -190,7 +190,7 @@ const StatsCard = ({ title, value, icon: Icon, trend, color = "blue" }) => {
     blue: "bg-blue-50 text-blue-600",
     green: "bg-green-50 text-green-600",
     purple: "bg-purple-50 text-purple-600",
-    orange: "bg-orange-50 text-orange-600",
+    orange: "bg-purple-50 text-purple-600",
   };
 
   return (
@@ -378,7 +378,7 @@ const DemographicsChart = ({ edades }) => {
     "bg-blue-500",
     "bg-green-500",
     "bg-purple-500",
-    "bg-orange-500",
+    "bg-purple-500",
   ];
 
   return (
@@ -668,7 +668,7 @@ const Pin = () => {
                 value={`$${stats.ingresos.toLocaleString()}`}
                 icon={Activity}
                 trend=""
-                color="orange"
+                color="purple"
               />
             </div>
 
