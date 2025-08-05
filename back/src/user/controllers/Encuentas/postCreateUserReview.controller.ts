@@ -9,63 +9,62 @@ export const createUserReview = async (
 ) => {
   try {
     const userId = req.userId;
-    const userCredId = Number(req.headers["x-credential-id"]);
-    const userRolId = Number(req.headers["x-role-id"]);
 
-    if (!userId || !userCredId || !userRolId) {
-      return res.status(400).json({ error: "Datos de autenticación incompletos." });
+    if (!userId) {
+      return res.status(401).json({ error: "Token inválido o no proporcionado." });
     }
 
-    const {
-      reviewed_id,
-      reviewed_cred_id,
-      reviewed_rol_id,
-      rating,
-      comment,
-    } = req.body;
-
-    if (
-      !reviewed_id || !reviewed_cred_id || !reviewed_rol_id ||
-      typeof rating !== "number"
-    ) {
-      return res.status(400).json({ error: "Datos incompletos o inválidos para la reseña." });
-    }
-
-    // Verificar que no exista una reseña duplicada
-    const existingReview = await prisma.userReview.findUnique({
+    const reviews = await prisma.userReview.findMany({
       where: {
-        reviewer_id_reviewer_cred_id_reviewer_rol_id_reviewed_id_reviewed_cred_id_reviewed_rol_id: {
-          reviewer_id: userId,
-          reviewer_cred_id: userCredId,
-          reviewer_rol_id: userRolId,
-          reviewed_id,
-          reviewed_cred_id,
-          reviewed_rol_id,
-        }
-      }
-    });
-
-    if (existingReview) {
-      return res.status(409).json({ error: "Ya has dejado una reseña para este especialista." });
-    }
-
-    // Crear la reseña
-    const newReview = await prisma.userReview.create({
-      data: {
         reviewer_id: userId,
-        reviewer_cred_id: userCredId,
-        reviewer_rol_id: userRolId,
-        reviewed_id,
-        reviewed_cred_id,
-        reviewed_rol_id,
-        rating,
-        comment,
+      },
+      include: {
+        reviewed: {
+          select: {
+            firstname: true,
+            second_firstname: true,
+            lastname: true,
+            second_lastname: true,
+            phone: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
-    res.status(201).json({ message: "Reseña creada exitosamente.", review: newReview });
+    const filteredReviews = reviews
+      .map((review) => {
+        const r = review.reviewed;
+
+        if (!r) return null;
+
+        const fullName = [
+          r.firstname,
+          r.second_firstname,
+          r.lastname,
+          r.second_lastname,
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        return {
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt,
+          reviewedUser: {
+            fullName,
+            phone: r.phone,
+          },
+        };
+      })
+      .filter(Boolean);
+
+    res.status(200).json({ reviews: filteredReviews });
   } catch (error) {
-    console.error("Error al crear la reseña:", error);
+    console.error("Error al obtener las reseñas del usuario:", error);
     res.status(500).json({ error: "Error interno del servidor." });
   }
 };
++987
