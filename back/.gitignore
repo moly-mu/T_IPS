@@ -6,8 +6,6 @@ bun.lock
 prisma/migrations/
 *.db
 
-
-
 # Environment variables
 .env
 .env.*
