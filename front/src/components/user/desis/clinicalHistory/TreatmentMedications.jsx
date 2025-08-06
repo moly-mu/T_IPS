@@ -8,7 +8,7 @@ const TreatmentMedications = () => {
       cie10: 'HM001',
       medicine: 'Ibuprofeno 400mg',
       dosage: '1 tableta',
-      prescripcion: 'Tomar después de las comidas para reducir irritación gástrica',
+      indicacion: 'Tomar después de las comidas para reducir irritación gástrica',
       issuedAt: '2025-01-15',
       sentBy: 'Dr. García Martínez',
       numeroFormula: '0623-34771412',
@@ -24,7 +24,7 @@ const TreatmentMedications = () => {
     cie10: '',
     medicine: '',
     dosage: '',
-    prescripcion: '',
+    indicacion: '',
     issuedAt: '',
     sentBy: '',
     numeroFormula: '',
@@ -47,7 +47,7 @@ const TreatmentMedications = () => {
       cie10: '',
       medicine: '',
       dosage: '',
-      prescripcion: '',
+      indicacion: '',
       issuedAt: '',
       sentBy: '',
       numeroFormula: '',
@@ -234,14 +234,14 @@ const TreatmentMedications = () => {
 
             <div className="md:col-span-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Prescripción
+                Indicación y Observación
               </label>
               <textarea
-                value={formData.prescripcion}
-                onChange={(e) => handleInputChange('prescripcion', e.target.value)}
+                value={formData.indicacion}
+                onChange={(e) => handleInputChange('indicacion', e.target.value)}
                 rows="3"
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#002F86] text-sm resize-none"
-                placeholder="Prescripciones especiales para la administración del medicamento..."
+                placeholder="Observaciones especiales para la administración del medicamento..."
               />
             </div>
           </div>
@@ -344,11 +344,11 @@ const TreatmentMedications = () => {
                   </div>
                 </div>
 
-                {receta.prescripcion && (
+                {receta.indicacion && (
                   <div className="mb-3">
-                    <span className="font-medium text-gray-500 text-sm">Prescripción:</span>
+                    <span className="font-medium text-gray-500 text-sm">Indicación y Observación:</span>
                     <p className="text-sm text-gray-700 mt-1 p-2 bg-blue-50 border-l-4 border-[#003EB1] rounded">
-                      {receta.prescripcion}
+                      {receta.indicacion}
                     </p>
                   </div>
                 )}
