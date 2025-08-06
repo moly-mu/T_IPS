@@ -52,7 +52,7 @@ const PatientProfile = () => {
             }
 
             try {
-                setLoading(true);
+                setLoading(false);
                 const response = await getUserProfile();
                 const user = response.user;
                 
