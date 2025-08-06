@@ -68,6 +68,7 @@ model User {
   userReviewsGiven    UserReview[]        @relation("UserReviewReviewer")
   userReviewsReceived UserReview[]        @relation("UserReviewReviewed")
   specialistRequests  SpecialistRequest[] @relation("UserToSpecialistRequests")
+  calendarEvents      CalendarEvent[]
 
   @@unique([id, credential_users_idcredential_users, rol_idrol])
   @@map("user")
@@ -514,4 +515,22 @@ enum Eps {
   MutualSer
   Otra
   Ninguna
+}
+
+// Tabla para eventos personalizados del calendario
+model CalendarEvent {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  date        DateTime @db.Date
+  time        String   @db.VarChar(10)
+  color       String   @default("#3B82F6") @db.VarChar(7)
+  type        String   @default("personal") @db.VarChar(50)
+  userId      Int
+  createdAt   DateTime @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @db.Timestamp(0)
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@map("calendar_events")
 }

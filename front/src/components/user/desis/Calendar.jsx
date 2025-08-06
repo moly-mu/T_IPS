@@ -53,6 +53,10 @@ const Calendar = () => {
         },
       });
       
+      console.log('📡 Eventos recibidos del backend:', response.data);
+      console.log('🏥 Citas médicas encontradas:', response.data.filter(e => e.type === 'appointment'));
+      console.log('📝 Eventos personales encontrados:', response.data.filter(e => e.type !== 'appointment'));
+      
       setEvents(response.data);
     } catch (err) {
       console.error("Error al cargar eventos:", err);
@@ -66,7 +70,7 @@ const Calendar = () => {
     if (token) {
       fetchCalendarEvents();
     }
-  }, [token]);
+  }, [token, fetchCalendarEvents]);
 
   // Crear evento
   const createEvent = async (eventData) => {
@@ -83,8 +87,7 @@ const Calendar = () => {
         }
       );
       
-      // Agregar el evento al estado local
-      setEvents(prev => [...prev, response.data.event]);
+      // El evento ya se recargará con fetchCalendarEvents
       return response.data.event;
     } catch (err) {
       console.error("Error al crear evento:", err);
@@ -108,10 +111,7 @@ const Calendar = () => {
         }
       );
       
-      // Actualizar el evento en el estado local
-      setEvents(prev => prev.map(event => 
-        event.id === eventId ? response.data.event : event
-      ));
+      // El evento ya se recargará con fetchCalendarEvents
       return response.data.event;
     } catch (err) {
       console.error("Error al actualizar evento:", err);
@@ -134,8 +134,7 @@ const Calendar = () => {
         }
       );
       
-      // Eliminar el evento del estado local
-      setEvents(prev => prev.filter(event => event.id !== eventId));
+      // El evento ya se eliminará cuando se recarguen los eventos
     } catch (err) {
       console.error("Error al eliminar evento:", err);
       setError("Error al eliminar el evento");
@@ -188,7 +187,17 @@ const Calendar = () => {
   };
 
   const getEventsForDate = (dateString) => {
-    return events.filter(event => event.date === dateString);
+    const filteredEvents = events.filter(event => event.date === dateString);
+    
+    // Debug para la vista de día
+    if (view === 'day') {
+      console.log('🔍 Debug Vista Día:');
+      console.log('📅 Fecha buscada:', dateString);
+      console.log('📋 Todos los eventos:', events);
+      console.log('🎯 Eventos filtrados:', filteredEvents);
+    }
+    
+    return filteredEvents;
   };
 
   const handlePrevious = () => {
@@ -258,9 +267,11 @@ const Calendar = () => {
       try {
         const eventData = {
           title: eventTitle,
+          description: '', // Campo de descripción opcional
           date: selectedDate,
           color: eventColor,
-          time: eventTime
+          time: eventTime,
+          type: 'personal'
         };
 
         if (editingEvent) {
@@ -275,6 +286,9 @@ const Calendar = () => {
         setEventTitle('');
         setSelectedDate('');
         setEditingEvent(null);
+        
+        // Recargar eventos para mostrar cambios
+        await fetchCalendarEvents();
       } catch (err) {
         console.error("Error al guardar evento:", err);
         // El error ya se maneja en las funciones createEvent/updateEvent
@@ -283,6 +297,12 @@ const Calendar = () => {
   };
 
   const handleEditEvent = (event) => {
+    // Solo permitir editar eventos personalizados (no citas médicas)
+    if (!event.id.startsWith('custom_')) {
+      setError("No se pueden editar citas médicas desde el calendario. Use la sección de citas para modificarlas.");
+      return;
+    }
+
     setEditingEvent(event);
     setEventTitle(event.title);
     setEventColor(event.color);
@@ -292,8 +312,16 @@ const Calendar = () => {
   };
 
   const handleDeleteEvent = async (eventId) => {
+    // Solo permitir eliminar eventos personalizados (no citas médicas)
+    if (!eventId.startsWith('custom_')) {
+      setError("No se pueden eliminar citas médicas desde el calendario");
+      return;
+    }
+
     try {
       await deleteEvent(eventId);
+      // Recargar eventos para reflejar cambios
+      await fetchCalendarEvents();
     } catch (err) {
       console.error("Error al eliminar evento:", err);
       // El error ya se maneja en la función deleteEvent
@@ -370,27 +398,39 @@ const Calendar = () => {
                           className={`text-xs px-2 py-1 rounded border-l-4 ${getColorClasses(event.color)} truncate group relative`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className="truncate">{event.title}</span>
-                            <div className="opacity-0 group-hover:opacity-100 flex items-center space-x-1 ml-1 transition-opacity">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEditEvent(event);
-                                }}
-                                className="p-1 hover:bg-black/20 rounded"
-                              >
-                                <Edit3 className="w-3 h-3" />
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteEvent(event.id);
-                                }}
-                                className="p-1 hover:bg-black/20 rounded"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
+                            <div className="truncate flex-1">
+                              <span className="truncate block">{event.title}</span>
+                              {event.type === 'appointment' && event.startTime && (
+                                <span className="text-xs text-gray-500 block">
+                                  {new Date(event.startTime).toLocaleTimeString('es-ES', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </span>
+                              )}
                             </div>
+                            {event.type !== 'appointment' && (
+                              <div className="opacity-0 group-hover:opacity-100 flex items-center space-x-1 ml-1 transition-opacity">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditEvent(event);
+                                  }}
+                                  className="p-1 hover:bg-black/20 rounded"
+                                >
+                                  <Edit3 className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteEvent(event.id);
+                                  }}
+                                  className="p-1 hover:bg-black/20 rounded"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -437,28 +477,68 @@ const Calendar = () => {
               </div>
               {weekDays.map((day, dayIndex) => {
                 const dateString = formatDateFromDate(day);
-                const dayEvents = getEventsForDate(dateString).filter(event => 
-                  event.time === time
-                );
+                const dayEvents = getEventsForDate(dateString);
+                
+                // Filtrar eventos para este slot de tiempo
+                const timeEvents = dayEvents.filter(event => {
+                  if (event.time === time) {
+                    return true;
+                  }
+                  
+                  // Para citas médicas, verificar si el horario está dentro del slot
+                  if (event.type === 'appointment' && event.startTime) {
+                    const eventDate = new Date(event.startTime);
+                    const eventHour = eventDate.getHours();
+                    
+                    // Convertir el slot de tiempo a hora
+                    let slotHour = 0;
+                    if (time !== 'all-day') {
+                      if (time.includes('am')) {
+                        slotHour = parseInt(time.replace('am', ''));
+                        if (slotHour === 12) slotHour = 0;
+                      } else if (time.includes('pm')) {
+                        slotHour = parseInt(time.replace('pm', ''));
+                        if (slotHour !== 12) slotHour += 12;
+                      }
+                      
+                      // Verificar si el evento está en esta hora
+                      return eventHour === slotHour;
+                    }
+                  }
+                  
+                  return false;
+                });
                 
                 return (
                   <div key={dayIndex} className="p-2 border-l border-gray-200 relative">
-                    {dayEvents.map(event => (
+                    {timeEvents.map(event => (
                       <div
                         key={event.id}
                         className={`text-xs px-2 py-1 rounded border-l-4 ${getColorClasses(event.color)} mb-1 group relative cursor-pointer`}
                         onClick={() => handleEditEvent(event)}>
                         <div className="flex items-center justify-between">
-                          <span className="truncate">{event.title}</span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteEvent(event.id);
-                            }}
-                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/20 rounded transition-opacity">
-                            <X className="w-3 h-3" />
-                          </button>
+                          <span className="truncate">
+                            {event.type === 'appointment' ? 
+                              `${event.title}` : 
+                              event.title
+                            }
+                          </span>
+                          {event.type !== 'appointment' && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteEvent(event.id);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/20 rounded transition-opacity">
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
                         </div>
+                        {event.type === 'appointment' && (
+                          <div className="text-xs text-gray-600 mt-1">
+                            {event.specialty}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -474,6 +554,9 @@ const Calendar = () => {
   const renderDayView = () => {
     const dateString = formatDateFromDate(currentDate);
     const dayName = fullDayNames[currentDate.getDay()];
+    const dayEvents = getEventsForDate(dateString);
+    const dayAppointments = dayEvents.filter(event => event.type === 'appointment');
+    const dayPersonalEvents = dayEvents.filter(event => event.type !== 'appointment');
     
     return (
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
@@ -482,13 +565,52 @@ const Calendar = () => {
           <p className="text-sm text-gray-500 mt-1">
             {currentDate.getDate()} {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </p>
+          
+          {/* Resumen del día */}
+          <div className="mt-4 flex gap-4 text-sm">
+            <div className="bg-blue-100 px-3 py-1 rounded-full">
+              <span className="text-blue-800 font-medium">{dayAppointments.length} Citas médicas</span>
+            </div>
+            <div className="bg-green-100 px-3 py-1 rounded-full">
+              <span className="text-green-800 font-medium">{dayPersonalEvents.length} Eventos personales</span>
+            </div>
+          </div>
         </div>
 
         <div className="max-h-96 overflow-y-auto">
           {timeSlots.map((time) => {
-            const timeEvents = getEventsForDate(dateString).filter(event => 
-              event.time === time
-            );
+            const dayEvents = getEventsForDate(dateString);
+            
+            // Filtrar eventos para este slot de tiempo
+            const timeEvents = dayEvents.filter(event => {
+              // Si es un evento personalizado, verificar coincidencia exacta de tiempo
+              if (event.time === time) {
+                return true;
+              }
+              
+              // Para citas médicas, verificar si el horario está dentro del slot
+              if (event.type === 'appointment' && event.startTime) {
+                const eventDate = new Date(event.startTime);
+                const eventHour = eventDate.getHours();
+                
+                // Convertir el slot de tiempo a hora
+                let slotHour = 0;
+                if (time !== 'all-day') {
+                  if (time.includes('am')) {
+                    slotHour = parseInt(time.replace('am', ''));
+                    if (slotHour === 12) slotHour = 0; // 12am = 0 horas
+                  } else if (time.includes('pm')) {
+                    slotHour = parseInt(time.replace('pm', ''));
+                    if (slotHour !== 12) slotHour += 12; // 1pm = 13 horas, pero 12pm = 12 horas
+                  }
+                  
+                  // Verificar si el evento está en esta hora
+                  return eventHour === slotHour;
+                }
+              }
+              
+              return false;
+            });
             
             return (
               <div key={time} className="flex border-b border-gray-100 min-h-20">
@@ -500,22 +622,60 @@ const Calendar = () => {
                     <div
                       key={event.id}
                       className={`text-sm px-3 py-2 rounded border-l-4 ${getColorClasses(event.color)} mb-2 group relative cursor-pointer`}
-                      onClick={() => handleEditEvent(event)}
+                      onClick={() => event.type !== 'appointment' ? handleEditEvent(event) : null}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="truncate">{event.title}</span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteEvent(event.id);
-                          }}
-                          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/20 rounded transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
+                        <div className="flex-1">
+                          <span className="truncate block font-medium">
+                            {event.title}
+                          </span>
+                          {event.type === 'appointment' && (
+                            <div className="text-xs text-gray-600 mt-1">
+                              <div><strong>Especialidad:</strong> {event.specialty}</div>
+                              <div><strong>Paciente:</strong> {event.patientName}</div>
+                              <div><strong>Estado:</strong> {event.state}</div>
+                              {event.startTime && (
+                                <div><strong>Hora:</strong> {new Date(event.startTime).toLocaleTimeString('es-ES', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })} - {new Date(event.endTime).toLocaleTimeString('es-ES', { 
+                                  hour: '2-digit', 
+                                  minute: '2-digit' 
+                                })}</div>
+                              )}
+                              {event.linkZoom && (
+                                <div className="mt-2">
+                                  <a 
+                                    href={event.linkZoom} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 text-xs underline"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    🔗 Unirse a la consulta
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        {event.type !== 'appointment' && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteEvent(event.id);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-black/20 rounded transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
+                  {timeEvents.length === 0 && (
+                    <div className="text-gray-400 text-sm italic">Sin eventos programados</div>
+                  )}
                 </div>
               </div>
             );
