@@ -77,7 +77,7 @@ const RecentActivityTable = () => {
     },
   ];
 
-  const filterData = (data, type) => {
+  const filterData = (data) => {
     const safeData = Array.isArray(data) ? data : [];
     return safeData
       .filter((item) => {

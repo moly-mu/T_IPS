@@ -21,6 +21,7 @@ import specialistAppointments from './specialist/routes/specialistAppointments.r
 import specialistDashboard from './specialist/routes/specialisttDashboard.routes';
 import specialistAuthRoutes from "./specialist/routes/specialistAuth.routes";
 
+
 const app = express();
 
 app.use(cors());
@@ -39,6 +40,7 @@ app.use("/admin/stats", adminStatsRoutes);
 app.use("/admin/test", getAllSpecialties);
 app.use("/admin/specialist-requests", specialistRequestRoutes);
 app.use("/admin/activity", activityRoutes);
+
 
 //*Rutas de especialista
 app.use("/specialist", specialistRequest);
