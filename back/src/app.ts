@@ -10,6 +10,7 @@ import adminProfRoutes from "./admin/routes/profesional.routes";
 import adminSpecialRoutes from "./admin/routes/specialty.routes";
 import adminPatientRoutes from "./admin/routes/patient.routes";
 import adminStatsRoutes from "./admin/routes/stats.routes";
+import adminAuthRoutes from "./admin/routes/auth.routes";
 import getAllSpecialties from "./admin/specialties/presentation/routes/specialties.routes";
 import specialistRequestRoutes from "./admin/routes/specialistRequest.routes";
 import activityRoutes from "./admin/routes/activity.routes";
@@ -33,6 +34,7 @@ app.use("/api", userRoutes); // /api/register, /api/login, /api/request-speciali
 
 
 // *Rutas de administración
+app.use("/admin/auth", adminAuthRoutes);
 app.use("/admin/profesional", adminProfRoutes);
 app.use("/admin/specialty", adminSpecialRoutes);
 app.use("/admin/patient", adminPatientRoutes);

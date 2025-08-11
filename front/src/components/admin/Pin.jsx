@@ -10,6 +10,7 @@ import {
   Calendar,
   BanknoteArrowUp,
   TrendingUp,
+  TrendingDown,
   Star,
   Filter,
   Bell,
@@ -234,47 +235,62 @@ const IncomeCard = ({ color = "black" }) => {
   IncomeCard.defaultProps = {
     color: "black",
   };
+  
   const [selectedSpecialty, setSelectedSpecialty] = useState("todas");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const specialties = [
-    {
-      id: "todas",
-      name: "Todas las especialidades",
-      income: "$45,670",
-      trend: "+15% este mes",
-    },
-    {
-      id: "medicina-general",
-      name: "Medicina General",
-      income: "$12,850",
-      trend: "+18% este mes",
-    },
-    {
-      id: "medicina-alternativa",
-      name: "Medicina Alternativa",
-      income: "$8,920",
-      trend: "+8% este mes",
-    },
-    {
-      id: "psicologia",
-      name: "Psicología",
-      income: "$10,340",
-      trend: "+22% este mes",
-    },
-    {
-      id: "nutricion",
-      name: "Nutrición",
-      income: "$7,650",
-      trend: "+12% este mes",
-    },
-    {
-      id: "ortopedia",
-      name: "Ortopedia",
-      income: "$5,910",
-      trend: "+6% este mes",
-    },
-  ];
+  // Cargar datos de especialidades desde el backend
+  useEffect(() => {
+    const fetchIncomeBySpecialty = async () => {
+      try {
+        setLoading(true);
+        console.log("🔍 Fetching income by specialty...");
+        
+        const response = await axios.get("http://localhost:3000/admin/stats/income");
+        console.log("📊 Income data received:", response.data);
+        console.log("📊 Response status:", response.status);
+        
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setSpecialties(response.data);
+          
+          // Seleccionar "todas" por defecto si existe
+          const allSpecialty = response.data.find(s => s.id === "todas");
+          if (allSpecialty) {
+            setSelectedSpecialty("todas");
+            console.log("✅ Selected 'todas' specialty");
+          } else if (response.data.length > 0) {
+            setSelectedSpecialty(response.data[0].id);
+            console.log("✅ Selected first specialty:", response.data[0].name);
+          }
+        } else {
+          console.log("⚠️ No specialties data received or empty array");
+          throw new Error("No data received");
+        }
+      } catch (error) {
+        console.error("❌ Error al cargar ingresos por especialidad:", error);
+        console.error("Response:", error.response?.data);
+        console.error("Status:", error.response?.status);
+        
+        // Fallback a datos de ejemplo en caso de error
+        setSpecialties([
+          {
+            id: "error",
+            name: "Error al cargar datos",
+            income: "$0",
+            trend: "Verifique la conexión",
+          }
+        ]);
+        setSelectedSpecialty("error");
+      } finally {
+        setLoading(false);
+        console.log("🏁 Loading finished");
+      }
+    };
+
+    fetchIncomeBySpecialty();
+  }, []);
 
   const currentSpecialty = specialties.find((s) => s.id === selectedSpecialty);
 
@@ -301,11 +317,12 @@ const IncomeCard = ({ color = "black" }) => {
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              disabled={loading}
             >
               <span className="text-gray-600 max-w-20 truncate">
-                {selectedSpecialty === "todas"
-                  ? "Todas"
-                  : currentSpecialty?.name}
+                {loading ? "Cargando..." : 
+                 selectedSpecialty === "todas" ? "Todas" : 
+                 currentSpecialty?.name || "Seleccionar"}
               </span>
               <ChevronDown
                 className={`w-3 h-3 text-gray-500 transition-transform ${
@@ -314,21 +331,27 @@ const IncomeCard = ({ color = "black" }) => {
               />
             </button>
 
-            {isDropdownOpen && (
+            {isDropdownOpen && !loading && (
               <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                {specialties.map((specialty) => (
-                  <button
-                    key={specialty.id}
-                    onClick={() => handleSpecialtyChange(specialty.id)}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                      selectedSpecialty === specialty.id
-                        ? "bg-gray-50 text-gray-900"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {specialty.name}
-                  </button>
-                ))}
+                {specialties.length > 0 ? (
+                  specialties.map((specialty) => (
+                    <button
+                      key={specialty.id}
+                      onClick={() => handleSpecialtyChange(specialty.id)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                        selectedSpecialty === specialty.id
+                          ? "bg-gray-50 text-gray-900"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {specialty.name}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-gray-500">
+                    No hay especialidades disponibles
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -341,13 +364,47 @@ const IncomeCard = ({ color = "black" }) => {
       </div>
 
       <div>
-        <p className="text-3xl font-light text-gray-900 mb-2">
-          {currentSpecialty?.income}
-        </p>
-        <p className="text-sm text-green-600 flex items-center">
-          <TrendingUp className="w-4 h-4 mr-1" />
-          {currentSpecialty?.trend}
-        </p>
+        {loading ? (
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+            </div>
+          </div>
+        ) : currentSpecialty ? (
+          <>
+            <p className="text-3xl font-light text-gray-900 mb-2">
+              {currentSpecialty.income}
+            </p>
+            {(() => {
+              const isNegative = currentSpecialty.trend.includes('-');
+              const isZero = currentSpecialty.trend.includes('0.0%');
+              
+              let TrendIcon = TrendingUp;
+              let colorClass = 'text-green-600';
+              
+              if (isNegative) {
+                TrendIcon = TrendingDown;
+                colorClass = 'text-red-600';
+              } else if (isZero) {
+                TrendIcon = TrendingUp;
+                colorClass = 'text-gray-600';
+              }
+              
+              return (
+                <p className={`text-sm ${colorClass} flex items-center`}>
+                  <TrendIcon className="w-4 h-4 mr-1" />
+                  {currentSpecialty.trend}
+                </p>
+              );
+            })()}
+          </>
+        ) : (
+          <div className="text-center">
+            <p className="text-2xl font-light text-gray-400">Sin datos</p>
+            <p className="text-sm text-gray-500">No se pudo cargar información</p>
+          </div>
+        )}
       </div>
     </div>
   );

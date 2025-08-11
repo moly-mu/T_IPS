@@ -124,15 +124,28 @@ const ServicesSection = () => {
   };
 
   const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // August = 7 (0-indexed)
+  const currentYear = now.getFullYear(); // 2025
 
   const newSpecialtyThisMonth = serviciosFiltrados.filter((s) => {
+    if (!s.joinDate) return false;
     const joinedDate = new Date(s.joinDate);
-    return (
-      joinedDate.getMonth() === currentMonth &&
-      joinedDate.getFullYear() === currentYear
-    );
+    const joinedMonth = joinedDate.getMonth();
+    const joinedYear = joinedDate.getFullYear();
+    
+    // Debug: log the comparison
+    if (s.name === "Neurología") {
+      console.log(`Debug - ${s.name}:`, {
+        joinDate: s.joinDate,
+        joinedMonth,
+        joinedYear,
+        currentMonth,
+        currentYear,
+        matches: joinedMonth === currentMonth && joinedYear === currentYear
+      });
+    }
+    
+    return joinedMonth === currentMonth && joinedYear === currentYear;
   });
 
   const cambiarEstado = (id) => {
