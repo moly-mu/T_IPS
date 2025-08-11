@@ -1,11 +1,12 @@
-import { Gender,Language,DocumentType,Eps,UserStatus,SpecialtyStatus,Sex,BloodType, PrismaClient } from "@prisma/client";
+import { Gender, Language, DocumentType, Eps, UserStatus, SpecialtyStatus, Sex, BloodType, stateAppointment, PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Starting database seeding...");
 
-  // 1. Create Roles (10 additional)
+  // 1. Create Roles
   const roleNames = ["Especialista", "Paciente"];
 
   const roles = await Promise.all(
@@ -18,7 +19,7 @@ async function main() {
     )
   );
 
-  // 2. Create Admins (10 additional)
+  // 2. Create Admins
   const adminData = [
     { username: "admin", password: "admin123" },
     { username: "admin_sistema", password: "sistema123" },
@@ -32,18 +33,17 @@ async function main() {
     { username: "admin_compras", password: "compras123" },
   ];
 
-  
-
   const bloodTypeMap: Record<string, BloodType> = {
-  'A+': BloodType.A_POS,
-  'A-': BloodType.A_NEG,
-  'B+': BloodType.B_POS,
-  'B-': BloodType.B_NEG,
-  'AB+': BloodType.AB_POS,
-  'AB-': BloodType.AB_NEG,
-  'O+': BloodType.O_POS,
-  'O-': BloodType.O_NEG,
-};
+    'A+': BloodType.A_POS,
+    'A-': BloodType.A_NEG,
+    'B+': BloodType.B_POS,
+    'B-': BloodType.B_NEG,
+    'AB+': BloodType.AB_POS,
+    'AB-': BloodType.AB_NEG,
+    'O+': BloodType.O_POS,
+    'O-': BloodType.O_NEG,
+  };
+
   const admins = await Promise.all(
     adminData.map(async (adminInfo) => {
       const hashedPassword = await hash(adminInfo.password, 12);
@@ -58,7 +58,7 @@ async function main() {
     })
   );
 
-  // 3. Create Specialties (10 additional)
+  // 3. Create Specialties
   const specialtyData = [
     {
       name: "Cardiología",
@@ -127,14 +127,14 @@ async function main() {
       prisma.specialty.upsert({
         where: { name: spec.name },
         update: {
-          status: "Activo",
+          status: SpecialtyStatus.Activo,
           price: spec.price,
           service: spec.service,
           duration: spec.duration,
         },
         create: {
           name: spec.name,
-          status: "Activo",
+          status: SpecialtyStatus.Activo,
           price: spec.price,
           service: spec.service,
           duration: spec.duration,
@@ -143,7 +143,7 @@ async function main() {
     )
   );
 
-  // 4. Create Credential Users (15 for patients and 13 for specialists = 28 total)
+  // 4. Create Credential Users
   const credentialData = [
     // Patients (15 credentials)
     {
@@ -299,111 +299,96 @@ async function main() {
     })
   );
 
-  // 5. Create Users (20 patients and 15 specialists with recent join dates)
+  // 5. Create Users
   const patientUserData = [
     {
       firstname: "Juan",
       lastname: "Pérez",
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3001234567",
     },
     {
       firstname: "María",
       lastname: "Rodríguez",
-      age: 28,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3012345678",
     },
     {
       firstname: "Carlos",
       lastname: "Martínez",
-      age: 45,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3023456789",
     },
     {
       firstname: "Ana",
       lastname: "López",
-      age: 32,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3034567890",
     },
     {
       firstname: "Pedro",
       lastname: "González",
-      age: 58,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3045678901",
     },
     {
       firstname: "Lucía",
       lastname: "Fernández",
-      age: 41,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3056789012",
     },
     {
       firstname: "Diego",
       lastname: "Sánchez",
-      age: 26,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3067890123",
     },
     {
       firstname: "Sofía",
       lastname: "Ramírez",
-      age: 39,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3078901234",
     },
     {
       firstname: "Miguel",
       lastname: "Torres",
-      age: 52,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3089012345",
     },
     {
       firstname: "Carmen",
       lastname: "Ruiz",
-      age: 47,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3090123456",
     },
-    // Additional patients for more dashboard data
     {
       firstname: "Alberto",
       lastname: "Vega",
-      age: 35,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3091234567",
     },
     {
       firstname: "Isabel",
       lastname: "Moreno",
-      age: 29,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3092345678",
     },
     {
       firstname: "Raúl",
       lastname: "Castro",
-      age: 43,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3093456789",
     },
     {
       firstname: "Patricia",
       lastname: "Delgado",
-      age: 38,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3094567890",
     },
     {
       firstname: "Fernando",
       lastname: "Ortiz",
-      age: 55,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3095678901",
     },
   ];
@@ -412,93 +397,79 @@ async function main() {
     {
       firstname: "María",
       lastname: "Gómez",
-      age: 42,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3109876543",
     },
     {
       firstname: "Roberto",
       lastname: "García",
-      age: 38,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3119876544",
     },
     {
       firstname: "Elena",
       lastname: "Morales",
-      age: 45,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3129876545",
     },
     {
       firstname: "Fernando",
       lastname: "Jiménez",
-      age: 51,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3139876546",
     },
     {
       firstname: "Patricia",
       lastname: "Herrera",
-      age: 39,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3149876547",
     },
     {
       firstname: "Andrés",
       lastname: "Vargas",
-      age: 44,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3159876548",
     },
     {
       firstname: "Claudia",
       lastname: "Castro",
-      age: 37,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3169876549",
     },
     {
       firstname: "Ricardo",
       lastname: "Mendoza",
-      age: 48,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3179876550",
     },
     {
       firstname: "Alejandra",
       lastname: "Silva",
-      age: 41,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3189876551",
     },
     {
       firstname: "Gustavo",
       lastname: "Reyes",
-      age: 46,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3199876552",
     },
-    // Additional specialists
     {
       firstname: "Daniela",
       lastname: "Paredes",
-      age: 34,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3200123456",
     },
     {
       firstname: "Sergio",
       lastname: "Navarro",
-      age: 40,
-      gender: "Masculino",
+      gender: Gender.Masculino,
       phone: "3201234567",
     },
     {
       firstname: "Valentina",
       lastname: "Rojas",
-      age: 36,
-      gender: "Femenino",
+      gender: Gender.Femenino,
       phone: "3202345678",
     },
   ];
@@ -507,8 +478,9 @@ async function main() {
   const patientUsers = await Promise.all(
     patientUserData.map((userData, index) => {
       const today = new Date();
-      const daysAgo = Math.floor(Math.random() * 180); // Joined within last 6 months
+      const daysAgo = Math.floor(Math.random() * 180);
       const joinDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 10, 0, 0);
+      const birthYear = 1970 + Math.floor(Math.random() * 40);
       
       return prisma.user.create({
         data: {
@@ -516,15 +488,15 @@ async function main() {
           lastname: userData.lastname,
           second_firstname: userData.firstname,
           second_lastname: userData.lastname,
-          gender: userData.gender === "Masculino" ? Gender.Masculino : Gender.Femenino,
-          sex: userData.gender === "Masculino" ? Sex.Masculino : Sex.Femenino,
+          gender: userData.gender,
+          sex: userData.gender === Gender.Masculino ? Sex.Masculino : Sex.Femenino,
           language: Language.Espanol,
           document_type: DocumentType.CC,
           phone: userData.phone,
           credential_users_idcredential_users: credentials[index].id,
           rol_idrol: roles[1].id, // Paciente role
           status: UserStatus.Activo,
-          birthdate: new Date("1990-01-01"),
+          birthdate: new Date(birthYear, 0, 1),
           joinDate: joinDate,
         },
       });
@@ -535,8 +507,9 @@ async function main() {
   const specialistUsers = await Promise.all(
     specialistUserData.map((userData, index) => {
       const today = new Date();
-      const daysAgo = Math.floor(Math.random() * 365); // Joined within last year
+      const daysAgo = Math.floor(Math.random() * 365);
       const joinDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 10, 0, 0);
+      const birthYear = 1965 + Math.floor(Math.random() * 25);
       
       return prisma.user.create({
         data: {
@@ -544,176 +517,174 @@ async function main() {
           lastname: userData.lastname,
           second_firstname: userData.firstname,
           second_lastname: userData.lastname,
-          gender: userData.gender === "Masculino" ? Gender.Masculino : Gender.Femenino,
-          sex: userData.gender === "Masculino" ? Sex.Masculino : Sex.Femenino,
+          gender: userData.gender,
+          sex: userData.gender === Gender.Masculino ? Sex.Masculino : Sex.Femenino,
           language: Language.Espanol,
           document_type: DocumentType.CC,
           phone: userData.phone,
           credential_users_idcredential_users: credentials[index + patientUserData.length].id,
           rol_idrol: roles[0].id, // Especialista role
           status: UserStatus.Activo,
-          birthdate: new Date("1985-01-01"),
+          birthdate: new Date(birthYear, 0, 1),
           joinDate: joinDate,
         },
       });
     })
   );
 
-  // 6. Create PacData (15 records to match patients)
- const pacDataInfo = [
-  {
-    history: "Historia médica de ejemplo",
-    direction: "Calle 123 #45-67",
-    blood: "O+",
-    allergies: "Penicilina, Mariscos",
-    emergency: "Laura Pérez - 3201234567",
-    profession: "Ingeniero",
-    ethnicgroup: "Mestizo",
-    eps: "Sura",
-  },
-  {
-    history: "Hipertensión controlada",
-    direction: "Carrera 45 #23-89",
-    blood: "A+",
-    allergies: "Ninguna",
-    emergency: "José Rodríguez - 3201234568",
-    profession: "Contador",
-    ethnicgroup: "Afrocolombiano",
-    eps: "Sanitas",
-  },
-  {
-    history: "Diabetes tipo 2",
-    direction: "Avenida 68 #12-34",
-    blood: "B+",
-    allergies: "Aspirina",
-    emergency: "Carmen Martínez - 3201234569",
-    profession: "Profesor",
-    ethnicgroup: "Indígena",
-    eps: "Compensar",
-  },
-  {
-    history: "Asma bronquial",
-    direction: "Calle 78 #56-12",
-    blood: "AB+",
-    allergies: "Polen, Ácaros",
-    emergency: "Luis López - 3201234570",
-    profession: "Chef",
-    ethnicgroup: "Mestizo",
-    eps: "Famisanar",
-  },
-  {
-    history: "Artritis reumatoide",
-    direction: "Carrera 12 #89-45",
-    blood: "O-",
-    allergies: "Antiinflamatorios",
-    emergency: "Rosa González - 3201234571",
-    profession: "Médico",
-    ethnicgroup: "Palenquero",
-    eps: "SaludTotal",
-  },
-  {
-    history: "Migraña crónica",
-    direction: "Avenida 23 #67-90",
-    blood: "A-",
-    allergies: "Chocolate, Vino",
-    emergency: "Mario Fernández - 3201234572",
-    profession: "Diseñador",
-    ethnicgroup: "Raizal",
-    eps: "NuevaEps",
-  },
-  {
-    history: "Gastritis crónica",
-    direction: "Calle 34 #12-78",
-    blood: "B-",
-    allergies: "Picante",
-    emergency: "Ana Sánchez - 3201234573",
-    profession: "Abogado",
-    ethnicgroup: "Gitano",
-    eps: "Coosalud",
-  },
-  {
-    history: "Hipotiroidismo",
-    direction: "Carrera 56 #34-21",
-    blood: "AB-",
-    allergies: "Yodo",
-    emergency: "Carlos Ramírez - 3201234574",
-    profession: "Psicólogo",
-    ethnicgroup: "Negro",
-    eps: "MutualSer",
-  },
-  {
-    history: "Osteoporosis",
-    direction: "Avenida 78 #45-67",
-    blood: "O+",
-    allergies: "Lactosa",
-    emergency: "Marta Torres - 3201234575",
-    profession: "Técnico en sistemas",
-    ethnicgroup: "Otro",
-    eps: "Otra",
-  },
-  {
-    history: "Anemia ferropénica",
-    direction: "Calle 90 #23-45",
-    blood: "A+",
-    allergies: "Mariscos",
-    emergency: "Pedro Ruiz - 3201234576",
-    profession: "Estudiante",
-    ethnicgroup: "Mestizo",
-    eps: "Ninguna",
-  },
-  // Additional 5 records for new patients
-  {
-    history: "Hipertensión arterial",
-    direction: "Carrera 15 #30-50",
-    blood: "B+",
-    allergies: "Sulfa",
-    emergency: "Elena Vega - 3201234577",
-    profession: "Arquitecto",
-    ethnicgroup: "Mestizo",
-    eps: "Sura",
-  },
-  {
-    history: "Rinitis alérgica",
-    direction: "Calle 50 #20-30",
-    blood: "O-",
-    allergies: "Polen, Polvo",
-    emergency: "Roberto Moreno - 3201234578",
-    profession: "Enfermero",
-    ethnicgroup: "Afrocolombiano",
-    eps: "Sanitas",
-  },
-  {
-    history: "Lumbalgia crónica",
-    direction: "Avenida 40 #15-25",
-    blood: "A-",
-    allergies: "Ninguna",
-    emergency: "Gloria Castro - 3201234579",
-    profession: "Fisioterapeuta",
-    ethnicgroup: "Indígena",
-    eps: "Compensar",
-  },
-  {
-    history: "Síndrome de colon irritable",
-    direction: "Calle 60 #35-40",
-    blood: "AB+",
-    allergies: "Lactosa, Gluten",
-    emergency: "Mario Delgado - 3201234580",
-    profession: "Nutricionista",
-    ethnicgroup: "Mestizo",
-    eps: "Famisanar",
-  },
-  {
-    history: "Depresión leve",
-    direction: "Carrera 25 #40-55",
-    blood: "O+",
-    allergies: "Ninguna",
-    emergency: "Sandra Ortiz - 3201234581",
-    profession: "Trabajador Social",
-    ethnicgroup: "Palenquero",
-    eps: "SaludTotal",
-  },
-];
-
+  // 6. Create PacData
+  const pacDataInfo = [
+    {
+      history: "Historia médica de ejemplo",
+      direction: "Calle 123 #45-67",
+      blood: "O+",
+      allergies: "Penicilina, Mariscos",
+      emergency: "Laura Pérez - 3201234567",
+      profession: "Ingeniero",
+      ethnicgroup: "Mestizo",
+      eps: Eps.Sura,
+    },
+    {
+      history: "Hipertensión controlada",
+      direction: "Carrera 45 #23-89",
+      blood: "A+",
+      allergies: "Ninguna",
+      emergency: "José Rodríguez - 3201234568",
+      profession: "Contador",
+      ethnicgroup: "Afrocolombiano",
+      eps: Eps.Sanitas,
+    },
+    {
+      history: "Diabetes tipo 2",
+      direction: "Avenida 68 #12-34",
+      blood: "B+",
+      allergies: "Aspirina",
+      emergency: "Carmen Martínez - 3201234569",
+      profession: "Profesor",
+      ethnicgroup: "Indígena",
+      eps: Eps.Compensar,
+    },
+    {
+      history: "Asma bronquial",
+      direction: "Calle 78 #56-12",
+      blood: "AB+",
+      allergies: "Polen, Ácaros",
+      emergency: "Luis López - 3201234570",
+      profession: "Chef",
+      ethnicgroup: "Mestizo",
+      eps: Eps.Famisanar,
+    },
+    {
+      history: "Artritis reumatoide",
+      direction: "Carrera 12 #89-45",
+      blood: "O-",
+      allergies: "Antiinflamatorios",
+      emergency: "Rosa González - 3201234571",
+      profession: "Médico",
+      ethnicgroup: "Palenquero",
+      eps: Eps.SaludTotal,
+    },
+    {
+      history: "Migraña crónica",
+      direction: "Avenida 23 #67-90",
+      blood: "A-",
+      allergies: "Chocolate, Vino",
+      emergency: "Mario Fernández - 3201234572",
+      profession: "Diseñador",
+      ethnicgroup: "Raizal",
+      eps: Eps.NuevaEps,
+    },
+    {
+      history: "Gastritis crónica",
+      direction: "Calle 34 #12-78",
+      blood: "B-",
+      allergies: "Picante",
+      emergency: "Ana Sánchez - 3201234573",
+      profession: "Abogado",
+      ethnicgroup: "Gitano",
+      eps: Eps.Coosalud,
+    },
+    {
+      history: "Hipotiroidismo",
+      direction: "Carrera 56 #34-21",
+      blood: "AB-",
+      allergies: "Yodo",
+      emergency: "Carlos Ramírez - 3201234574",
+      profession: "Psicólogo",
+      ethnicgroup: "Negro",
+      eps: Eps.MutualSer,
+    },
+    {
+      history: "Osteoporosis",
+      direction: "Avenida 78 #45-67",
+      blood: "O+",
+      allergies: "Lactosa",
+      emergency: "Marta Torres - 3201234575",
+      profession: "Técnico en sistemas",
+      ethnicgroup: "Otro",
+      eps: Eps.Otra,
+    },
+    {
+      history: "Anemia ferropénica",
+      direction: "Calle 90 #23-45",
+      blood: "A+",
+      allergies: "Mariscos",
+      emergency: "Pedro Ruiz - 3201234576",
+      profession: "Estudiante",
+      ethnicgroup: "Mestizo",
+      eps: Eps.Ninguna,
+    },
+    {
+      history: "Hipertensión arterial",
+      direction: "Carrera 15 #30-50",
+      blood: "B+",
+      allergies: "Sulfa",
+      emergency: "Elena Vega - 3201234577",
+      profession: "Arquitecto",
+      ethnicgroup: "Mestizo",
+      eps: Eps.Sura,
+    },
+    {
+      history: "Rinitis alérgica",
+      direction: "Calle 50 #20-30",
+      blood: "O-",
+      allergies: "Polen, Polvo",
+      emergency: "Roberto Moreno - 3201234578",
+      profession: "Enfermero",
+      ethnicgroup: "Afrocolombiano",
+      eps: Eps.Sanitas,
+    },
+    {
+      history: "Lumbalgia crónica",
+      direction: "Avenida 40 #15-25",
+      blood: "A-",
+      allergies: "Ninguna",
+      emergency: "Gloria Castro - 3201234579",
+      profession: "Fisioterapeuta",
+      ethnicgroup: "Indígena",
+      eps: Eps.Compensar,
+    },
+    {
+      history: "Síndrome de colon irritable",
+      direction: "Calle 60 #35-40",
+      blood: "AB+",
+      allergies: "Lactosa, Gluten",
+      emergency: "Mario Delgado - 3201234580",
+      profession: "Nutricionista",
+      ethnicgroup: "Mestizo",
+      eps: Eps.Famisanar,
+    },
+    {
+      history: "Depresión leve",
+      direction: "Carrera 25 #40-55",
+      blood: "O+",
+      allergies: "Ninguna",
+      emergency: "Sandra Ortiz - 3201234581",
+      profession: "Trabajador Social",
+      ethnicgroup: "Palenquero",
+      eps: Eps.SaludTotal,
+    },
+  ];
 
   const pacDataRecords = await Promise.all(
     pacDataInfo.map((info) =>
@@ -724,7 +695,7 @@ async function main() {
           bloodType: bloodTypeMap[info.blood],
           allergies: info.allergies,
           emergency_contact: info.emergency,
-          eps_type: info.eps as Eps,
+          eps_type: info.eps,
           profession: info.profession,
           ethnicgroup: info.ethnicgroup,
         },
@@ -732,22 +703,21 @@ async function main() {
     )
   );
 
-  // 7. Create Patients (10 records)
+  // 7. Create Patients
   const patients = await Promise.all(
     patientUsers.map((user, index) =>
       prisma.patient.create({
         data: {
           pac_data_idpac_data: pacDataRecords[index].id,
           User_idUser: user.id,
-          User_credential_users_idcredential_users:
-            user.credential_users_idcredential_users,
+          User_credential_users_idcredential_users: user.credential_users_idcredential_users,
           User_rol_idrol: user.rol_idrol,
         },
       })
     )
   );
 
-  // 8. Create SpecData (13 records to match specialists)
+  // 8. Create SpecData
   const specDataInfo = [
     {
       bio: "Cardióloga con 15 años de experiencia",
@@ -799,7 +769,6 @@ async function main() {
       exp: "Centro de Diabetes",
       years: "17 años",
     },
-    // Additional 3 records for new specialists
     {
       bio: "Anestesióloga con especialización en dolor",
       exp: "Clínica del Dolor",
@@ -818,8 +787,12 @@ async function main() {
   ];
 
   const specDataRecords = await Promise.all(
-    specDataInfo.map((info, index) =>
-      prisma.specData.create({
+    specDataInfo.map((info, index) => {
+      const today = new Date();
+      const workStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8, 0, 0);
+      const workEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 17, 0, 0);
+      
+      return prisma.specData.create({
         data: {
           biography: info.bio,
           picture: Buffer.from(`imagen_perfil_${index + 1}`),
@@ -829,27 +802,28 @@ async function main() {
           degrees: Buffer.from(`diplomas_${index + 1}`),
           working_experience: info.years,
           consultations: Math.floor(Math.random() * 500) + 50,
+          workStartSchedule: workStart,
+          workEndSchedule: workEnd,
         },
-      })
-    )
+      });
+    })
   );
 
-  // 9. Create Specialists (10 records)
+  // 9. Create Specialists
   const specialists = await Promise.all(
     specialistUsers.map((user, index) =>
       prisma.specialist.create({
         data: {
           spec_data_idspec_data: specDataRecords[index].id,
           User_idUser: user.id,
-          User_credential_users_idcredential_users:
-            user.credential_users_idcredential_users,
+          User_credential_users_idcredential_users: user.credential_users_idcredential_users,
           User_rol_idrol: user.rol_idrol,
         },
       })
     )
   );
 
-  // 10. Associate Specialists with Specialties (13 records with cycling specialties)
+  // 10. Associate Specialists with Specialties
   const specialistSpecialtyAssociations = await Promise.all(
     specialists.map((specialist, index) =>
       prisma.specialistHasSpecialty.create({
@@ -857,8 +831,7 @@ async function main() {
           Specialist_idEspecialista: specialist.id,
           Specialist_spec_data_idspec_data: specialist.spec_data_idspec_data,
           Specialist_User_idUser: specialist.User_idUser,
-          Specialist_User_credential_users_idcredential_users:
-            specialist.User_credential_users_idcredential_users,
+          Specialist_User_credential_users_idcredential_users: specialist.User_credential_users_idcredential_users,
           Specialist_User_rol_idrol: specialist.User_rol_idrol,
           specialty_idspecialty: specialties[index % specialties.length].id,
         },
@@ -866,7 +839,7 @@ async function main() {
     )
   );
 
-  // 11. Create Medical Histories (10 records)
+  // 11. Create Medical Histories
   const medicalHistories = await Promise.all(
     patients.map((patient, index) =>
       prisma.medicalHistory.create({
@@ -874,19 +847,309 @@ async function main() {
           patient_idPaciente: patient.id,
           patient_pac_data_idpac_data: patient.pac_data_idpac_data,
           patient_User_idUser: patient.User_idUser,
-          patient_User_credential_users_idcred:
-            patient.User_credential_users_idcredential_users,
+          patient_User_credential_users_idcred: patient.User_credential_users_idcredential_users,
           patient_User_rol_idrol: patient.User_rol_idrol,
           email: credentials[index].email,
-          emergency_contact:
-            pacDataRecords[index].emergency_contact || "DEFAULT_VALUE",
+          emergency_contact: pacDataRecords[index].emergency_contact || "DEFAULT_VALUE",
           contact_phone: patientUsers[index].phone,
         },
       })
     )
   );
 
-  // 12. Create Medical Consultations (10 records)
+  // 12. Create Appointments
+  const appointmentStates = [
+    stateAppointment.Completada,
+    stateAppointment.Pendiente,
+    stateAppointment.Cancelada,
+    stateAppointment.EnCurso,
+    stateAppointment.Reagendada,
+  ];
+
+  const allAppointments = [];
+  
+  // Appointments for today (5 appointments)
+  for (let i = 0; i < 5; i++) {
+    const today = new Date();
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8 + i * 2, 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: i < 3 ? stateAppointment.Completada : stateAppointment.Pendiente,
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/1234567${i}`,
+    });
+  }
+
+  // Appointments for this week (10 appointments)
+  for (let i = 0; i < 10; i++) {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 7);
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 9 + (i % 8), 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: appointmentStates[i % appointmentStates.length],
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/12345${100 + i}`,
+    });
+  }
+
+  // Appointments for this month (15 appointments)
+  for (let i = 0; i < 15; i++) {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 30);
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 8 + (i % 10), 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: appointmentStates[i % appointmentStates.length],
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/12345${200 + i}`,
+    });
+  }
+
+  // Appointments for this year (20 appointments)
+  for (let i = 0; i < 20; i++) {
+    const today = new Date();
+    const daysAgo = Math.floor(Math.random() * 365);
+    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 8 + (i % 10), 0, 0);
+    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
+    
+    allAppointments.push({
+      state: appointmentStates[i % appointmentStates.length],
+      appoint_specialtyId: specialties[i % specialties.length].id,
+      patient: patients[i % patients.length],
+      specialist: specialists[i % specialists.length],
+      appoint_init: startDate,
+      appoint_finish: endDate,
+      linkZoom: `https://zoom.us/j/12345${300 + i}`,
+    });
+  }
+
+  const appointments = await Promise.all(
+    allAppointments.map((appointmentData) =>
+      prisma.appointment.create({
+        data: {
+          state: appointmentData.state,
+          appoint_specialtyId: appointmentData.appoint_specialtyId,
+          Paciente_idPaciente: appointmentData.patient.id,
+          Paciente_pac_data_idpac_data: appointmentData.patient.pac_data_idpac_data,
+          Paciente_User_idUser: appointmentData.patient.User_idUser,
+          Paciente_User_credential_users_idcredential_users: appointmentData.patient.User_credential_users_idcredential_users,
+          Paciente_User_rol_idrol: appointmentData.patient.User_rol_idrol,
+          Specialist_idEspecialista: appointmentData.specialist.id,
+          Specialist_spec_data_idspec_data: appointmentData.specialist.spec_data_idspec_data,
+          Specialist_User_idUser: appointmentData.specialist.User_idUser,
+          Specialist_User_credential_users_idcredential_users: appointmentData.specialist.User_credential_users_idcredential_users,
+          Specialist_User_rol_idrol: appointmentData.specialist.User_rol_idrol,
+          appoint_init: appointmentData.appoint_init,
+          appoint_finish: appointmentData.appoint_finish,
+          linkZoom: appointmentData.linkZoom,
+        },
+      })
+    )
+  );
+
+  // 13. Create User Reviews (with appointmentId)
+  const reviewComments = [
+    "Excelente atención, muy profesional",
+    "Muy buen doctor, explica claramente",
+    "Atención rápida y eficiente",
+    "Doctor muy empático y comprensivo",
+    "Excelente diagnóstico y tratamiento",
+    "Muy profesional en su consulta",
+    "Buena atención pero algo apresurada",
+    "Doctor muy preparado y actualizado",
+    "Excelente seguimiento del caso",
+    "Muy satisfecho con la consulta",
+    "Puntual y organizado",
+    "Instalaciones muy limpias",
+    "Personal muy amable",
+    "Tiempo de espera razonable",
+    "Explicaciones muy claras",
+  ];
+
+  const completedAppointments = appointments.filter(apt => apt.state === stateAppointment.Completada);
+  
+  const userReviews = await Promise.all(
+    completedAppointments.slice(0, Math.min(15, completedAppointments.length)).map(async (appointment, index) => {
+      const today = new Date();
+      const daysAgo = Math.floor(Math.random() * 60);
+      const reviewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 10 + (index % 12), 0, 0);
+      const rating = 3.5 + (Math.random() * 1.5);
+      
+      // Get patient and specialist from the appointment
+      const patient = patients.find(p => p.id === appointment.Paciente_idPaciente);
+      const specialist = specialists.find(s => s.id === appointment.Specialist_idEspecialista);
+      
+      if (!patient || !specialist) return null;
+      
+      const patientUser = patientUsers.find(u => u.id === patient.User_idUser);
+      const specialistUser = specialistUsers.find(u => u.id === specialist.User_idUser);
+      
+      if (!patientUser || !specialistUser) return null;
+      
+      return prisma.userReview.create({
+        data: {
+          appointmentId: appointment.id,
+          reviewer_id: patientUser.id,
+          reviewer_cred_id: patientUser.credential_users_idcredential_users,
+          reviewer_rol_id: patientUser.rol_idrol,
+          reviewed_id: specialistUser.id,
+          reviewed_cred_id: specialistUser.credential_users_idcredential_users,
+          reviewed_rol_id: specialistUser.rol_idrol,
+          rating: Math.round(rating * 10) / 10,
+          comment: reviewComments[index % reviewComments.length],
+          createdAt: reviewDate,
+        },
+      });
+    })
+  );
+
+  // Filter out null values
+  const validUserReviews = userReviews.filter(review => review !== null);
+
+  // 14. Create Consents
+  const consents = await Promise.all(
+    patients.slice(0, 10).map((patient, index) =>
+      prisma.consent.create({
+        data: {
+          patient_idPaciente: patient.id,
+          patient_pac_data_idpac_data: patient.pac_data_idpac_data,
+          patient_User_idUser: patient.User_idUser,
+          patient_User_credential_users_idcred: patient.User_credential_users_idcredential_users,
+          patient_User_rol_idrol: patient.User_rol_idrol,
+          especialidad_id: specialties[index % specialties.length].id,
+          fecha_firma: new Date(2023, 4, 10 + index, 0, 0, 0),
+          firmado_por: `${patientUsers[index].firstname} ${patientUsers[index].lastname}`,
+          relacion_con_paciente: index % 3 === 0 ? "Titular" : index % 3 === 1 ? "Representante legal" : "Familiar",
+          documento_identidad: credentials[index].document.toString(),
+          consentimiento_texto: `Consiento el tratamiento médico para ${specialties[index % specialties.length].name.toLowerCase()}...`,
+          firmado: true,
+        },
+      })
+    )
+  );
+
+  // 15. Create Invoices
+  const paymentMethods = ["Tarjeta crédito", "Tarjeta débito", "Efectivo", "Transferencia", "PSE"];
+  const paymentStatuses = ["pagado", "pendiente", "vencido", "parcial"];
+
+  const invoices = await Promise.all(
+    appointments.map((appointment, index) => {
+      const baseAmount = 80000;
+      const variableAmount = Math.floor(Math.random() * 100000) + 50000;
+      const finalAmount = baseAmount + variableAmount;
+      
+      let paidDate = null;
+      const status = paymentStatuses[index % paymentStatuses.length];
+      if (status === "pagado") {
+        const appointmentDate = new Date(appointment.appoint_init);
+        paidDate = new Date(appointmentDate.getTime() + (Math.random() * 5 + 1) * 24 * 60 * 60 * 1000);
+      }
+
+      return prisma.invoice.create({
+        data: {
+          appointmentId: appointment.id,
+          patient_idPaciente: appointment.Paciente_idPaciente,
+          patient_pac_data_idpac_data: appointment.Paciente_pac_data_idpac_data,
+          patient_User_idUser: appointment.Paciente_User_idUser,
+          patient_User_credential_users_idcred: appointment.Paciente_User_credential_users_idcredential_users,
+          patient_User_rol_idrol: appointment.Paciente_User_rol_idrol,
+          amount: finalAmount,
+          paymentMethod: paymentMethods[index % paymentMethods.length],
+          paymentStatus: status,
+          issuedDate: appointment.appoint_init,
+          paidDate: paidDate,
+        },
+      });
+    })
+  );
+
+  // 16. Create Appointment Receipts
+  const appointmentReceipts = await Promise.all(
+    appointments.map((appointment, index) =>
+      prisma.appointmentReceipt.create({
+        data: {
+          appointmentId: appointment.id,
+          patient_idPaciente: appointment.Paciente_idPaciente,
+          patient_pac_data_idpac_data: appointment.Paciente_pac_data_idpac_data,
+          patient_User_idUser: appointment.Paciente_User_idUser,
+          patient_User_credential_users_idcred: appointment.Paciente_User_credential_users_idcredential_users,
+          patient_User_rol_idrol: appointment.Paciente_User_rol_idrol,
+          issuedAt: new Date(appointment.appoint_init),
+          receiptUrl: `https://storage.example.com/receipts/${123 + index}.pdf`,
+          notes: `Consulta de ${specialties[index % specialties.length].name.toLowerCase()} completada`,
+        },
+      })
+    )
+  );
+
+  // 17. Create Medical Orders
+  const orderDescriptions = [
+    "Orden para ECG y análisis de sangre",
+    "Orden para resonancia magnética cerebral",
+    "Orden para biopsia cutánea",
+    "Orden para análisis de sangre pediátrico",
+    "Orden para ecografía pélvica",
+    "Orden para radiografía de rodilla",
+    "Orden para pruebas psicológicas",
+    "Orden para campimetría visual",
+    "Orden para audiometría",
+    "Orden para prueba de tolerancia a glucosa",
+  ];
+
+  const orderInstructions = [
+    "Ayunas de 8 horas para los análisis",
+    "No usar objetos metálicos",
+    "No aplicar cremas 24h antes",
+    "Acompañar al menor durante el proceso",
+    "Vejiga llena para el examen",
+    "No realizar ejercicio previo",
+    "Descansar bien la noche anterior",
+    "No usar gotas oftálmicas",
+    "Evitar ruidos fuertes antes",
+    "Ayunas de 12 horas",
+  ];
+
+  const medicalOrders = await Promise.all(
+    appointments.slice(0, 20).map((appointment, index) =>
+      prisma.medicalOrder.create({
+        data: {
+          appointmentId: appointment.id,
+          specialist_idEspecialista: appointment.Specialist_idEspecialista,
+          specialist_spec_data_idspec_data: appointment.Specialist_spec_data_idspec_data,
+          specialist_User_idUser: appointment.Specialist_User_idUser,
+          specialist_User_credential_users_idcred: appointment.Specialist_User_credential_users_idcredential_users,
+          specialist_User_rol_idrol: appointment.Specialist_User_rol_idrol,
+          patient_idPaciente: appointment.Paciente_idPaciente,
+          patient_pac_data_idpac_data: appointment.Paciente_pac_data_idpac_data,
+          patient_User_idUser: appointment.Paciente_User_idUser,
+          patient_User_credential_users_idcred: appointment.Paciente_User_credential_users_idcredential_users,
+          patient_User_rol_idrol: appointment.Paciente_User_rol_idrol,
+          issuedAt: new Date(appointment.appoint_init),
+          description: orderDescriptions[index % orderDescriptions.length],
+          instructions: orderInstructions[index % orderInstructions.length],
+          status: [UserStatus.Pendiente, UserStatus.Activo, UserStatus.Inactivo][index % 3],
+        },
+      })
+    )
+  );
+
+  // 18. Create Medical Consultations
   const consultationReasons = [
     "Dolor en el pecho",
     "Dolor de cabeza persistente",
@@ -903,7 +1166,7 @@ async function main() {
   const consultations = await Promise.all(
     medicalHistories.map((history, index) => {
       const startDate = new Date(2023, 4, 15 + index, 10 + index, 0, 0);
-      const endDate = new Date(startDate.getTime() + 45 * 60 * 1000); // 45 minutes later
+      const endDate = new Date(startDate.getTime() + 45 * 60 * 1000);
       const reasonIndex = index % consultationReasons.length;
 
       return prisma.medicalConsultation.create({
@@ -912,21 +1175,17 @@ async function main() {
           startTime: startDate,
           endTime: endDate,
           reason: consultationReasons[reasonIndex],
-          medicalNote: `Paciente presenta ${consultationReasons[
-            reasonIndex
-          ].toLowerCase()}...`,
+          medicalNote: `Paciente presenta ${consultationReasons[reasonIndex].toLowerCase()}...`,
           vitalSigns: `TA: ${110 + index * 2}/${70 + index}, FC: ${70 + index}`,
           consultationMode: index % 2 === 0 ? "Presencial" : "Virtual",
           location: `Consultorio ${201 + index}`,
-          summary: `Se recomienda tratamiento específico para ${consultationReasons[
-            reasonIndex
-          ].toLowerCase()}`,
+          summary: `Se recomienda tratamiento específico para ${consultationReasons[reasonIndex].toLowerCase()}`,
         },
       });
     })
   );
 
-  // 13. Create Diagnoses (10 records)
+  // 19. Create Diagnoses
   const diagnosisCodes = [
     { code: "I20.9", symptom: "Dolor torácico anginoso" },
     { code: "G43.9", symptom: "Migraña sin especificar" },
@@ -958,14 +1217,8 @@ async function main() {
     })
   );
 
-  // 14. Create Medical Backgrounds (10 records)
-  const backgroundTypes = [
-    "Familiares",
-    "Personales",
-    "Quirúrgicos",
-    "Alérgicos",
-    "Farmacológicos",
-  ];
+  // 20. Create Medical Backgrounds
+  const backgroundTypes = ["Familiares", "Personales", "Quirúrgicos", "Alérgicos", "Farmacológicos"];
   const backgroundDescs = [
     "Padre con cardiopatía isquémica",
     "Hipertensión desde hace 5 años",
@@ -991,7 +1244,7 @@ async function main() {
     )
   );
 
-  // 15. Create Prescriptions (10 records)
+  // 21. Create Prescriptions
   const medicineData = [
     {
       medicine: "Aspirina",
@@ -1072,371 +1325,7 @@ async function main() {
     )
   );
 
-  // 16. Create Appointments (30 records with varied dates for dashboard)
-  const appointmentStates = [
-    "Completada",
-    "Pendiente",
-    "Cancelada",
-    "En curso",
-    "Reagendada",
-  ];
-
-  // Create appointments with dates distributed across different periods
-  const allAppointments = [];
-  
-  // Appointments for today (5 appointments)
-  for (let i = 0; i < 5; i++) {
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8 + i * 2, 0, 0);
-    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
-    
-    allAppointments.push({
-      state: i < 3 ? "Completada" : "Pendiente",
-      appoint_specialtyId: specialties[i % specialties.length].id,
-      patient: patients[i % patients.length],
-      specialist: specialists[i % specialists.length],
-      appoint_init: startDate,
-      appoint_finish: endDate,
-      linkZoom: `https://zoom.us/j/1234567${i}`,
-    });
-  }
-
-  // Appointments for this week (10 appointments)
-  for (let i = 0; i < 10; i++) {
-    const today = new Date();
-    const daysAgo = Math.floor(Math.random() * 7); // Last 7 days
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 9 + (i % 8), 0, 0);
-    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
-    
-    allAppointments.push({
-      state: appointmentStates[i % appointmentStates.length],
-      appoint_specialtyId: specialties[i % specialties.length].id,
-      patient: patients[i % patients.length],
-      specialist: specialists[i % specialists.length],
-      appoint_init: startDate,
-      appoint_finish: endDate,
-      linkZoom: `https://zoom.us/j/12345${100 + i}`,
-    });
-  }
-
-  // Appointments for this month (15 appointments)
-  for (let i = 0; i < 15; i++) {
-    const today = new Date();
-    const daysAgo = Math.floor(Math.random() * 30); // Last 30 days
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 8 + (i % 10), 0, 0);
-    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
-    
-    allAppointments.push({
-      state: appointmentStates[i % appointmentStates.length],
-      appoint_specialtyId: specialties[i % specialties.length].id,
-      patient: patients[i % patients.length],
-      specialist: specialists[i % specialists.length],
-      appoint_init: startDate,
-      appoint_finish: endDate,
-      linkZoom: `https://zoom.us/j/12345${200 + i}`,
-    });
-  }
-
-  // Appointments for this year (20 appointments)
-  for (let i = 0; i < 20; i++) {
-    const today = new Date();
-    const daysAgo = Math.floor(Math.random() * 365); // Last year
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 8 + (i % 10), 0, 0);
-    const endDate = new Date(startDate.getTime() + specialties[i % specialties.length].duration * 60 * 1000);
-    
-    allAppointments.push({
-      state: appointmentStates[i % appointmentStates.length],
-      appoint_specialtyId: specialties[i % specialties.length].id,
-      patient: patients[i % patients.length],
-      specialist: specialists[i % specialists.length],
-      appoint_init: startDate,
-      appoint_finish: endDate,
-      linkZoom: `https://zoom.us/j/12345${300 + i}`,
-    });
-  }
-
-  const appointments = await Promise.all(
-    allAppointments.map((appointmentData) =>
-      prisma.appointment.create({
-        data: {
-          state: appointmentData.state,
-          appoint_specialtyId: appointmentData.appoint_specialtyId,
-          Paciente_idPaciente: appointmentData.patient.id,
-          Paciente_pac_data_idpac_data: appointmentData.patient.pac_data_idpac_data,
-          Paciente_User_idUser: appointmentData.patient.User_idUser,
-          Paciente_User_credential_users_idcredential_users:
-            appointmentData.patient.User_credential_users_idcredential_users,
-          Paciente_User_rol_idrol: appointmentData.patient.User_rol_idrol,
-          Specialist_idEspecialista: appointmentData.specialist.id,
-          Specialist_spec_data_idspec_data:
-            appointmentData.specialist.spec_data_idspec_data,
-          Specialist_User_idUser: appointmentData.specialist.User_idUser,
-          Specialist_User_credential_users_idcredential_users:
-            appointmentData.specialist.User_credential_users_idcredential_users,
-          Specialist_User_rol_idrol: appointmentData.specialist.User_rol_idrol,
-          appoint_init: appointmentData.appoint_init,
-          appoint_finish: appointmentData.appoint_finish,
-          linkZoom: appointmentData.linkZoom,
-        },
-      })
-    )
-  );
-
-  // 17. Create User Reviews (more reviews with recent dates and varied ratings)
-  const reviewComments = [
-    "Excelente atención, muy profesional",
-    "Muy buen doctor, explica claramente",
-    "Atención rápida y eficiente",
-    "Doctor muy empático y comprensivo",
-    "Excelente diagnóstico y tratamiento",
-    "Muy profesional en su consulta",
-    "Buena atención pero algo apresurada",
-    "Doctor muy preparado y actualizado",
-    "Excelente seguimiento del caso",
-    "Muy satisfecho con la consulta",
-    "Puntual y organizado",
-    "Instalaciones muy limpias",
-    "Personal muy amable",
-    "Tiempo de espera razonable",
-    "Explicaciones muy claras",
-  ];
-
-  // Create more reviews with recent dates and varied ratings
-  const allUserReviews = [];
-  
-  // Reviews from patients to specialists
-  for (let i = 0; i < 30; i++) {
-    const today = new Date();
-    const daysAgo = Math.floor(Math.random() * 60); // Last 60 days
-    const reviewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - daysAgo, 10 + (i % 12), 0, 0);
-    const rating = 3.5 + (Math.random() * 1.5); // Rating between 3.5 and 5.0
-    
-    allUserReviews.push({
-      reviewer: patientUsers[i % patientUsers.length],
-      reviewed: specialistUsers[i % specialistUsers.length],
-      rating: Math.round(rating * 10) / 10, // Round to 1 decimal
-      comment: reviewComments[i % reviewComments.length],
-      createdAt: reviewDate,
-    });
-  }
-
-  const userReviews = await Promise.all(
-    allUserReviews.map((reviewData) =>
-      prisma.userReview.create({
-        data: {
-          reviewer_id: reviewData.reviewer.id,
-          reviewer_cred_id: reviewData.reviewer.credential_users_idcredential_users,
-          reviewer_rol_id: reviewData.reviewer.rol_idrol,
-          reviewed_id: reviewData.reviewed.id,
-          reviewed_cred_id: reviewData.reviewed.credential_users_idcredential_users,
-          reviewed_rol_id: reviewData.reviewed.rol_idrol,
-          rating: reviewData.rating,
-          comment: reviewData.comment,
-          createdAt: reviewData.createdAt,
-        },
-      })
-    )
-  );
-
-  const reviewCommentsFromSpecialists = [
-    "Paciente muy cooperativo",
-    "Buena comunicación",
-    "Seguimiento adecuado",
-    "Muy puntual",
-    "Paciente educado",
-    "Participación activa",
-    "Respetuoso y atento",
-    "Fácil de tratar",
-    "Paciente comprometido",
-    "Buena actitud",
-  ];
-
-  const specialistToPatientReviews = await Promise.all(
-    specialistUsers.map((specialist, index) =>
-      prisma.userReview.create({
-        data: {
-          reviewer_id: specialist.id,
-          reviewer_cred_id: specialist.credential_users_idcredential_users,
-          reviewer_rol_id: specialist.rol_idrol,
-          reviewed_id: patientUsers[index].id,
-          reviewed_cred_id:
-            patientUsers[index].credential_users_idcredential_users,
-          reviewed_rol_id: patientUsers[index].rol_idrol,
-          rating: 4.5 - (index % 5) * 0.3,
-          comment: reviewCommentsFromSpecialists[index],
-          createdAt: new Date(2023, 5, 15 + index, 10, 0, 0),
-        },
-      })
-    )
-  );
-
-  // 18. Create Specialty Reviews (Comentado - modelo no existe en schema)
-  
-  const specialtyComments = [
-    "Muy buen servicio de cardiología",
-    "Excelente atención neurológica",
-    "Dermatología muy profesional",
-    "Pediatría con mucho cariño",
-    "Ginecología con mucha experiencia",
-    "Ortopedia muy especializada",
-    "Psiquiatría muy comprensiva",
-    "Oftalmología con tecnología moderna",
-    "ORL muy detallada",
-    "Endocrinología muy actualizada",
-  ];
-
-  // 19. Create Consents (10 records)
-  const consents = await Promise.all(
-    patients.map((patient, index) =>
-      prisma.consent.create({
-        data: {
-          patient_idPaciente: patient.id,
-          patient_pac_data_idpac_data: patient.pac_data_idpac_data,
-          patient_User_idUser: patient.User_idUser,
-          patient_User_credential_users_idcred:
-            patient.User_credential_users_idcredential_users,
-          patient_User_rol_idrol: patient.User_rol_idrol,
-          especialidad_id: specialties[index % specialties.length].id,
-          fecha_firma: new Date(2023, 4, 10 + index, 0, 0, 0),
-          firmado_por: `${patientUsers[index % patientUsers.length].firstname} ${patientUsers[index % patientUsers.length].lastname}`,
-          relacion_con_paciente:
-            index % 3 === 0
-              ? "Titular"
-              : index % 3 === 1
-              ? "Representante legal"
-              : "Familiar",
-          documento_identidad: credentials[index % credentials.length].document.toString(),
-          consentimiento_texto: `Consiento el tratamiento médico para ${specialties[
-            index % specialties.length
-          ].name.toLowerCase()}...`,
-          firmado: true,
-        },
-      })
-    )
-  );
-
-  // 20. Create Invoices (matching all appointments with varied amounts)
-  const paymentMethods = [
-    "Tarjeta crédito",
-    "Tarjeta débito",
-    "Efectivo",
-    "Transferencia",
-    "PSE",
-  ];
-  const paymentStatuses = ["Pagado", "Pendiente", "Vencido", "Parcial"];
-
-  const invoices = await Promise.all(
-    appointments.map((appointment, index) => {
-      const baseAmount = 80000; // Base amount
-      const variableAmount = Math.floor(Math.random() * 100000) + 50000; // Random between 50k-150k
-      const finalAmount = baseAmount + variableAmount;
-      
-      // Calculate paid date based on payment status
-      let paidDate = null;
-      const status = paymentStatuses[index % paymentStatuses.length];
-      if (status === "Pagado") {
-        const appointmentDate = new Date(appointment.appoint_init);
-        paidDate = new Date(appointmentDate.getTime() + (Math.random() * 5 + 1) * 24 * 60 * 60 * 1000); // 1-5 days after appointment
-      }
-
-      return prisma.invoice.create({
-        data: {
-          appointmentId: appointment.id,
-          patient_idPaciente: appointment.Paciente_idPaciente,
-          patient_pac_data_idpac_data: appointment.Paciente_pac_data_idpac_data,
-          patient_User_idUser: appointment.Paciente_User_idUser,
-          patient_User_credential_users_idcred:
-            appointment.Paciente_User_credential_users_idcredential_users,
-          patient_User_rol_idrol: appointment.Paciente_User_rol_idrol,
-          amount: finalAmount,
-          paymentMethod: paymentMethods[index % paymentMethods.length],
-          paymentStatus: status,
-          issuedDate: appointment.appoint_init,
-          paidDate: paidDate,
-        },
-      });
-    })
-  );
-
-  // 21. Create Appointment Receipts (for all appointments)
-  const appointmentReceipts = await Promise.all(
-    appointments.map((appointment, index) =>
-      prisma.appointmentReceipt.create({
-        data: {
-          appointmentId: appointment.id,
-          patient_idPaciente: patients[index % patients.length].id,
-          patient_pac_data_idpac_data: patients[index % patients.length].pac_data_idpac_data,
-          patient_User_idUser: patients[index % patients.length].User_idUser,
-          patient_User_credential_users_idcred:
-            patients[index % patients.length].User_credential_users_idcredential_users,
-          patient_User_rol_idrol: patients[index % patients.length].User_rol_idrol,
-          issuedAt: new Date(2023, 4, 15 + index, 10, 45, 0),
-          receiptUrl: `https://storage.example.com/receipts/${123 + index}.pdf`,
-          notes: `Consulta de ${specialties[
-            index % specialties.length
-          ].name.toLowerCase()} completada`,
-        },
-      })
-    )
-  );
-
-  // 22. Create Medical Orders (10 records)
-  const orderDescriptions = [
-    "Orden para ECG y análisis de sangre",
-    "Orden para resonancia magnética cerebral",
-    "Orden para biopsia cutánea",
-    "Orden para análisis de sangre pediátrico",
-    "Orden para ecografía pélvica",
-    "Orden para radiografía de rodilla",
-    "Orden para pruebas psicológicas",
-    "Orden para campimetría visual",
-    "Orden para audiometría",
-    "Orden para prueba de tolerancia a glucosa",
-  ];
-
-  const orderInstructions = [
-    "Ayunas de 8 horas para los análisis",
-    "No usar objetos metálicos",
-    "No aplicar cremas 24h antes",
-    "Acompañar al menor durante el proceso",
-    "Vejiga llena para el examen",
-    "No realizar ejercicio previo",
-    "Descansar bien la noche anterior",
-    "No usar gotas oftálmicas",
-    "Evitar ruidos fuertes antes",
-    "Ayunas de 12 horas",
-  ];
-
-  const medicalOrders = await Promise.all(
-    appointments.map((appointment, index) =>
-      prisma.medicalOrder.create({
-        data: {
-          appointmentId: appointment.id,
-          specialist_idEspecialista: specialists[index % specialists.length].id,
-          specialist_spec_data_idspec_data:
-            specialists[index % specialists.length].spec_data_idspec_data,
-          specialist_User_idUser: specialists[index % specialists.length].User_idUser,
-          specialist_User_credential_users_idcred:
-            specialists[index % specialists.length].User_credential_users_idcredential_users,
-          specialist_User_rol_idrol: specialists[index % specialists.length].User_rol_idrol,
-          patient_idPaciente: patients[index % patients.length].id,
-          patient_pac_data_idpac_data: patients[index % patients.length].pac_data_idpac_data,
-          patient_User_idUser: patients[index % patients.length].User_idUser,
-          patient_User_credential_users_idcred:
-            patients[index % patients.length].User_credential_users_idcredential_users,
-          patient_User_rol_idrol: patients[index % patients.length].User_rol_idrol,
-          issuedAt: new Date(2023, 4, 15 + index, 10, 45, 0),
-          description: orderDescriptions[index % orderDescriptions.length],
-          instructions: orderInstructions[index % orderInstructions.length],
-          status: ["Pendiente", "Activo", "Inactivo", "Pendiente"][
-            index % 4
-          ] as "Pendiente" | "Activo" | "Inactivo",
-        },
-      })
-    )
-  );
-
-  // 23. Create Diagnostic Files (10 records)
+  // 22. Create Diagnostic Files
   const fileTypes = ["PDF", "JPG", "PNG", "DICOM", "DOC"];
   const fileNames = [
     "ECG_20230515.pdf",
@@ -1467,7 +1356,7 @@ async function main() {
     )
   );
 
-  // 24. Create Specialist Requests (10 records)
+  // 23. Create Specialist Requests
   const requestSpecialties = [
     "Neurología",
     "Oncología",
@@ -1525,20 +1414,15 @@ async function main() {
       prisma.specialistRequest.create({
         data: {
           userId: patientUsers[index].id,
-          biography: `Médico con ${10 + index} años de experiencia en ${
-            requestSpecialties[index]
-          }`,
+          biography: `Médico con ${10 + index} años de experiencia en ${requestSpecialties[index]}`,
           specialty: requestSpecialties[index],
           price: 100000 + index * 10000,
           graduationYear: 2005 + index,
           workExperience: workExperiences[index],
-          language:Language.Ingles,
+          language: Language.Ingles,
           education: educationUniversities[index],
           skills: skills[index],
-          references: JSON.stringify([
-            `Dr. Carlos ${index}`,
-            `Dra. Ana ${index}`,
-          ]),
+          references: JSON.stringify([`Dr. Carlos ${index}`, `Dra. Ana ${index}`]),
           documentInfo: JSON.stringify({
             type: "Cédula",
             number: credentials[index].document.toString(),
@@ -1565,20 +1449,18 @@ async function main() {
   console.log(`- Patients: ${patients.length}`);
   console.log(`- SpecData: ${specDataRecords.length}`);
   console.log(`- Specialists: ${specialists.length}`);
-  console.log(
-    `- Specialist-Specialty Associations: ${specialistSpecialtyAssociations.length}`
-  );
+  console.log(`- Specialist-Specialty Associations: ${specialistSpecialtyAssociations.length}`);
   console.log(`- Medical Histories: ${medicalHistories.length}`);
-  console.log(`- Medical Consultations: ${consultations.length}`);
-  console.log(`- Diagnoses: ${diagnoses.length}`);
-  console.log(`- Medical Backgrounds: ${backgrounds.length}`);
-  console.log(`- Prescriptions: ${prescriptions.length}`);
   console.log(`- Appointments: ${appointments.length} (distributed across different time periods)`);
-  console.log(`- User Reviews: ${userReviews.length} (with recent dates and varied ratings)`);
+  console.log(`- User Reviews: ${validUserReviews.length} (with recent dates and varied ratings)`);
   console.log(`- Consents: ${consents.length}`);
   console.log(`- Invoices: ${invoices.length} (with varied amounts and payment statuses)`);
   console.log(`- Appointment Receipts: ${appointmentReceipts.length}`);
   console.log(`- Medical Orders: ${medicalOrders.length}`);
+  console.log(`- Medical Consultations: ${consultations.length}`);
+  console.log(`- Diagnoses: ${diagnoses.length}`);
+  console.log(`- Medical Backgrounds: ${backgrounds.length}`);
+  console.log(`- Prescriptions: ${prescriptions.length}`);
   console.log(`- Diagnostic Files: ${diagnosticFiles.length}`);
   console.log(`- Specialist Requests: ${specialistRequests.length}`);
   
@@ -1586,7 +1468,7 @@ async function main() {
   console.log("✅ Added appointments for today, this week, this month, and this year");
   console.log("✅ Added varied invoice amounts (50k-250k range)");
   console.log("✅ Added recent user join dates for active user metrics");
-  console.log("✅ Added 30+ user reviews with varied ratings (3.5-5.0)");
+  console.log("✅ Added user reviews with varied ratings (3.5-5.0)");
   console.log("✅ Added realistic payment statuses and dates");
   console.log("✅ Increased total users for better demographic data");
   console.log("\n🚀 Your dashboard should now display comprehensive data across all time periods!");
@@ -1599,4 +1481,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  });  
+  });
