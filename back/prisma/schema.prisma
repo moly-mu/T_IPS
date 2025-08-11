@@ -215,12 +215,14 @@ model Appointment {
   Invoice            Invoice[]
   MedicalOrder       MedicalOrder[]
   AppointmentReceipt AppointmentReceipt[]
+  UserReviews        UserReview[]
 
   @@map("appointments")
 }
 
 model UserReview {
   id               Int      @id @default(autoincrement()) @map("iduser_review")
+  appointmentId    Int      @unique
   reviewer_id      Int
   reviewer_cred_id Int
   reviewer_rol_id  Int
@@ -231,10 +233,10 @@ model UserReview {
   comment          String?  @db.Text
   createdAt        DateTime @default(now()) @db.Timestamp(6)
 
+  appointment      Appointment @relation(fields: [appointmentId], references: [id]) 
   reviewer User @relation("UserReviewReviewer", fields: [reviewer_id, reviewer_cred_id, reviewer_rol_id], references: [id, credential_users_idcredential_users, rol_idrol])
   reviewed User @relation("UserReviewReviewed", fields: [reviewed_id, reviewed_cred_id, reviewed_rol_id], references: [id, credential_users_idcredential_users, rol_idrol])
 
-  @@unique([reviewer_id, reviewer_cred_id, reviewer_rol_id, reviewed_id, reviewed_cred_id, reviewed_rol_id])
   @@map("user_review")
 }
 
