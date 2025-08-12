@@ -222,7 +222,7 @@ model Appointment {
 
 model UserReview {
   id               Int      @id @default(autoincrement()) @map("iduser_review")
-  appointmentId    Int      @unique
+  appointmentId    Int?     @unique
   reviewer_id      Int
   reviewer_cred_id Int
   reviewer_rol_id  Int
@@ -233,7 +233,7 @@ model UserReview {
   comment          String?  @db.Text
   createdAt        DateTime @default(now()) @db.Timestamp(6)
 
-  appointment      Appointment @relation(fields: [appointmentId], references: [id]) 
+  appointment      Appointment? @relation(fields: [appointmentId], references: [id]) 
   reviewer User @relation("UserReviewReviewer", fields: [reviewer_id, reviewer_cred_id, reviewer_rol_id], references: [id, credential_users_idcredential_users, rol_idrol])
   reviewed User @relation("UserReviewReviewed", fields: [reviewed_id, reviewed_cred_id, reviewed_rol_id], references: [id, credential_users_idcredential_users, rol_idrol])
 
@@ -417,7 +417,7 @@ model Invoice {
 // AppointmentReceipt apunta a Patient
 model AppointmentReceipt {
   id                                   Int      @id @default(autoincrement()) @map("idcomprobante")
-  appointmentId                        Int
+  appointmentId                        Int?
   patient_idPaciente                   Int
   patient_pac_data_idpac_data          Int
   patient_User_idUser                  Int
@@ -427,7 +427,7 @@ model AppointmentReceipt {
   receiptUrl                           String   @db.VarChar(255)
   notes                                String?  @db.Text
 
-  Appointment Appointment @relation(fields: [appointmentId], references: [id])
+  Appointment Appointment? @relation(fields: [appointmentId], references: [id])
   Patient     Patient     @relation(fields: [patient_idPaciente, patient_pac_data_idpac_data, patient_User_idUser, patient_User_credential_users_idcred, patient_User_rol_idrol], references: [id, pac_data_idpac_data, User_idUser, User_credential_users_idcredential_users, User_rol_idrol])
 
   @@map("comprobante_cita")

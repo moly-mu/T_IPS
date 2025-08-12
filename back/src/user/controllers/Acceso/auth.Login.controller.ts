@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -12,7 +13,6 @@ export const loginUser = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Correo y contraseña son requeridos." });
   }
 
-  
   try {
     const credential = await prisma.credentialUser.findUnique({
       where: { email },
@@ -35,14 +35,19 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "No se encontró el perfil de usuario asociado." });
     }
 
-    // Generar token
+    // Generar token con más datos
     const token = jwt.sign(
-      { id: user.id, email: credential.email, role: user.rol_idrol },
+      {
+        id: user.id,              // ID de la tabla User
+        credId: credential.id,    // ID de la tabla credentialUser
+        rolId: user.rol_idrol,    // ID del rol
+        email: credential.email
+      },
       process.env.JWT_SECRET || "secret",
       { expiresIn: "1d" }
     );
 
-    // Crear objeto sanitizado (sin ids)
+    // Crear objeto sanitizado (sin ids internos)
     const sanitizedUser = {
       firstname: user.firstname,
       second_firstname: user.second_firstname,

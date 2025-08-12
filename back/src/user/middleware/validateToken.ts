@@ -3,14 +3,15 @@ import jwt from "jsonwebtoken";
 
 interface DecodedToken {
   id: number;
+  credId: number;
+  rolId: number;
   email: string;
-  role: string;
   iat: number;
   exp: number;
 }
 
 export const validateToken = (
-  req: Request & { userId?: number; email?: string; role?: string },
+  req: Request & { userId?: number; userCredId?: number; userRolId?: number; email?: string },
   res: Response,
   next: NextFunction
 ) => {
@@ -26,10 +27,11 @@ export const validateToken = (
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret") as DecodedToken;
 
     req.userId = decoded.id;
+    req.userCredId = decoded.credId;
+    req.userRolId = decoded.rolId;
     req.email = decoded.email;
-    req.role = decoded.role;
 
-    next(); // Pasa al siguiente middleware o controlador
+    next();
   } catch (err) {
     return res.status(401).json({ error: "Token inválido o expirado." });
   }
