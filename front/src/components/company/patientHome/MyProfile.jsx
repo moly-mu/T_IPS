@@ -242,14 +242,14 @@ const MyProfile = ({ profile: initialProfile, onProfileUpdate }) => {
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               >
                 <option value="">Seleccionar</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
+                <option value="A_POS">A+</option>
+                <option value="A_NEG">A-</option>
+                <option value="B_POS">B+</option>
+                <option value="B_NEG">B-</option>
+                <option value="AB_POS">AB+</option>
+                <option value="AB_NEG">AB-</option>
+                <option value="O_POS">O+</option>
+                <option value="O_NEG">O-</option>
               </select>
             ) : (
               <p className="text-gray-900 pb-3 border-b border-gray-100">{localProfile.tipoSangre || 'No especificado'}</p>

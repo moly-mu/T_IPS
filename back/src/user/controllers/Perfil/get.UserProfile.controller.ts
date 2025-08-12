@@ -2,7 +2,16 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
-
+const bloodTypeMap: Record<string, string> = {
+  A_POS: "A+",
+  A_NEG: "A-",
+  B_POS: "B+",
+  B_NEG: "B-",
+  AB_POS: "AB+",
+  AB_NEG: "AB-",
+  O_POS: "O+",
+  O_NEG: "O-"
+};
 export const UserProfile = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
@@ -66,7 +75,7 @@ export const UserProfile = async (req: Request, res: Response) => {
         ? {
             pac_data: {
               Direction: paciente.pac_data?.Direction ?? null,
-              bloodType: paciente.pac_data?.bloodType ?? null,
+              bloodType: paciente.pac_data?.bloodType? bloodTypeMap[paciente.pac_data.bloodType] || paciente.pac_data.bloodType: null,
               allergies: paciente.pac_data?.allergies ?? null,
               emergency_contact: paciente.pac_data?.emergency_contact ?? null,
               eps_type: paciente.pac_data?.eps_type ?? null,

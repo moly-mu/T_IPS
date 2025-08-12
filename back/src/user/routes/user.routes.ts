@@ -8,6 +8,7 @@ import {UserScheduleAppointment} from "../controllers/Citas/get.UserScheduleAppo
 import {UserScheduleAppointmentCreate} from "../controllers/Citas/Post.UserScheduleAppointment.controller";
 import { getUserAppointments } from "../controllers/Citas/get.UserAppointments.controller";
 import { getUserReviews } from "../controllers/Encuentas/getUserReviews.controller";
+import { createUserReview} from "../controllers/Encuentas/postCreateUserReview.controller";
 import express from "express";
 
 const router = express.Router();
@@ -30,4 +31,6 @@ router.post("/User/scheduleAppointment", validateToken, UserScheduleAppointmentC
 router.get("/User/appointments", validateToken, getUserAppointments);
 // *Ruta para obtener las reseñas del usuario
 router.get("/User/Reviews", validateToken, getUserReviews);
+// *Ruta para crear una reseña del usuario
+router.post("/User/Reviews", validateToken, createUserReview);
 export default router;

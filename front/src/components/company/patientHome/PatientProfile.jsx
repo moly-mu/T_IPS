@@ -52,7 +52,7 @@ const PatientProfile = () => {
             }
 
             try {
-                setLoading(true);
+                setLoading(false);
                 const response = await getUserProfile();
                 const user = response.user;
                 
@@ -153,7 +153,7 @@ const PatientProfile = () => {
             return response;
             
         } catch (error) {
-            console.error('Error al actualizar perfil:', error);
+            console.error('Error al actualizar perfil:', error.response?.data || error);
             throw error;
         } finally {
             setLoading(false);
