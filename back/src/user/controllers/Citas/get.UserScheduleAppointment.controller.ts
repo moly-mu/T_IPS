@@ -74,9 +74,9 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
         }
 
         // Obtener reseñas de la especialidad
-        const reviews = await prisma.specialtyReview.findMany({
+        const reviews = await prisma.userReview.findMany({
           where: {
-            specialty_id: specialtyData?.id,
+             reviewed_id: specialtyData?.id,
           },
         });
 
