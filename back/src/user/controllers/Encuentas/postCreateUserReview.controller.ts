@@ -8,7 +8,9 @@ export const createUserReview = async (
   res: Response
 ) => {
   try {
-    const { userId, userCredId, userRolId } = req;
+    const userId = req.userId;
+    const userCredId = req.userCredId;
+    const userRolId = req.userRolId;
 
     if (!userId || !userCredId || !userRolId) {
       return res.status(400).json({ error: "Datos de usuario no proporcionados." });
@@ -16,21 +18,24 @@ export const createUserReview = async (
 
     const { appointmentId, rating, comment } = req.body;
 
-    // Convertir a número y validar
-    const appointmentIdNum = parseInt(appointmentId, 10);
-    if (isNaN(appointmentIdNum)) {
-      return res.status(400).json({ error: "ID de cita inválido." });
+    // Validaciones básicas
+    if (!appointmentId) {
+      return res.status(400).json({ error: "ID de cita es requerido." });
     }
 
     if (!rating || rating < 1 || rating > 5) {
       return res.status(400).json({ error: "La calificación debe estar entre 1 y 5." });
     }
 
-    // Buscar la cita y verificar que existe y esté completada
+    // Verificar que la cita existe y está completada
     const appointment = await prisma.appointment.findUnique({
-      where: { id: appointmentIdNum },
+      where: { id: appointmentId },
       include: {
-        Specialist: { include: { User: true } },
+        Specialist: {
+          include: {
+            User: true
+          }
+        },
         Paciente: true
       }
     });
@@ -40,8 +45,8 @@ export const createUserReview = async (
     }
 
     if (appointment.state !== "Completada") {
-      return res.status(400).json({
-        error: "Solo puedes reseñar citas que han sido completadas."
+      return res.status(400).json({ 
+        error: "Solo puedes reseñar citas que han sido completadas." 
       });
     }
 
@@ -98,7 +103,7 @@ export const createUserReview = async (
       reviewedUser.firstname,
       reviewedUser.second_firstname,
       reviewedUser.lastname,
-      reviewedUser.second_lastname
+      reviewedUser.second_lastname,
     ]
       .filter(Boolean)
       .join(" ");
@@ -110,13 +115,13 @@ export const createUserReview = async (
       createdAt: newReview.createdAt,
       reviewedSpecialist: {
         fullName,
-        phone: reviewedUser.phone
+        phone: reviewedUser.phone,
       }
     };
 
-    res.status(201).json({
+    res.status(201).json({ 
       message: "Reseña creada exitosamente",
-      review: formattedReview
+      review: formattedReview 
     });
 
   } catch (error) {
