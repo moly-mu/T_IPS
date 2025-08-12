@@ -5,6 +5,8 @@ const prisma = new PrismaClient();
 
 
 export const createSpecialistRequest = async (req: Request, res: Response) => {
+  // Convertir arrays y objetos a string (porque el modelo los define como String?)
+  const stringifyIfNeeded = (input: any) => (input ? JSON.stringify(input) : null);
   const userId = req.userId;
 
   if (!userId) {
@@ -19,7 +21,7 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
     price,
     graduationYear,
     workExperience,
-    languages,
+  language,
     education,
     skills,
     references,
@@ -29,18 +31,18 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
     personalRefs,
   } = req.body;
 
-  if (!specialty || !price || !graduationYear || !workExperience) {
-   res.status(400).json({ 
-    message: "Faltan campos obligatorios",
-    missing: { specialty: !specialty, price: !price, graduationYear: !graduationYear, workExperience: !workExperience }
+  if (!specialty || !price || !graduationYear) {
+    res.status(400).json({ 
+      message: "Faltan campos obligatorios",
+      missing: { specialty: !specialty, price: !price, graduationYear: !graduationYear }
     });
-  return;
+    return;
   }
   
   try {
     // Verifica que no exista una solicitud pendiente
     const existing = await prisma.specialistRequest.findFirst({
-      where: { userId, status: "pendiente" },
+  where: { userId, status: "Pendiente" },
     });
 
     if (existing) {
@@ -61,7 +63,14 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
     }
 
     // Convertir arrays y objetos a string (porque el modelo los define como String?)
-    const stringifyIfNeeded = (input: any) => (input ? JSON.stringify(input) : null);
+
+    // Validar language solo si viene (opcional)
+    const validLanguages = ["Espanol", "Ingles", "Frances", "Aleman", "Portugues"];
+    if (language && !validLanguages.includes(language)) {
+      return res.status(400).json({
+        message: "El campo 'language' debe ser uno de: " + validLanguages.join(", ")
+      });
+    }
 
     const newRequest = await prisma.specialistRequest.create({
       data: {
@@ -72,7 +81,7 @@ export const createSpecialistRequest = async (req: Request, res: Response) => {
         price,
         graduationYear,
         workExperience,
-        languages: stringifyIfNeeded(languages)|| "",
+        language,
         education: stringifyIfNeeded(education)|| "",
         skills: stringifyIfNeeded(skills)|| "",
         references: stringifyIfNeeded(references)|| "",

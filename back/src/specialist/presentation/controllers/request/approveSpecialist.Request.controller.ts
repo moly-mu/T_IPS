@@ -17,7 +17,7 @@ export const approveSpecialistRequest = async (req: Request, res: Response) => {
         return;
     }  
 
-    if (request.status !== "pendiente"){
+  if (request.status !== "Pendiente"){
         res.status(400).json({ message: "Ya fue procesada" });
         return;
     }
@@ -57,7 +57,7 @@ export const approveSpecialistRequest = async (req: Request, res: Response) => {
 
     await prisma.specialistRequest.update({
       where: { id: request.id },
-      data: { status: "aprobado" },
+  data: { status: "Activo" },
     });
 
     res.json({ message: "Solicitud aprobada y profesional creado" });

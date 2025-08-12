@@ -1,7 +1,6 @@
 //! Realizar cambios de los campos
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Barral from "../desis/Barral";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -10,8 +9,8 @@ const Cards = () => {
   const [trabajos, setTrabajos] = useState([]);
   const [nuevoTrabajo, setNuevoTrabajo] = useState({ trabajo: "", experiencia: "" });
 
-  const [idiomas, setIdiomas] = useState([]);
-  const [nuevoIdioma, setNuevoIdioma] = useState("");
+  // Idioma principal (enum Language)
+  const [idiomaPrincipal, setIdiomaPrincipal] = useState("");
 
   const [educacion, setEducacion] = useState("");
   const [habilidades, setHabilidades] = useState("");
@@ -69,12 +68,7 @@ const Cards = () => {
     }
   };
 
-  const handleAddIdioma = () => {
-    if (nuevoIdioma) {
-      setIdiomas([...idiomas, nuevoIdioma]);
-      setNuevoIdioma("");
-    }
-  };
+  // No se necesita handleAddIdioma, solo setIdiomaPrincipal
 
   const handleAddReferenciaProfesional = () => {
     if (nuevaReferenciaProfesional.nombre && nuevaReferenciaProfesional.telefono && nuevaReferenciaProfesional.cargo) {
@@ -125,44 +119,78 @@ const Cards = () => {
     }
   };
 
+  const [formError, setFormError] = useState("");
+  const [showError, setShowError] = useState(false);
+
+  // Permite mostrar la alerta aunque el mensaje sea el mismo varias veces
+  useEffect(() => {
+    if (formError) {
+      setShowError(false);
+      const timeout = setTimeout(() => {
+        setShowError(true);
+        const timer = setTimeout(() => setShowError(false), 3500);
+        return () => clearTimeout(timer);
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [formError]);
   const handleSubmit = async () => {
+    console.log("[handleSubmit] click en botón enviar");
+    setFormError("");
+    // Validación frontend de campos obligatorios (solo los que exige el backend)
+    if (!informacionProfesional.especialidadMedica || !informacionProfesional.precioACobrar || !informacionProfesional.añoGraduacion) {
+      console.log("[handleSubmit] Falla validación: falta especialidad, precio o año", informacionProfesional);
+      setFormError("Por favor completa especialidad, precio y año de graduación.");
+      return;
+    }
     try {
-      // Preparar el objeto de datos según la estructura esperada por el endpoint
+      // Construir el objeto de datos igual al ejemplo JSON
       const requestData = {
         biography: biografia,
-        picture: foto, // Asumiendo que foto es la URL base64
+        picture: foto || "", // base64 string o vacío
         specialty: informacionProfesional.especialidadMedica,
         price: parseFloat(informacionProfesional.precioACobrar),
         graduationYear: parseInt(informacionProfesional.añoGraduacion),
-        workExperience: trabajos.map(t => `${t.trabajo} - ${t.experiencia}`).join(", "),
-        languages: idiomas,
-        education: educacion ? [{
-          institution: educacion.split(" - ")[0] || "",
-          degree: educacion.split(" - ")[1] || educacion,
-          year: parseInt(informacionProfesional.añoGraduacion)
-        }] : [],
-        skills: habilidades.split(",").map(s => s.trim()),
-        references: referenciasProfesionales.map(ref => ({
-          name: ref.nombre,
-          contact: ref.telefono
-        })),
-        certificates: certificados.length > 0 ? "data:application/pdf;base64,..." : "", // Simplificado para prueba
+        workExperience: trabajos.length > 0 ? trabajos.map(t => `${t.trabajo} - ${t.experiencia}`).join(", ") : "",
+        language: idiomaPrincipal || "",
+        education: educacion
+          ? [
+              {
+                institution: educacion.split(" - ")[0] || educacion,
+                degree: educacion.split(" - ")[1] || educacion,
+                year: parseInt(informacionProfesional.añoGraduacion)
+              }
+            ]
+          : [],
+        skills: habilidades
+          ? habilidades.split(",").map((s) => s.trim()).filter(Boolean)
+          : [],
+        references: referenciasProfesionales.length > 0
+          ? referenciasProfesionales.map((ref) => ({
+              name: ref.nombre,
+              contact: ref.telefono
+            }))
+          : [],
+        certificates: certificados.length > 0 ? certificados[0] : "", // Aquí deberías poner el base64 real si lo tienes
         documentInfo: {
-          dni: informacionPersonal.numeroDocumento,
-          type: informacionPersonal.tipoDocumento
+          dni: informacionPersonal.numeroDocumento || "",
+          type: informacionPersonal.tipoDocumento || ""
         },
         personalInfo: {
-          address: informacionPersonal.direccion,
-          phone: informacionPersonal.telefono
+          address: informacionPersonal.direccion || "",
+          phone: informacionPersonal.telefono || ""
         },
-        personalRefs: referenciasPersonales.map(ref => ({
-          name: ref.nombre,
-          relationship: ref.relacion,
-          phone: ref.telefono
-        }))
+        personalRefs: referenciasPersonales.length > 0
+          ? referenciasPersonales.map((ref) => ({
+              name: ref.nombre,
+              relationship: ref.relacion,
+              phone: ref.telefono
+            }))
+          : []
       };
 
-      // Enviar la solicitud POST
+      console.log("[handleSubmit] JSON enviado al backend:", requestData);
+      // Enviar la solicitud POST con el token
       const response = await axios.post(
         "http://localhost:3000/specialist/specialistRequest",
         requestData,
@@ -174,13 +202,22 @@ const Cards = () => {
         }
       );
 
+      console.log("[handleSubmit] Respuesta backend:", response.data);
       // Mostrar alerta de éxito
       alert("Solicitud enviada con éxito");
-      console.log("Respuesta del servidor:", response.data);
-      
+      window.location.href = "/pagusuario";
     } catch (error) {
-      console.error("Error al enviar la solicitud:", error);
-      alert("Error al enviar la solicitud");
+      let errorMsg = "Error al enviar la solicitud";
+      if (error.response && error.response.data && error.response.data.message) {
+        errorMsg = error.response.data.message;
+        if (error.response.data.error) {
+          errorMsg += ": " + error.response.data.error;
+        }
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+      setFormError(errorMsg);
+      console.error("[handleSubmit] Error al enviar la solicitud:", error, error.response?.data);
     }
   };
 
@@ -191,8 +228,22 @@ const Cards = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen p-6 flex">
+      {showError && (
+        <div style={{
+          position: 'fixed',
+          top: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          borderRadius: 8,
+          padding: '12px 24px',
+          zIndex: 9999,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}>
+          {formError}
+        </div>
+      )}
       <Barral />
-
+      
       <div className="flex-1 mt-12 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Biografía */}
         <div className="col-span-1 lg:col-span-3 bg-white p-6 rounded-lg shadow-md">
@@ -237,7 +288,7 @@ const Cards = () => {
 
             {/* Especialidad Médica */}
             <div className="mb-6">
-              <h3 className="font-medium mb-2">Especialidad Médica</h3>
+              <h3 className="font-medium mb-2">Especialidad Médica <span className="text-red-500">*</span></h3>
               <input
                 type="text"
                 name="especialidadMedica"
@@ -250,7 +301,7 @@ const Cards = () => {
 
             {/* Precio a Cobrar */}
             <div className="mb-6">
-              <h3 className="font-medium mb-2">Precio a Cobrar</h3>
+              <h3 className="font-medium mb-2">Precio a Cobrar <span className="text-red-500">*</span></h3>
               <input
                 type="number"
                 name="precioACobrar"
@@ -263,7 +314,7 @@ const Cards = () => {
 
             {/* Año de Graduación */}
             <div className="mb-6">
-              <h3 className="font-medium mb-2">Año en que se Graduó</h3>
+              <h3 className="font-medium mb-2">Año en que se Graduó <span className="text-red-500">*</span></h3>
               <input
                 type="number"
                 name="añoGraduacion"
@@ -278,7 +329,7 @@ const Cards = () => {
 
             {/* Experiencia Laboral */}
             <div className="mb-6">
-              <h3 className="font-medium mb-2">Experiencia Laboral</h3>
+              <h3 className="font-medium mb-2">Experiencia Laboral <span className="text-red-500">*</span></h3>
               <div className="flex gap-4 mb-2">
                 <input
                   type="text"
@@ -298,28 +349,27 @@ const Cards = () => {
                   +
                 </button>
               </div>
+
               <ul className="text-sm text-gray-600">
                 {trabajos.map((t, i) => <li key={i} className="mb-1">{t.trabajo} - {t.experiencia}</li>)}
               </ul>
             </div>
 
-            {/* Idiomas */}
+            {/* Idioma principal */}
             <div className="mb-6">
-              <h3 className="font-medium mb-2">Idiomas</h3>
-              <div className="flex gap-4 mb-2">
-                <input
-                  type="text"
-                  placeholder="Idioma y nivel (ej: Inglés - Avanzado)"
-                  className="w-full p-2 border rounded"
-                  value={nuevoIdioma}
-                  onChange={(e) => setNuevoIdioma(e.target.value)}/>
-                <button onClick={handleAddIdioma} className="bg-green-500 text-white p-2 rounded">
-                  +
-                </button>
-              </div>
-              <ul className="text-sm text-gray-600">
-                {idiomas.map((idioma, i) => <li key={i} className="mb-1">{idioma}</li>)}
-              </ul>
+              <h3 className="font-medium mb-2">Idioma principal <span className="text-red-500">*</span></h3>
+              <select
+                className="w-full p-2 border rounded"
+                value={idiomaPrincipal}
+                onChange={e => setIdiomaPrincipal(e.target.value)}
+              >
+                <option value="">Selecciona un idioma</option>
+                <option value="Espanol">Español</option>
+                <option value="Ingles">Inglés</option>
+                <option value="Frances">Francés</option>
+                <option value="Aleman">Alemán</option>
+                <option value="Portugues">Portugués</option>
+              </select>
             </div>
 
             {/* Educación */}
@@ -702,7 +752,6 @@ const Cards = () => {
         </div>
 
         {/* Botón de Guardar - modificado para usar handleSubmit */}
-      <Link to="/pagusuario">
         <div className="mt-6 flex justify-start w-full">
           <button
             className="w-full mt-4 bg-[#00102D] text-white p-2 rounded-md hover:bg-[#001a4a] transition-colors"
@@ -710,7 +759,6 @@ const Cards = () => {
             Enviar Solicitud y Volver
           </button>
         </div>
-      </Link>
     </div>
   </div>
   );
