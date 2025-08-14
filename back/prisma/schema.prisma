@@ -520,6 +520,15 @@ enum Eps {
   Ninguna
 }
 
+enum stateAppointment {
+  Pendiente
+  Confirmada
+  Cancelada
+  Completada
+  EnCurso
+  Reagendada
+}
+
 // Tabla para eventos personalizados del calendario
 model CalendarEvent {
   id          Int      @id @default(autoincrement())
@@ -536,12 +545,4 @@ model CalendarEvent {
   User User @relation(fields: [userId], references: [id])
 
   @@map("calendar_events")
-}
-
-enum stateAppointment{
-  Completada
-  EnCurso
-  Pendiente
-  Reagendada
-  Cancelada
 }

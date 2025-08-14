@@ -48,9 +48,9 @@ export const getCalendarEvents = async (req: Request, res: Response) => {
         hour: 'numeric', 
         minute: '2-digit' 
       }).toLowerCase().replace(' ', ''),
-      color: appointment.state === 'confirmada' ? 'green' : 
-             appointment.state === 'pendiente' ? 'yellow' : 
-             appointment.state === 'cancelada' ? 'red' : 'blue',
+      color: appointment.state === 'Confirmada' ? 'green' : 
+             appointment.state === 'Pendiente' ? 'yellow' : 
+             appointment.state === 'Cancelada' ? 'red' : 'blue',
       type: 'appointment',
       specialty: appointment.Specialty.name,
       patientName: `${appointment.Paciente.User.firstname} ${appointment.Paciente.User.lastname}`,
