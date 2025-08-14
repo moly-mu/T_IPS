@@ -1,14 +1,15 @@
-import {validateToken } from "../middleware/validateToken";
-import {registerUser} from "../controllers/Registro/post.Register.controller";
-import {loginUser} from "../controllers/Acceso/auth.Login.controller";
-import {UserProfile} from "../controllers/Perfil/get.UserProfile.controller";
-import {updateUserProfile } from '../controllers/Perfil/put.UserProfileEdit.controller';
+import { validateToken } from "../middleware/validateToken";
+import { registerUser} from "../controllers/Registro/post.Register.controller";
+import { loginUser} from "../controllers/Acceso/auth.Login.controller";
+import { UserProfile} from "../controllers/Perfil/get.UserProfile.controller";
+import { updateUserProfile } from '../controllers/Perfil/put.UserProfileEdit.controller';
 import { getMedicalConsultations } from "../controllers/HistorialDeConsultas/getMedicalHistory.controller";
-import {UserScheduleAppointment} from "../controllers/Citas/get.UserScheduleAppointment.controller";
-import {UserScheduleAppointmentCreate} from "../controllers/Citas/Post.UserScheduleAppointment.controller";
+import { UserScheduleAppointment} from "../controllers/Citas/get.UserScheduleAppointment.controller";
+import { UserScheduleAppointmentCreate} from "../controllers/Citas/Post.UserScheduleAppointment.controller";
 import { getUserAppointments } from "../controllers/Citas/get.UserAppointments.controller";
 import { getUserReviews } from "../controllers/Encuentas/getUserReviews.controller";
 import { createUserReview} from "../controllers/Encuentas/postCreateUserReview.controller";
+import { createUserReviewPostAppointment } from "user/controllers/Encuentas/post.CreateUserReviewPostAppointment.controller";
 import express from "express";
 
 const router = express.Router();
@@ -33,4 +34,6 @@ router.get("/User/appointments", validateToken, getUserAppointments);
 router.get("/User/Reviews", validateToken, getUserReviews);
 // *Ruta para crear una reseña del usuario
 router.post("/User/Reviews", validateToken, createUserReview);
+// *Ruta para crear una reseña del especialista despues de terminar una cita medica 
+router.post("/User/reviews/postPointment", validateToken, createUserReviewPostAppointment)
 export default router;
