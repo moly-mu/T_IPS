@@ -21,16 +21,16 @@ async function main() {
 
   // 2. Create Admins
   const adminData = [
-    { username: "admin", password: "admin123" },
-    { username: "admin_sistema", password: "sistema123" },
-    { username: "admin_clinico", password: "clinico123" },
-    { username: "admin_financiero", password: "finanzas123" },
-    { username: "admin_rrhh", password: "rrhh123" },
-    { username: "admin_it", password: "tech123" },
-    { username: "admin_calidad", password: "calidad123" },
-    { username: "admin_legal", password: "legal123" },
-    { username: "admin_marketing", password: "marketing123" },
-    { username: "admin_compras", password: "compras123" },
+    { username: "admin@ips.com", password: "admin123" },
+    { username: "admin_sistema@ips.com", password: "sistema123" },
+    { username: "admin_clinico@ips.com", password: "clinico123" },
+    { username: "admin_financiero@ips.com", password: "finanzas123" },
+    { username: "admin_rrhh@ips.com", password: "rrhh123" },
+    { username: "admin_it@ips.com", password: "tech123" },
+    { username: "admin_calidad@ips.com", password: "calidad123" },
+    { username: "admin_legal@ips.com", password: "legal123" },
+    { username: "admin_marketing@ips.com", password: "marketing123" },
+    { username: "admin_compras@ips.com", password: "compras123" },
   ];
 
   const bloodTypeMap: Record<string, BloodType> = {
@@ -49,7 +49,9 @@ async function main() {
       const hashedPassword = await hash(adminInfo.password, 12);
       return prisma.admin.upsert({
         where: { username: adminInfo.username },
-        update: {},
+        update: {
+          password: hashedPassword,
+        },
         create: {
           username: adminInfo.username,
           password: hashedPassword,
@@ -717,33 +719,10 @@ async function main() {
     )
   );
 
-  // 8. Create SpecData
+
+
+  // 8. Create SpecDataInfo
   const specDataInfo = [
-    {
-      bio: "Cardióloga con 15 años de experiencia",
-      exp: "Hospital Central",
-      years: "15 años",
-    },
-    {
-      bio: "Neurólogo especializado en epilepsia",
-      exp: "Hospital Universitario",
-      years: "12 años",
-    },
-    {
-      bio: "Dermatóloga experta en cáncer de piel",
-      exp: "Instituto de Dermatología",
-      years: "10 años",
-    },
-    {
-      bio: "Pediatra con enfoque en crecimiento",
-      exp: "Hospital Infantil",
-      years: "18 años",
-    },
-    {
-      bio: "Ginecóloga especialista en fertilidad",
-      exp: "Centro de Fertilidad",
-      years: "14 años",
-    },
     {
       bio: "Traumatólogo deportivo",
       exp: "Clínica Deportiva",
@@ -783,6 +762,31 @@ async function main() {
       bio: "Oncóloga clínica especializada en mama",
       exp: "Instituto Nacional de Cáncer",
       years: "16 años",
+    },
+    {
+      bio: "Neurólogo clínico",
+      exp: "Hospital Central",
+      years: "18 años",
+    },
+    {
+      bio: "Gastroenterólogo",
+      exp: "Clínica Gastro",
+      years: "12 años",
+    },
+    {
+      bio: "Reumatóloga",
+      exp: "Instituto Reumatológico",
+      years: "15 años",
+    },
+    {
+      bio: "Nefrólogo",
+      exp: "Centro Nefrológico",
+      years: "10 años",
+    },
+    {
+      bio: "Hematóloga",
+      exp: "Hospital Hematológico",
+      years: "8 años",
     },
   ];
 
@@ -1020,7 +1024,80 @@ async function main() {
   );
 
   // Filter out null values
-  const validUserReviews = userReviews.filter(review => review !== null);
+
+  // Asegurar que cada especialista tenga al menos un review
+  const specialistIdsWithReview = new Set(
+    (userReviews.filter(r => r && r.reviewed_id !== undefined) as any[]).map(r => r.reviewed_id)
+  );
+
+  const missingSpecialists = specialists.filter(
+    s => !specialistIdsWithReview.has(s.User_idUser)
+  );
+
+  const extraReviews = await Promise.all(
+    missingSpecialists.map((specialist, idx) => {
+      // Buscar un paciente cualquiera para hacer el review
+      const patient = patients[idx % patients.length];
+      const patientUser = patientUsers.find(u => u.id === patient.User_idUser);
+      const specialistUser = specialistUsers.find(u => u.id === specialist.User_idUser);
+      if (!patientUser || !specialistUser) return null;
+      return prisma.userReview.create({
+        data: {
+          appointmentId: null,
+          reviewer_id: patientUser.id,
+          reviewer_cred_id: patientUser.credential_users_idcredential_users,
+          reviewer_rol_id: patientUser.rol_idrol,
+          reviewed_id: specialistUser.id,
+          reviewed_cred_id: specialistUser.credential_users_idcredential_users,
+          reviewed_rol_id: specialistUser.rol_idrol,
+          rating: Math.round((3.5 + Math.random() * 1.5) * 10) / 10,
+          comment: 'Review automático para visibilidad de rating',
+          createdAt: new Date(),
+        },
+      });
+    })
+  );
+
+  const validUserReviews = [
+    ...userReviews.filter(review => review !== null),
+    ...extraReviews.filter(review => review !== null),
+  ];
+
+  // Asegurar que todos los pacientes tengan al menos un review recibido
+  const patientIdsWithReview = new Set(
+    (validUserReviews.filter(r => r && r.reviewed_id !== undefined) as any[]).map(r => r.reviewed_id)
+  );
+  const missingPatients = patients.filter(
+    p => !patientIdsWithReview.has(p.User_idUser)
+  );
+  const extraPatientReviews = await Promise.all(
+    missingPatients.map((patient, idx) => {
+      // Buscar un especialista cualquiera para hacer el review
+      const specialist = specialists[idx % specialists.length];
+      const specialistUser = specialistUsers.find(u => u.id === specialist.User_idUser);
+      const patientUser = patientUsers.find(u => u.id === patient.User_idUser);
+      if (!specialistUser || !patientUser) return null;
+      return prisma.userReview.create({
+        data: {
+          appointmentId: null,
+          reviewer_id: specialistUser.id,
+          reviewer_cred_id: specialistUser.credential_users_idcredential_users,
+          reviewer_rol_id: specialistUser.rol_idrol,
+          reviewed_id: patientUser.id,
+          reviewed_cred_id: patientUser.credential_users_idcredential_users,
+          reviewed_rol_id: patientUser.rol_idrol,
+          rating: Math.round((3.5 + Math.random() * 1.5) * 10) / 10,
+          comment: 'Review automático para visibilidad de rating',
+          createdAt: new Date(),
+        },
+      });
+    })
+  );
+  // Unir todos los reviews
+  const allUserReviews = [
+    ...validUserReviews,
+    ...extraPatientReviews.filter(review => review !== null),
+  ];
 
   // 14. Create Consents
   const consents = await Promise.all(

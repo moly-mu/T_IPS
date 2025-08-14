@@ -13,22 +13,19 @@ import adminSpecialRoutes from "./admin/routes/specialty.routes";
 import adminPatientRoutes from "./admin/routes/patient.routes";
 import adminStatsRoutes from "./admin/routes/stats.routes";
 import adminAuthRoutes from "./admin/routes/auth.routes";
-import specialistRequest from "./specialist/presentation/routes/specialistRequest.routes";
-import specialistSettings from "./specialist/presentation/routes/specialistSettings.routes";
-import specialistAppointments from './specialist/presentation/routes/specialistAppointments.routes';
-import specialistDashboard from './specialist/presentation/routes/specialisttDashboard.routes';
+
 import specialistCalendar from './specialist/presentation/routes/specialistCalendar.routes';
-import specialistAuthRoutes from "./specialist/presentation/routes/specialistAuth.routes";
 import getAllSpecialties from "./admin/specialties/presentation/routes/specialties.routes";
 import specialistRequestRoutes from "./admin/routes/specialistRequest.routes";
 import activityRoutes from "./admin/routes/activity.routes";
 
 // Importaciones de rutas de especialista
-import specialistRequest from "./specialist/routes/specialistRequest.routes";
-import specialistSettings from "./specialist/routes/specialistSettings.routes";
-import specialistAppointments from './specialist/routes/specialistAppointments.routes'
-import specialistDashboard from './specialist/routes/specialisttDashboard.routes';
-import specialistAuthRoutes from "./specialist/routes/specialistAuth.routes";
+import specialistRequest from "./specialist/presentation/routes/specialistRequest.routes";
+import specialistSettings from "./specialist/presentation/routes/specialistSettings.routes";
+import specialistAppointments from './specialist/presentation/routes/specialistAppointments.routes';
+import specialistDashboard from './specialist/presentation/routes/specialisttDashboard.routes';
+import specialistAuthRoutes from "./specialist/presentation/routes/specialistAuth.routes";
+
 
 
 const app = express();
