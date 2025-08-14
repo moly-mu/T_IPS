@@ -28,6 +28,11 @@ export const getAllProfessionals = async (_req: Request, res: Response) => {
       },
     });
 
+    // Log temporal para depuración
+    professionals.forEach((pro, idx) => {
+      console.log(`Especialista #${idx + 1} (${pro.User.firstname} ${pro.User.lastname}) reviews:`, pro.User.userReviewsReceived);
+    });
+
     const response = await Promise.all(
       professionals.map(async (pro) => {
         const reviews = pro.User.userReviewsReceived || [];
