@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import { calculateAge } from "../utils/dateUtils";
 
 const prisma = new PrismaClient();
 
 // ------------------ GET TODOS ------------------
+
 export const getAllPacientes = async (req: Request, res: Response) => {
   try {
     const { status, gender, search } = req.query;
@@ -17,68 +19,63 @@ export const getAllPacientes = async (req: Request, res: Response) => {
           },
         },
         Appointments: {
-          orderBy: {
-            appoint_finish: "desc",
-          },
+          orderBy: { appoint_finish: "desc" },
         },
         pac_data: true,
       },
     });
 
-    const response = pacientes
-      .map((p) => {
-        const reviews = p.User.userReviewsReceived || [];
+    const response = pacientes.map((p) => {
+      const reviews = p.User.userReviewsReceived || [];
 
-        // Calcular promedio rating
-        const rating =
-          reviews.length > 0
-            ? parseFloat(
-                (
-                  reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-                ).toFixed(2)
-              )
-            : 0;
+      const rating =
+        reviews.length > 0
+          ? parseFloat(
+              (
+                reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+              ).toFixed(2)
+            )
+          : 0;
 
-        return {
-          id: p.User.id,
-          name: `${p.User.firstname} ${p.User.lastname}`,
-          secondName: p.User.second_firstname
-            ? `${p.User.second_firstname} ${p.User.second_lastname || ""}`
-            : undefined,
-          email: p.User.credential_users.email,
-          document: p.User.credential_users.document,
-          documentType: p.User.document_type,
-          phone: p.User.phone,
-          age: calculateAge(p.User.birthdate),
-          birthdate: p.User.birthdate.toISOString().split("T")[0],
-          gender: p.User.gender,
-          sex: p.User.sex,
-          language: p.User.language,
-          consultations: p.Appointments.length,
-          lastConsultation:
-            p.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] ||
-            null,
-          status: p.User.status,
-          rating,
-          joinDate: p.User.joinDate.toISOString().split("T")[0],
-          bloodType: p.pac_data.bloodType,
-          allergies: p.pac_data.allergies,
-          emergencyContact: p.pac_data.emergency_contact,
-          epsType: p.pac_data.eps_type,
-          profession: p.pac_data.profession,
-          ethnicGroup: p.pac_data.ethnicgroup,
-        };
-      })
-      .filter((u) => {
-        const matchesStatus = !status || u.status === status;
-        const matchesGender = !gender || u.gender === gender;
-        const matchesSearch =
-          !search ||
-          u.name.toLowerCase().includes(String(search).toLowerCase()) ||
-          u.email.toLowerCase().includes(String(search).toLowerCase()) ||
-          u.document.toString().includes(String(search));
-        return matchesStatus && matchesGender && matchesSearch;
-      });
+      return {
+        id: p.User.id,
+        name: `${p.User.firstname} ${p.User.lastname}`,
+        secondName: p.User.second_firstname
+          ? `${p.User.second_firstname} ${p.User.second_lastname || ""}`
+          : undefined,
+        email: p.User.credential_users.email,
+        document: p.User.credential_users.document,
+        documentType: p.User.document_type,
+        phone: p.User.phone,
+        age: calculateAge(p.User.birthdate),
+        birthdate: p.User.birthdate.toISOString().split("T")[0],
+        gender: p.User.gender,
+        sex: p.User.sex,
+        language: p.User.language,
+        consultations: p.Appointments.length,
+        lastConsultation:
+          p.Appointments[0]?.appoint_finish?.toISOString().split("T")[0] ||
+          null,
+        status: p.User.status,
+        rating,
+        joinDate: p.User.joinDate.toISOString().split("T")[0],
+        bloodType: p.pac_data.bloodType,
+        allergies: p.pac_data.allergies,
+        emergencyContact: p.pac_data.emergency_contact,
+        epsType: p.pac_data.eps_type,
+        profession: p.pac_data.profession,
+        ethnicGroup: p.pac_data.ethnicgroup,
+      };
+    }).filter((u) => {
+      const matchesStatus = !status || u.status === status;
+      const matchesGender = !gender || u.gender === gender;
+      const matchesSearch =
+        !search ||
+        u.name.toLowerCase().includes(String(search).toLowerCase()) ||
+        u.email.toLowerCase().includes(String(search).toLowerCase()) ||
+        u.document.toString().includes(String(search));
+      return matchesStatus && matchesGender && matchesSearch;
+    });
 
     res.json(response);
   } catch (error) {
@@ -350,19 +347,4 @@ export const deletePaciente = async (req: Request, res: Response) => {
   }
 };
 
-// Función auxiliar para calcular edad
-function calculateAge(birthdate: Date): number {
-  const today = new Date();
-  const birthDate = new Date(birthdate);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
 
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    age--;
-  }
-
-  return age;
-}

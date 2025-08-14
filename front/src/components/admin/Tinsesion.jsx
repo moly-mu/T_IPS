@@ -1,6 +1,53 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 const Tinsesion = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Limpiar error cuando el usuario empiece a escribir
+    if (error) setError('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post('http://localhost:3000/admin/auth/login', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      // Guardar token en localStorage
+      localStorage.setItem('adminToken', response.data.token);
+      localStorage.setItem('adminUser', JSON.stringify(response.data.user));
+
+      // Redirigir al dashboard
+      navigate('/pagadmin');
+    } catch (error) {
+      console.error('Error de login:', error);
+      setError(
+        error.response?.data?.error || 
+        'Error al iniciar sesión. Verifique sus credenciales.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const Navbar = () => {
     return (
@@ -44,10 +91,17 @@ const Tinsesion = () => {
   
             {/* formulario*/}
             <div className="md:max-w-md w-full px-4 py-4">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-12">
                   <h3 className="text-gray-800 text-3xl font-extrabold">Iniciar Sesión Administrador</h3>
                 </div>
+
+                {/* Mostrar error si existe */}
+                {error && (
+                  <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {error}
+                  </div>
+                )}
   
                 {/* correo */}
                 <div>
@@ -57,7 +111,10 @@ const Tinsesion = () => {
                       name="email"
                       type="email"
                       required
-                      className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-[#003366] px-2 py-3 outline-none"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      disabled={loading}
+                      className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-[#003366] px-2 py-3 outline-none disabled:opacity-50"
                       placeholder="Introduce tu correo"/>
 
                     <svg
@@ -93,7 +150,10 @@ const Tinsesion = () => {
                       name="password"
                       type="password"
                       required
-                      className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-[#003366] px-2 py-3 outline-none"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      disabled={loading}
+                      className="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-[#003366] px-2 py-3 outline-none disabled:opacity-50"
                       placeholder="Introduce tu contraseña"/>
 
                     <svg
@@ -132,14 +192,13 @@ const Tinsesion = () => {
   
                 {/* boton de inicio de sesion */}
                 <div className="mt-12">
-                <Link to="/pagadmin">
                   <button
                     type="submit"
-                    className="w-full shadow-xl py-2.5 px-4 text-sm tracking-wide rounded-md text-white bg-[#003366] hover:bg-[#00102D] focus:outline-none">
-                    Iniciar sesión
+                    disabled={loading}
+                    className="w-full shadow-xl py-2.5 px-4 text-sm tracking-wide rounded-md text-white bg-[#003366] hover:bg-[#00102D] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+                    {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
                   </button>
-                </Link>
-              </div>
+                </div>
   
                 {/* redes sociales */}
                 <div className="space-x-6 flex justify-center mt-6">

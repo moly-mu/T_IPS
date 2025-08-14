@@ -1,29 +1,29 @@
-import { 
-  Star, MessageSquare, Clock, Heart, ThumbsUp, ArrowRight, Shield, Mail, Bell, CheckCircle, AlertCircle, Award, Target, Zap } from 'lucide-react';
+import { Star, Heart, ThumbsUp, ArrowRight, Shield, Mail, CheckCircle, AlertCircle, Award, Target, Zap } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 export default function SatisfactionSurveyPreview() {
   const handleStartSurvey = () => {
-    console.log('Iniciando encuesta de satisfacción...');
+    window.location.href = '/EncuestaSatisfaccion';
   };
 
   const Navbar = () => {
     return (
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-lg z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="text-xl font-bold text-gray-800">
-              TELECONSULTAS<span className="text-blue-600">IPS</span>
-            </div>
+            <Link to="/" className="text-2xl font-light tracking-wide text-gray-900">
+              TELECONSULTAS<span className="font-medium">IPS</span>
+            </Link>
             
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="/Tins" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+            <div className="hidden md:flex items-center space-x-12">
+              <a href="/Tins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
                 ADMINISTRADOR
               </a>
-              <a href="/Pins" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+              <a href="/Pins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
                 MÉDICO
               </a>
-              <a href="/Sins" className="text-sm font-semibold text-blue-600 border-b-2 border-blue-600 pb-1">
-                PACIENTE
+              <a href="/Sreg" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
+                REGISTRARME
               </a>
             </div>
           </div>
@@ -35,48 +35,42 @@ export default function SatisfactionSurveyPreview() {
   return (
     <>
       <Navbar/>
-      <div className="min-h-screen bg-white relative overflow-hidden pt-20">
-        
-        {/* Hero Section con diseño moderno */}
-        <div className="relative bg-gradient-to-r from-blue-600 via-indigo-700 to-blue-800 text-white">
-          <div className="absolute inset-0 bg-black/10"></div>
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="relative bg-white">
           <div className="relative max-w-6xl mx-auto px-6 py-24">
             <div className="text-center space-y-8">
-              <div className="inline-flex items-center bg-white/20 rounded-full px-6 py-3 text-sm font-medium">
-                <Star className="w-5 h-5 mr-2 text-yellow-300" />
+              <div className="inline-flex items-center bg-blue-50 rounded-full px-6 py-3 text-sm font-medium text-blue-700 border border-blue-200">
+                <Star className="w-5 h-5 mr-2 text-blue-300" />
                 Encuesta de Satisfacción Post-Consulta
               </div>
               
               <h1 className="text-5xl md:text-6xl font-bold">
                 Tu Experiencia
                 <br />
-                <span className="text-blue-200">Construye Mejores</span>
+                <span className="text-blue-700">Construye Mejores</span>
                 <br />
                 Servicios Médicos
               </h1>
               
-              <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 Cada opinión que compartes nos ayuda a perfeccionar la atención médica virtual 
                 y garantizar la mejor experiencia para todos nuestros pacientes.
               </p>
               
               <button
                 onClick={handleStartSurvey}
-                className="bg-white text-blue-700 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-lg text-lg"
-              >
+                className="bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-500 transition-all transform hover:scale-105 shadow-lg text-lg">
                 Evaluar Mi Consulta
                 <ArrowRight className="w-5 h-5 inline-block ml-2" />
               </button>
             </div>
           </div>
-          
-          {/* Elementos decorativos */}
+          </div>
+
           <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full"></div>
           <div className="absolute bottom-20 right-10 w-32 h-32 bg-blue-400/20 rounded-full"></div>
           <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-indigo-300/30 rounded-full"></div>
-        </div>
 
-        {/* Sección de Proceso */}
         <div className="py-20 bg-gray-50">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-16">
@@ -96,14 +90,6 @@ export default function SatisfactionSurveyPreview() {
               </div>
               
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">Notificación Inmediata</h3>
-                <p className="text-gray-600 text-sm">Recibes un email con enlace seguro para acceder a la encuesta</p>
-              </div>
-              
-              <div className="text-center">
                 <div className="w-16 h-16 bg-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Star className="w-8 h-8 text-white" />
                 </div>
@@ -118,14 +104,21 @@ export default function SatisfactionSurveyPreview() {
                 <h3 className="font-bold text-gray-900 mb-2">Mejora Continua</h3>
                 <p className="text-gray-600 text-sm">Tu feedback se convierte en mejoras reales del servicio</p>
               </div>
+
+               <div className="text-center">
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">Notificación Inmediata</h3>
+                <p className="text-gray-600 text-sm">Recibes un email confirmando que realizaste la encuesta</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Sección de Contenido de la Encuesta */}
         <div className="py-20">
           <div className="max-w-6xl mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="grid lg:grid-cols-1 gap-16 items-center">
               <div className="space-y-8">
                 <h2 className="text-4xl font-bold text-gray-900">
                   ¿Qué Evaluamos <span className="text-blue-600">Juntos</span>?
@@ -163,57 +156,10 @@ export default function SatisfactionSurveyPreview() {
                   </div>
                 </div>
               </div>
-              
-              <div className="relative">
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-2xl">
-                  <div className="space-y-6">
-                    <div className="flex items-center space-x-3">
-                      <Star className="w-8 h-8 text-yellow-300" />
-                      <h3 className="text-2xl font-bold">Evaluación Activa</h3>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="bg-white/20 rounded-xl p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium">Dr(a). María González</span>
-                          <div className="flex space-x-1">
-                            {[1,2,3,4,5].map(i => (
-                              <Star key={i} className="w-4 h-4 text-yellow-300 fill-current" />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-blue-100 text-sm">Consulta de Cardiología • 25 min</p>
-                      </div>
-                      
-                      <div className="bg-white/10 rounded-xl p-4">
-                        <h4 className="font-medium mb-2">Tu opinión sobre:</h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-yellow-300 rounded-full"></div>
-                            <span>Claridad del diagnóstico</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-yellow-300 rounded-full"></div>
-                            <span>Tiempo dedicado a consulta</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-yellow-300 rounded-full"></div>
-                            <span>Calidad técnica de videollamada</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-yellow-300 rounded-full opacity-20"></div>
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-blue-300 rounded-full opacity-30"></div>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Sección de Motivación para Participar */}
         <div className="py-20 bg-gradient-to-r from-slate-50 to-blue-50">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-12">
@@ -246,8 +192,8 @@ export default function SatisfactionSurveyPreview() {
                   <h3 className="text-xl font-bold text-gray-900">Solo 5 Minutos</h3>
                 </div>
                 <div className="bg-blue-50 rounded-lg p-4 mb-4">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">⚡</div>
-                  <p className="text-sm text-blue-700">Proceso rápido y sencillo desde cualquier dispositivo</p>
+                  <div className="text-2xl font-bold text-indigo-600 mb-1">⚡</div>
+                  <p className="text-sm text-indigo-600">Proceso rápido y sencillo desde cualquier dispositivo</p>
                 </div>
                 <p className="text-gray-600">Una inversión mínima de tiempo que genera un impacto máximo en la calidad del servicio.</p>
               </div>
@@ -268,42 +214,7 @@ export default function SatisfactionSurveyPreview() {
             </div>
           </div>
         </div>
-
-        {/* Sección de Impacto Real */}
-        <div className="py-16 bg-white">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                <span className="text-blue-600">Logros</span> de Nuestros Pacientes
-              </h3>
-              <p className="text-lg text-gray-600">Cambios reales basados en tu feedback</p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="text-center p-6 bg-blue-50 rounded-xl">
-                <div className="text-3xl font-bold text-blue-600 mb-2">4.8/5</div>
-                <p className="text-sm text-gray-600">Satisfacción promedio actual</p>
-              </div>
-              
-              <div className="text-center p-6 bg-green-50 rounded-xl">
-                <div className="text-3xl font-bold text-green-600 mb-2">89%</div>
-                <p className="text-sm text-gray-600">Pacientes recomiendan el servicio</p>
-              </div>
-              
-              <div className="text-center p-6 bg-purple-50 rounded-xl">
-                <div className="text-3xl font-bold text-purple-600 mb-2">142</div>
-                <p className="text-sm text-gray-600">Mejoras implementadas este año</p>
-              </div>
-              
-              <div className="text-center p-6 bg-indigo-50 rounded-xl">
-                <div className="text-3xl font-bold text-indigo-600 mb-2">-40%</div>
-                <p className="text-sm text-gray-600">Reducción en tiempo de espera</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Section con diseño minimalista */}
+        
         <div className="py-20">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white relative overflow-hidden">
@@ -318,8 +229,7 @@ export default function SatisfactionSurveyPreview() {
                 
                 <button
                   onClick={handleStartSurvey}
-                  className="bg-white text-blue-700 px-10 py-4 rounded-xl font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl text-lg"
-                >
+                  className="bg-white text-blue-700 px-10 py-4 rounded-xl font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl text-lg">
                   Completar Encuesta Ahora
                 </button>
                 
@@ -336,7 +246,6 @@ export default function SatisfactionSurveyPreview() {
           </div>
         </div>
 
-        {/* Footer informativo */}
         <div className="bg-gray-50 py-12">
           <div className="max-w-4xl mx-auto px-6">
             <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">

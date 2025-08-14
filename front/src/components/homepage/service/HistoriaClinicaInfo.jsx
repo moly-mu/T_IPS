@@ -1,34 +1,29 @@
-import { 
-  FileText, User, Heart, Stethoscope, Calendar, Shield, 
-  Database, Activity, Pill, FileCheck, UserCheck, 
-  Clock, BookOpen, Clipboard, Hospital, Phone, ArrowRight,
-  CheckCircle, Star, Users, Zap
-} from 'lucide-react';
+import { FileText, User, Stethoscope, Shield,Database, Activity, FileCheck, UserCheck,Clock, BookOpen, Hospital, Phone} from 'lucide-react';
+import { Link } from "react-router-dom";
 
 export default function HistoriaClinicaInfo() {
   const handleViewExample = () => {
-    console.log('Mostrando ejemplo de historia clínica...');
+    window.location.href = '/Sins';
   };
 
   const Navbar = () => {
     return (
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl z-50 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="text-xl font-bold text-gray-900">
-              TELECONSULTAS<span className="text-violet-600">IPS</span>
-            </div>
+            <Link to="/" className="text-2xl font-light tracking-wide text-gray-900">
+              TELECONSULTAS<span className="font-medium">IPS</span>
+            </Link>
             
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="/Tins" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">
+            <div className="hidden md:flex items-center space-x-12">
+              <a href="/Tins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
                 ADMINISTRADOR
               </a>
-              <a href="/Pins" className="text-sm font-semibold text-violet-600 relative">
+              <a href="/Pins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
                 MÉDICO
-                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-violet-600 rounded-full"></div>
               </a>
-              <a href="/Sins" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">
-                PACIENTE
+              <a href="/Sreg" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
+                REGISTRARME
               </a>
             </div>
           </div>
@@ -41,12 +36,9 @@ export default function HistoriaClinicaInfo() {
     <>
       <Navbar/>
       <div className="min-h-screen bg-gray-50 pt-20">
-        
-        {/* Hero Section */}
         <div className="relative bg-white">
-          <div className="max-w-7xl mx-auto px-6 py-20">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8">
+          <div className="relative max-w-7xl mx-auto px-6 py-20">
+              <div className="text-center space-y-8">
                 <div className="inline-flex items-center bg-violet-50 rounded-full px-4 py-2 text-sm font-medium text-violet-700 border border-violet-200">
                   <FileText className="w-4 h-4 mr-2" />
                   Documentación Médica Digital
@@ -60,75 +52,23 @@ export default function HistoriaClinicaInfo() {
                   Digital
                 </h1>
                 
-                <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
+                <p className="text-xl text-gray-600 max-w-3xl leading-relaxed mx-auto">
                   El registro médico completo y centralizado que documenta toda la información 
                   de salud del paciente, desde datos personales hasta diagnósticos y tratamientos.
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
                     onClick={handleViewExample}
-                    className="bg-violet-600 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-violet-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center"
-                  >
+                    className="bg-violet-600 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-violet-700 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center">
                     <FileCheck className="w-5 h-5 mr-2" />
-                    Ver Estructura Completa
-                  </button>
-                  <button className="bg-white text-gray-700 px-8 py-4 rounded-2xl font-semibold hover:bg-gray-50 transition-all border border-gray-200 flex items-center justify-center">
-                    <Phone className="w-5 h-5 mr-2" />
-                    Contactar Soporte
+                    Ver mi historia clínica
                   </button>
                 </div>
               </div>
-              
-              <div className="relative">
-                <div className="bg-white rounded-3xl p-8 shadow-2xl border border-gray-100">
-                  <div className="space-y-6">
-                    <div className="flex items-center space-x-4 mb-6">
-                      <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center">
-                        <Stethoscope className="w-7 h-7 text-violet-600" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900">Dr. Carlos Mendoza</h3>
-                        <p className="text-gray-500">Cardiología • TP: 12345</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="bg-gray-50 rounded-2xl p-6">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="font-semibold text-gray-900">María Elena Rodríguez</span>
-                          <span className="text-sm bg-violet-100 text-violet-700 px-3 py-1 rounded-full font-medium">CC: 1234567890</span>
-                        </div>
-                        <p className="text-gray-600">31 años • Tipo O+ • EPS Sanitas</p>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white rounded-xl p-4 text-center border border-gray-100">
-                          <Calendar className="w-6 h-6 mx-auto mb-2 text-violet-600" />
-                          <p className="text-xs text-gray-500 mb-1">Última consulta</p>
-                          <p className="font-semibold text-gray-900">15/01/2025</p>
-                        </div>
-                        <div className="bg-white rounded-xl p-4 text-center border border-gray-100">
-                          <Activity className="w-6 h-6 mx-auto mb-2 text-violet-600" />
-                          <p className="text-xs text-gray-500 mb-1">Diagnósticos</p>
-                          <p className="font-semibold text-gray-900">3 activos</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Floating elements */}
-                <div className="absolute -top-6 -right-6 w-12 h-12 bg-violet-100 rounded-2xl flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-violet-600" />
-                </div>
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-violet-400 to-purple-500 rounded-2xl opacity-20"></div>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Stats Section */}
         <div className="py-16 bg-white border-y border-gray-100">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid md:grid-cols-4 gap-8">
@@ -152,7 +92,6 @@ export default function HistoriaClinicaInfo() {
           </div>
         </div>
 
-        {/* Main Components Section */}
         <div className="py-20">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
@@ -165,7 +104,6 @@ export default function HistoriaClinicaInfo() {
             </div>
             
             <div className="grid lg:grid-cols-3 gap-8">
-              {/* Datos Generales */}
               <div className="group bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <User className="w-8 h-8 text-white" />
@@ -173,79 +111,31 @@ export default function HistoriaClinicaInfo() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Datos Generales</h3>
                 <div className="space-y-3 text-sm text-gray-600 mb-6">
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span>Información personal completa</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span>Datos de contacto y emergencia</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span>Información demográfica</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span>Tipo sanguíneo y alergias</span>
                   </div>
                 </div>
                 <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                  <p className="text-xs text-blue-700 font-medium">Incluye encabezado con datos de la entidad y pie de página con información del médico</p>
+                  <p className="text-xs text-blue-700 font-medium">Información personal completa</p>
                 </div>
               </div>
 
-              {/* Antecedentes */}
               <div className="group bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <BookOpen className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Antecedentes</h3>
                 <div className="space-y-3 text-sm text-gray-600 mb-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span>Médicos y hospitalarios</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span>Quirúrgicos y traumáticos</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span>Farmacológicos y alergias</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span>Familiares y ginecoobstétricos</span>
-                  </div>
                 </div>
                 <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
                   <p className="text-xs text-purple-700 font-medium">Registro cronológico con fechas (DD/MM/AAAA) de todos los antecedentes médicos</p>
                 </div>
               </div>
 
-              {/* Seguimiento */}
               <div className="group bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Activity className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Seguimiento</h3>
                 <div className="space-y-3 text-sm text-gray-600 mb-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                    <span>Historial de consultas médicas</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                    <span>Diagnósticos y códigos CIE-10</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                    <span>Exámenes físicos y signos vitales</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                    <span>Archivos y órdenes médicas</span>
-                  </div>
                 </div>
                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                   <p className="text-xs text-emerald-700 font-medium">Documentación completa de cada consulta con evolución del paciente</p>
@@ -255,125 +145,6 @@ export default function HistoriaClinicaInfo() {
           </div>
         </div>
 
-        {/* Detailed Structure Section */}
-        <div className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Estructura <span className="text-violet-600">Detallada</span>
-              </h2>
-              <p className="text-xl text-gray-600">Cada sección incluye información específica y estructurada</p>
-            </div>
-            
-            <div className="grid lg:grid-cols-2 gap-12">
-              {/* Left Column */}
-              <div className="space-y-8">
-                <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-3xl p-8 border border-gray-100">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                      <Clipboard className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Información del Paciente</h3>
-                  </div>
-                  <div className="grid grid-cols-2 gap-6 text-sm">
-                    <div className="space-y-3">
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Nombres y apellidos</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Fecha de nacimiento</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Género y sexo</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Tipo de documento</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Contacto de emergencia</p>
-                    </div>
-                    <div className="space-y-3">
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Teléfono y email</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Dirección</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Tipo sanguíneo</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>EPS y profesión</p>
-                      <p className="text-gray-600 flex items-center"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></span>Estado civil</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-gray-50 to-purple-50 rounded-3xl p-8 border border-gray-100">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
-                      <Heart className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Diagnósticos y Exámenes</h3>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="bg-white rounded-2xl p-4 border border-gray-100">
-                      <h4 className="font-semibold text-gray-900 mb-2">Anamnesis</h4>
-                      <p className="text-sm text-gray-600">Motivo de consulta y enfermedad actual</p>
-                    </div>
-                    <div className="bg-white rounded-2xl p-4 border border-gray-100">
-                      <h4 className="font-semibold text-gray-900 mb-2">Signos Vitales</h4>
-                      <p className="text-sm text-gray-600">FC, FR, TA, SO2, temperatura, peso, talla, IMC</p>
-                    </div>
-                    <div className="bg-white rounded-2xl p-4 border border-gray-100">
-                      <h4 className="font-semibold text-gray-900 mb-2">Plan de Manejo</h4>
-                      <p className="text-sm text-gray-600">Procedimientos, códigos y especialidades</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column */}
-              <div className="space-y-8">
-                <div className="bg-gradient-to-r from-gray-50 to-emerald-50 rounded-3xl p-8 border border-gray-100">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                      <Database className="w-6 h-6 text-emerald-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Historial Médico</h3>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="bg-white rounded-2xl p-4 border border-gray-100">
-                      <h4 className="font-semibold text-gray-900 mb-2">Consultas Anteriores</h4>
-                      <p className="text-sm text-gray-600">PDFs de historias clínicas generadas en consultas pasadas</p>
-                    </div>
-                    <div className="bg-white rounded-2xl p-4 border border-gray-100">
-                      <h4 className="font-semibold text-gray-900 mb-2">Archivos Diagnósticos</h4>
-                      <p className="text-sm text-gray-600">Estudios del usuario con fecha y especialidad</p>
-                    </div>
-                    <div className="bg-white rounded-2xl p-4 border border-gray-100">
-                      <h4 className="font-semibold text-gray-900 mb-2">Órdenes Médicas</h4>
-                      <p className="text-sm text-gray-600">Registro de órdenes anteriores y seguimiento</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-gray-50 to-orange-50 rounded-3xl p-8 border border-gray-100">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
-                      <Pill className="w-6 h-6 text-orange-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Medicamentos</h3>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between bg-white rounded-2xl p-4 border border-gray-100">
-                      <span className="text-sm font-medium text-gray-900">Fórmula médica No.</span>
-                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    </div>
-                    <div className="flex items-center justify-between bg-white rounded-2xl p-4 border border-gray-100">
-                      <span className="text-sm font-medium text-gray-900">Diagnósticos CIE-10</span>
-                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    </div>
-                    <div className="flex items-center justify-between bg-white rounded-2xl p-4 border border-gray-100">
-                      <span className="text-sm font-medium text-gray-900">Prescripción y cantidad</span>
-                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    </div>
-                    <div className="flex items-center justify-between bg-white rounded-2xl p-4 border border-gray-100">
-                      <span className="text-sm font-medium text-gray-900">Firmas digitales</span>
-                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Benefits Section */}
         <div className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
@@ -419,7 +190,6 @@ export default function HistoriaClinicaInfo() {
           </div>
         </div>
 
-        {/* CTA Section */}
         <div className="py-20 bg-white">
           <div className="max-w-4xl mx-auto px-6">
             <div className="bg-gradient-to-br from-violet-600 via-violet-700 to-purple-700 rounded-3xl p-12 text-white text-center relative overflow-hidden">
@@ -438,16 +208,11 @@ export default function HistoriaClinicaInfo() {
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <button className="bg-white text-violet-700 px-8 py-4 rounded-2xl font-semibold hover:bg-violet-50 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center">
-                    <Phone className="w-5 h-5 mr-2" />
-                    Contactar Soporte
-                  </button>
                   <button 
                     onClick={handleViewExample}
-                    className="bg-violet-500 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-violet-400 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center border-2 border-white/20"
-                  >
-                    <FileText className="w-5 h-5 mr-2" />
-                    Ver Ejemplo
+                    className="bg-violet-500 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-violet-400 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center border-2 border-white/20">
+                    <Phone className="w-5 h-5 mr-2" />
+                    Contactar
                   </button>
                 </div>
                 

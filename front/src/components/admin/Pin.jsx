@@ -5,17 +5,19 @@ import axios from "axios";
 import {
   Users,
   UserCheck,
-  Calendar,
   Activity,
+  FolderClock,
+  Calendar,
+  BanknoteArrowUp,
   TrendingUp,
+  TrendingDown,
   Star,
   Filter,
   Bell,
   Settings,
-  ChevronDown,  
+  ChevronDown,
   CheckCircle,
   XCircle,
-  Clock,
   Home,
   User,
   FileText,
@@ -23,6 +25,7 @@ import {
 import UserSection from "../admin/user/UserSection";
 import SpecialistsSection from "../admin/specialist/SpecialistsSection";
 import ServicesSection from "../admin/service/ServicesSection";
+import RecentActivityTable from "./recentActivity/RecentActivityTable";
 
 const Layout = ({ children, activeTab, setActiveTab }) => {
   return (
@@ -82,6 +85,16 @@ const Layout = ({ children, activeTab, setActiveTab }) => {
             <FileText size={16} />
             Servicios
           </button>
+
+          <button
+            onClick={() => setActiveTab("recentActivity")}
+            className={`flex hover:bg-gray-100 px-6 py-2 items-center gap-2 ${
+              activeTab === "recentActivity" ? "bg-gray-100 text-gray-800" : ""
+            }`}
+          >
+            <FolderClock size={16} />
+            Actividad Reciente
+          </button>
         </div>
 
         {/* el perfil del usuario inferior */}
@@ -108,6 +121,7 @@ const Layout = ({ children, activeTab, setActiveTab }) => {
                 {activeTab === "users" && "Gestión de Usuarios"}
                 {activeTab === "specialists" && "Gestión de Especialistas"}
                 {activeTab === "services" && "Gestión de Servicios"}
+                {activeTab === "recentActivity" && "Actividad Reciente"}
               </span>
             </div>
 
@@ -177,7 +191,7 @@ const StatsCard = ({ title, value, icon: Icon, trend, color = "blue" }) => {
     blue: "bg-blue-50 text-blue-600",
     green: "bg-green-50 text-green-600",
     purple: "bg-purple-50 text-purple-600",
-    orange: "bg-orange-50 text-orange-600",
+    orange: "bg-purple-50 text-purple-600",
   };
 
   return (
@@ -210,7 +224,190 @@ StatsCard.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   icon: PropTypes.elementType.isRequired,
   trend: PropTypes.string,
-  color: PropTypes.oneOf(["blue", "green", "purple", "orange"]),
+  color: PropTypes.oneOf(["blue", "green", "purple", "black"]),
+};
+
+const IncomeCard = ({ color = "black" }) => {
+  IncomeCard.propTypes = {
+    color: PropTypes.oneOf(["blue", "green", "purple", "black"]),
+  };
+
+  IncomeCard.defaultProps = {
+    color: "black",
+  };
+  
+  const [selectedSpecialty, setSelectedSpecialty] = useState("todas");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Cargar datos de especialidades desde el backend
+  useEffect(() => {
+    const fetchIncomeBySpecialty = async () => {
+      try {
+        setLoading(true);
+        console.log("🔍 Fetching income by specialty...");
+        
+        const response = await axios.get("http://localhost:3000/admin/stats/income");
+        console.log("📊 Income data received:", response.data);
+        console.log("📊 Response status:", response.status);
+        
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setSpecialties(response.data);
+          
+          // Seleccionar "todas" por defecto si existe
+          const allSpecialty = response.data.find(s => s.id === "todas");
+          if (allSpecialty) {
+            setSelectedSpecialty("todas");
+            console.log("✅ Selected 'todas' specialty");
+          } else if (response.data.length > 0) {
+            setSelectedSpecialty(response.data[0].id);
+            console.log("✅ Selected first specialty:", response.data[0].name);
+          }
+        } else {
+          console.log("⚠️ No specialties data received or empty array");
+          throw new Error("No data received");
+        }
+      } catch (error) {
+        console.error("❌ Error al cargar ingresos por especialidad:", error);
+        console.error("Response:", error.response?.data);
+        console.error("Status:", error.response?.status);
+        
+        // Fallback a datos de ejemplo en caso de error
+        setSpecialties([
+          {
+            id: "error",
+            name: "Error al cargar datos",
+            income: "$0",
+            trend: "Verifique la conexión",
+          }
+        ]);
+        setSelectedSpecialty("error");
+      } finally {
+        setLoading(false);
+        console.log("🏁 Loading finished");
+      }
+    };
+
+    fetchIncomeBySpecialty();
+  }, []);
+
+  const currentSpecialty = specialties.find((s) => s.id === selectedSpecialty);
+
+  const colorClasses = {
+    blue: "bg-blue-50 text-blue-600",
+    green: "bg-green-50 text-green-600",
+    purple: "bg-purple-50 text-purple-600",
+    black: "bg-black-600 text-black-600",
+  };
+
+  const handleSpecialtyChange = (specialtyId) => {
+    setSelectedSpecialty(specialtyId);
+    setIsDropdownOpen(false);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+            Ingresos
+          </p>
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              disabled={loading}
+            >
+              <span className="text-gray-600 max-w-20 truncate">
+                {loading ? "Cargando..." : 
+                 selectedSpecialty === "todas" ? "Todas" : 
+                 currentSpecialty?.name || "Seleccionar"}
+              </span>
+              <ChevronDown
+                className={`w-3 h-3 text-gray-500 transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {isDropdownOpen && !loading && (
+              <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                {specialties.length > 0 ? (
+                  specialties.map((specialty) => (
+                    <button
+                      key={specialty.id}
+                      onClick={() => handleSpecialtyChange(specialty.id)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                        selectedSpecialty === specialty.id
+                          ? "bg-gray-50 text-gray-900"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {specialty.name}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-gray-500">
+                    No hay especialidades disponibles
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        <div
+          className={`w-12 h-12 rounded-lg ${colorClasses[color]} flex items-center justify-center`}
+        >
+          <BanknoteArrowUp className="w-6 h-6" />
+        </div>
+      </div>
+
+      <div>
+        {loading ? (
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+            </div>
+          </div>
+        ) : currentSpecialty ? (
+          <>
+            <p className="text-3xl font-light text-gray-900 mb-2">
+              {currentSpecialty.income}
+            </p>
+            {(() => {
+              const isNegative = currentSpecialty.trend.includes('-');
+              const isZero = currentSpecialty.trend.includes('0.0%');
+              
+              let TrendIcon = TrendingUp;
+              let colorClass = 'text-green-600';
+              
+              if (isNegative) {
+                TrendIcon = TrendingDown;
+                colorClass = 'text-red-600';
+              } else if (isZero) {
+                TrendIcon = TrendingUp;
+                colorClass = 'text-gray-600';
+              }
+              
+              return (
+                <p className={`text-sm ${colorClass} flex items-center`}>
+                  <TrendIcon className="w-4 h-4 mr-1" />
+                  {currentSpecialty.trend}
+                </p>
+              );
+            })()}
+          </>
+        ) : (
+          <div className="text-center">
+            <p className="text-2xl font-light text-gray-400">Sin datos</p>
+            <p className="text-sm text-gray-500">No se pudo cargar información</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 const ChartCard = ({ title, children, className = "" }) => {
@@ -238,7 +435,7 @@ const DemographicsChart = ({ edades }) => {
     "bg-blue-500",
     "bg-green-500",
     "bg-purple-500",
-    "bg-orange-500",
+    "bg-purple-500",
   ];
 
   return (
@@ -462,73 +659,6 @@ const SpecialistRequests = () => {
   );
 };
 
-const RecentActivity = () => {
-  const activities = [
-    {
-      id: 1,
-      action: "Nueva consulta",
-      user: "María González",
-      time: "Hace 5 min",
-      type: "consultation",
-    },
-    {
-      id: 2,
-      action: "Especialista registrado",
-      user: "Dr. Carlos Ruiz",
-      time: "Hace 15 min",
-      type: "specialist",
-    },
-    {
-      id: 3,
-      action: "Pago completado",
-      user: "Ana Rodríguez",
-      time: "Hace 30 min",
-      type: "payment",
-    },
-    {
-      id: 4,
-      action: "Consulta finalizada",
-      user: "Dr. Luis Pérez",
-      time: "Hace 1 hora",
-      type: "consultation",
-    },
-  ];
-
-  const getIcon = (type) => {
-    switch (type) {
-      case "consultation":
-        return <Calendar className="w-4 h-4 text-blue-600" />;
-      case "specialist":
-        return <UserCheck className="w-4 h-4 text-green-600" />;
-      case "payment":
-        return <Activity className="w-4 h-4 text-purple-600" />;
-      default:
-        return <Clock className="w-4 h-4 text-gray-600" />;
-    }
-  };
-
-  return (
-    <ChartCard title="Actividad Reciente">
-      <div className="space-y-4">
-        {activities.map((activity) => (
-          <div key={activity.id} className="flex items-center space-x-3">
-            <div className="flex-shrink-0">{getIcon(activity.type)}</div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900">
-                {activity.action}
-              </p>
-              <p className="text-sm text-gray-600">{activity.user}</p>
-            </div>
-            <div className="flex-shrink-0 text-xs text-gray-500">
-              {activity.time}
-            </div>
-          </div>
-        ))}
-      </div>
-    </ChartCard>
-  );
-};
-
 const Pin = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -563,6 +693,8 @@ const Pin = () => {
         return <SpecialistsSection />;
       case "services":
         return <ServicesSection />;
+      case "recentActivity":
+        return <RecentActivityTable />;
       default:
         return stats ? (
           <>
@@ -588,19 +720,18 @@ const Pin = () => {
                 trend=""
                 color="purple"
               />
-              <StatsCard
+              <IncomeCard
                 title="Ingresos"
                 value={`$${stats.ingresos.toLocaleString()}`}
                 icon={Activity}
                 trend=""
-                color="orange"
+                color="purple"
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               <DemographicsChart edades={stats.edades} />
               <GenderChart generos={stats.generos} />
-              <RecentActivity />
             </div>
 
             <div className="grid grid-cols-1 gap-6">

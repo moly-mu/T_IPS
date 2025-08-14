@@ -168,38 +168,36 @@ const GeneralData = ({ medicalHistory, patientId }) => {
 
   return (
     <div className="space-y-8">
-      {/*Boton para editar datos*/}
-      <div className="flex kistify-between items-center mb-8">
-        {!isEditingProfile ? (
-          <button
-          onClick={() => setIsEditingProfile(true)}
-          className="flex items-center gap-2 text-green-600 hover:text-gray-900 transition-colors">
-            <Edit3 size={20} className='text-green-600 font-semibold'/>Editar</button>
-        ) : (
-          <div className='flex gap-4'>
-            <button
-            onClick={handleSaveProfile}
-            className='flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors'>
-              <Save size={16}/>Guardar</button>
-              <button
-              onClick={() => setIsEditingProfile(false)}
-              className='flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors'>
-              <X size={16}/>Cancelar</button>
-          </div>
-        )}
-      </div>
-      
       {/* Información del Paciente */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="bg-blue-500 p-2 rounded-lg">
-            <User className="h-5 w-5 text-white" />
+        <div className='flex justify-between items-center mb-8'>
+          <h2 className='text-lg font-semibold text-blue-700'>Información del paciente</h2>
+          {!isEditingProfile ? (
+          <button
+            onClick={() => setIsEditingProfile(true)}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-900 transition-colors">
+            <Edit3 size={20} className="text-blue-600 font-semibold"/>
+            Editar
+          </button>
+        ) : (
+          <div className="flex gap-4">
+            <button
+              onClick={handleSaveProfile}
+              className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors">
+              <Save size={16} />
+              Guardar
+            </button>
+            <button
+              onClick={() => setIsEditingProfile(false)}
+              className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">
+              <X size={16} />
+              Cancelar
+            </button>
           </div>
-          <h3 className="text-lg font-semibold text-blue-900">Información del Paciente</h3>
+        )}
         </div>
-        
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
         <div className="space-y-6">
           <div>
             <label className="block text-sm text-gray-500 mb-2">Primer Nombre </label>
@@ -324,9 +322,10 @@ const GeneralData = ({ medicalHistory, patientId }) => {
           <div>
             <label className="block text-sm text-gray-500 mb-2">Eps</label>
             {isEditingProfile ? (
+              <div>
               <select
-                value={formData.eps}
-                onChange={(e) => setProfile({...formData, eps: e.target.value})}
+                value={formData.eps === '' || ! ['sura', 'sanitas', 'compensar', 'famisanar', 'saludTotal', 'nuevaEps', 'Coosalud', 'mutualSer', 'ninguna'].includes(formData.eps) ? 'otra' : formData.eps}
+                onChange={handleEpsChange}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent">
                 <option value="sura">Sura</option>
                 <option value="sanitas">Sanitas</option>
@@ -339,10 +338,21 @@ const GeneralData = ({ medicalHistory, patientId }) => {
                 <option value="ninguna">Ninguna</option>
                 <option value="otra">Otra</option>
               </select>
-            ) : (
-              <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.eps}</p>
-            )}
-          </div>
+
+              {(formData.eps === 'otra' || !['sura', 'sanitas', 'compensar', 'famisanar', 'saludTotal', 'nuevaEps', 'Coosalud', 'mutualSer', 'ninguna'].includes(formData.eps)) && (
+                <input 
+                type="text"
+                value={formData.eps === 'otra' ? '' : formData.eps}
+                onChange={(e) => setFormData({ ...formData, eps: e.target.value })}
+                placeholder='Especifica tu EPS'
+                className='w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent mt-2' />
+              )}
+              </div>
+
+              ) : (
+                <p className="text-gray-900 pb-3 border-b border-gray-100">{formData.eps}</p>
+              )}
+            </div>
 
           <div>
             <label className="block text-sm text-gray-500 mb-2">Estado Civil </label>

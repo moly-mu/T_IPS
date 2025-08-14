@@ -20,23 +20,35 @@ const Sregistro = () => {
   };
 
 
-      const Navbar = () => {
+  const Navbar = () => {
     return (
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            <Link to="/" className="text-2xl font-light tracking-wide text-gray-900">
+            <Link
+              to="/"
+              className="text-2xl font-light tracking-wide text-gray-900"
+            >
               TELECONSULTAS<span className="font-medium">IPS</span>
             </Link>
-            
+
             <div className="hidden md:flex items-center space-x-12">
-              <a href="/Tins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
+              <a
+                href="/Tins"
+                className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide"
+              >
                 ADMINISTRADOR
               </a>
-              <a href="/Pins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
+              <a
+                href="/Pins"
+                className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide"
+              >
                 MÉDICO
               </a>
-              <a href="/Sins" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
+              <a
+                href="/Sins"
+                className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide"
+              >
                 INICIAR SESIÓN
               </a>
             </div>
@@ -45,7 +57,6 @@ const Sregistro = () => {
       </nav>
     );
   };
-
 
     return (
       <div>
@@ -121,95 +132,110 @@ const Sregistro = () => {
                   />
                 </div>
 
-                {/* genero */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Género
-                  </label>
-                  <select
-                    name="genero"
-                    value={formData.genero}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
-                    <option value="" disabled>
+              {/* genero */}
+              <div>
+                <label className="text-gray-300 text-sm block mb-2">
+                  Género
+                </label>
+                <select
+                  name="genero"
+                  value={formData.genero}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                >
+                  <option value="" disabled>
                     Selecciona tu género
-                    </option>
-                    <option value="M" className="text-black bg-white">
+                  </option>
+                  <option value="M" className="text-black bg-white">
                     Masculino
-                    </option>
-                    <option value="F" className="text-black bg-white">
+                  </option>
+                  <option value="F" className="text-black bg-white">
                     Femenino
-                    </option>
-                    <option value="Otro" className="text-black bg-white">
+                  </option>
+                  <option value="Otro" className="text-black bg-white">
                     Otro
-                    </option>
-                  </select>
+                  </option>
+                </select>
 
-                  {formData.genero === "Otro" && (
-                    <div className="mt-4">
-                      <label className="text-gray-300 text-sm block mb-2">Especifica tu género</label>
-                      <input 
+                {formData.genero === "Otro" && (
+                  <div className="mt-4">
+                    <label className="text-gray-300 text-sm block mb-2">
+                      Especifica tu género
+                    </label>
+                    <input
                       type="text"
                       name="generoOtro"
                       value={formData.generoOtro || ""}
-                        onChange={handleInputChange}
-                        placeholder="Escribe tu género"
-                        className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
-                      />
-                    </div>
-                  )}
-                </div>
-  
-                {/* Sexo */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Sexo
-                  </label>
-                  <select
-                    name="sexo"
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
-                    <option value="" disabled selected>
+                      onChange={handleInputChange}
+                      placeholder="Escribe tu género"
+                      className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:ng-transparent px-6 py-3 outline-none rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Sexo */}
+              <div>
+                <label className="text-gray-300 text-sm block mb-2">Sexo</label>
+                <select
+                  name="sexo"
+                  required
+                  className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                >
+                  <option value="" disabled selected>
                     Selecciona tu sexo
-                    </option>
-                    <option value="M" className="text-black bg-white">
+                  </option>
+                  <option value="M" className="text-black bg-white">
                     Masculino
-                    </option>
-                    <option value="F" className="text-black bg-white">
+                  </option>
+                  <option value="F" className="text-black bg-white">
                     Femenino
-                    </option>
-                  </select>
-                </div>
+                  </option>
+                </select>
+              </div>
 
-                {/* lenguaje */}
-                <div>
-                  <label className="text-gray-300 text-sm block mb-2">
-                    Idioma
-                  </label>
-                  <select
-                    name="idioma"
-                    value={formData.idioma}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
-                    <option value="" disabled>
+              {/* lenguaje */}
+              <div>
+                <label className="text-gray-300 text-sm block mb-2">
+                  Idioma
+                </label>
+                <select
+                  name="idioma"
+                  value={formData.idioma}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md"
+                >
+                  <option value="" disabled>
                     Selecciona tu idioma
-                    </option>
-                    <option value="Español" className="text-black bg-white">Español</option>
-                    <option value="Portugues" className="text-black bg-white">Portugués</option>
-                    <option value="Frances" className="text-black bg-white">Francés</option>
-                    <option value="Aleman" className="text-black bg-white">Alemén</option>
-                    <option value="Ingles" className="text-black bg-white">Inglés</option>
-                    <option value="Otro" className="text-black bg-white">
+                  </option>
+                  <option value="Español" className="text-black bg-white">
+                    Español
+                  </option>
+                  <option value="Portugues" className="text-black bg-white">
+                    Portugués
+                  </option>
+                  <option value="Frances" className="text-black bg-white">
+                    Francés
+                  </option>
+                  <option value="Aleman" className="text-black bg-white">
+                    Alemén
+                  </option>
+                  <option value="Ingles" className="text-black bg-white">
+                    Inglés
+                  </option>
+                  <option value="Otro" className="text-black bg-white">
                     Otro
-                    </option>
-                  </select>
+                  </option>
+                </select>
 
-                  {formData.idioma === "Otro" && (
-                    <div className="mt-4">
-                      <label className="text-gray-300 text-sm block mb-2">Especifica tu idioma</label>
-                      <input 
+                {formData.idioma === "Otro" && (
+                  <div className="mt-4">
+                    <label className="text-gray-300 text-sm block mb-2">
+                      Especifica tu idioma
+                    </label>
+                    <input
                       type="text"
                       name="idiomaOtro"
                       value={formData.idiomaOtro || ""}
@@ -252,17 +278,17 @@ const Sregistro = () => {
                     className="w-full text-gray-200 text-sm bg-gray-700 border-b border-gray-500 focus:border-[#FFCB00] focus:bg-transparent px-6 py-3 outline-none rounded-md">
                     <option value="" disabled selected>
                     Selecciona un tipo de documento
-                    </option>
-                    <option value="cc" className="text-black bg-white">
+                  </option>
+                  <option value="cc" className="text-black bg-white">
                     Cédula de Ciudadanía
-                    </option>
-                    <option value="ti" className="text-black bg-white">
+                  </option>
+                  <option value="ti" className="text-black bg-white">
                     Tarjeta de Identidad
-                    </option>
-                    <option value="ce" className="text-black bg-white">
+                  </option>
+                  <option value="ce" className="text-black bg-white">
                     Cédula de Extranjería
-                    </option>
-                    <option value="pasaporte" className="text-black bg-white">
+                  </option>
+                  <option value="pasaporte" className="text-black bg-white">
                     Pasaporte
                     </option>
                   </select>
@@ -328,7 +354,8 @@ const Sregistro = () => {
                 <Link to="/">
                 <button
                   type="button"
-                  className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none">
+                  className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none"
+                >
                   Cancelar
                 </button>
                 </Link>
