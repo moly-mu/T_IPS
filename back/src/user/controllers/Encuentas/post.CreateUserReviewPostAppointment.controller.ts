@@ -18,26 +18,30 @@ export const createUserReviewPostAppointment = async (
 
     const { appointmentId, q1, q2, q3, q4, q5, comment } = req.body;
 
-    // Validar ID de cita
     if (!appointmentId) {
       return res.status(400).json({ error: "ID de cita es requerido." });
     }
 
-    // Validar que las preguntas estén presentes y sean números de 1 a 5
     const calificaciones = [q1, q2, q3, q4, q5].map(Number);
     if (calificaciones.some(c => isNaN(c) || c < 1 || c > 5)) {
       return res.status(400).json({ error: "Todas las calificaciones deben estar entre 1 y 5." });
     }
 
-    // Calcular promedio general
     const rating = parseFloat(
       (calificaciones.reduce((acc, val) => acc + val, 0) / calificaciones.length).toFixed(2)
     );
 
-    // Verificar que la cita existe y está completada
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
-      include: {
+      select: {
+        appoint_init: true, // 👈 Fecha/hora de la cita
+        state: true,
+        Paciente_User_idUser: true,
+        Paciente_User_credential_users_idcredential_users: true,
+        Paciente_User_rol_idrol: true,
+        Specialist_User_idUser: true,
+        Specialist_User_credential_users_idcredential_users: true,
+        Specialist_User_rol_idrol: true,
         Specialist: {
           include: { User: true }
         },
@@ -53,7 +57,6 @@ export const createUserReviewPostAppointment = async (
       return res.status(400).json({ error: "Solo puedes reseñar citas que han sido completadas." });
     }
 
-    // Verificar que el usuario es el paciente de la cita
     if (
       appointment.Paciente_User_idUser !== userId ||
       appointment.Paciente_User_credential_users_idcredential_users !== userCredId ||
@@ -62,7 +65,6 @@ export const createUserReviewPostAppointment = async (
       return res.status(403).json({ error: "Solo puedes reseñar tus propias citas." });
     }
 
-    // Verificar que no exista ya una reseña para esta cita
     const existingReview = await prisma.userReview.findUnique({
       where: { appointmentId }
     });
@@ -71,7 +73,6 @@ export const createUserReviewPostAppointment = async (
       return res.status(409).json({ error: "Esta cita ya tiene una reseña." });
     }
 
-    // Crear reseña con el promedio como rating
     const newReview = await prisma.userReview.create({
       data: {
         appointmentId,
@@ -110,6 +111,7 @@ export const createUserReviewPostAppointment = async (
       rating: newReview.rating,
       comment: newReview.comment,
       createdAt: newReview.createdAt,
+      appointmentDate: appointment.appoint_init, // 👈 Aquí devolvemos la fecha
       reviewedSpecialist: {
         fullName,
         phone: reviewedUser.phone

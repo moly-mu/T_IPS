@@ -113,6 +113,7 @@ export const createUserReview = async (
       rating: newReview.rating,
       comment: newReview.comment,
       createdAt: newReview.createdAt,
+      appointmentDate: appointment.appoint_init, // fecha de inicio de la cita
       reviewedSpecialist: {
         fullName,
         phone: reviewedUser.phone,

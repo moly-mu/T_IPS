@@ -1,4 +1,3 @@
-//Controlador para crear una nueva cita
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
@@ -29,11 +28,14 @@ export const UserScheduleAppointmentCreate = async (
     const fechaHoraInicio = new Date(`${fecha}T${hora}:00`);
     const fechaHoraFin = new Date(fechaHoraInicio.getTime() + duration * 60 * 1000);
 
-    // Verificar si ya existe una cita en ese horario para el especialista
+    // Verificar si ya existe una cita en ese horario para el especialista, pero solo si el estado NO es Reagendada o Cancelada
     const existingAppointment = await prisma.appointment.findFirst({
       where: {
         Specialist_idEspecialista: specialistId,
         appoint_init: fechaHoraInicio,
+        NOT: {
+          state: { in: ["Reagendada", "Cancelada"] }
+        }
       },
     });
 
@@ -41,7 +43,7 @@ export const UserScheduleAppointmentCreate = async (
       return res.status(409).json({ error: "Ese horario ya está reservado." });
     }
 
-    // Obtener información del especialista para validar
+    // Obtener información del especialista
     const specialist = await prisma.specialist.findUnique({
       where: { id: specialistId },
       include: {
@@ -62,9 +64,7 @@ export const UserScheduleAppointmentCreate = async (
     // Obtener información del paciente
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
-      include: {
-        Paciente: true
-      },
+      include: { Paciente: true },
     });
 
     if (!user || !user.Paciente || user.Paciente.length === 0) {
@@ -89,7 +89,7 @@ export const UserScheduleAppointmentCreate = async (
         appoint_specialtyId: specialty.id,
         appoint_init: fechaHoraInicio,
         appoint_finish: fechaHoraFin,
-        linkZoom: `https://zoom.us/j/${Date.now()}`, // Generar link único
+        linkZoom: `https://zoom.us/j/${Date.now()}`,
         // Datos del paciente
         Paciente_idPaciente: patient.id,
         Paciente_pac_data_idpac_data: patient.pac_data_idpac_data,

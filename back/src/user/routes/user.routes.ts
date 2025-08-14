@@ -10,6 +10,7 @@ import { getUserAppointments } from "../controllers/Citas/get.UserAppointments.c
 import { getUserReviews } from "../controllers/Encuentas/getUserReviews.controller";
 import { createUserReview} from "../controllers/Encuentas/postCreateUserReview.controller";
 import { createUserReviewPostAppointment } from "user/controllers/Encuentas/post.CreateUserReviewPostAppointment.controller";
+import { UsercancelAppointment} from "../controllers/Citas/Put.UserAppointment.controller"
 import express from "express";
 
 const router = express.Router();
@@ -36,4 +37,6 @@ router.get("/User/Reviews", validateToken, getUserReviews);
 router.post("/User/Reviews", validateToken, createUserReview);
 // *Ruta para crear una reseña del especialista despues de terminar una cita medica 
 router.post("/User/reviews/postPointment", validateToken, createUserReviewPostAppointment)
+//*Ruta para cancelar una cita 
+router.put("/User/cancel/Appointment",validateToken, UsercancelAppointment)
 export default router;

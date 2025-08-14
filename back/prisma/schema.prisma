@@ -216,6 +216,7 @@ model Appointment {
   MedicalOrder       MedicalOrder[]
   AppointmentReceipt AppointmentReceipt[]
   UserReviews        UserReview[]
+  MedicalConsultations MedicalConsultation[]
 
   @@map("appointments")
 }
@@ -295,6 +296,7 @@ model MedicalHistory {
 model MedicalConsultation {
   id               Int      @id @default(autoincrement()) @map("idconsulta_medica")
   medicalHistoryId Int
+  appointmentId    Int?
   startTime        DateTime @db.Timestamp
   endTime          DateTime @db.Timestamp
   reason           String   @db.Text
@@ -305,7 +307,7 @@ model MedicalConsultation {
   summary          String?  @db.Text
 
   medicalHistory MedicalHistory @relation(fields: [medicalHistoryId], references: [id])
-
+  appointment    Appointment?   @relation(fields: [appointmentId], references: [id])
   @@map("consulta_medica")
 }
 
