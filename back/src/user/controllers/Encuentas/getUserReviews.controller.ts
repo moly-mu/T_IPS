@@ -28,36 +28,45 @@ export const getUserReviews = async (
             phone: true,
           },
         },
+        appointment: {
+          select: {
+            appoint_init: true,
+            appoint_finish: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    const filteredReviews = reviews.map((review) => {
-      const r = review.reviewed;
+    const filteredReviews = reviews
+      .map((review) => {
+        const r = review.reviewed;
+        if (!r) return null;
 
-      if (!r) return null; // por seguridad
+        const fullName = [
+          r.firstname,
+          r.second_firstname,
+          r.lastname,
+          r.second_lastname,
+        ]
+          .filter(Boolean)
+          .join(" ");
 
-      const fullName = [
-        r.firstname,
-        r.second_firstname,
-        r.lastname,
-        r.second_lastname,
-      ]
-        .filter(Boolean)
-        .join(" ");
-
-      return {
-        rating: review.rating,
-        comment: review.comment,
-        createdAt: review.createdAt,
-        reviewedUser: {
-          fullName,
-          phone: r.phone,
-        },
-      };
-    }).filter(Boolean); // elimina nulos
+        return {
+          rating: review.rating,
+          comment: review.comment,
+          createdAt: review.createdAt,
+          appointmentDate: review.appointment?.appoint_init || null,
+          appointmentEnd: review.appointment?.appoint_finish || null,
+          reviewedUser: {
+            fullName,
+            phone: r.phone,
+          },
+        };
+      })
+      .filter(Boolean);
 
     res.status(200).json({ reviews: filteredReviews });
   } catch (error) {

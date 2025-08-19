@@ -15,9 +15,7 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
       include: {
         User: true,
         SpecialistHasSpecialty: {
-          include: {
-            Specialty: true,
-          },
+          include: { Specialty: true },
         },
         spec_data: true,
       },
@@ -32,7 +30,6 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
 
         const startDate = spec.spec_data?.workStartSchedule;
         const endDate = spec.spec_data?.workEndSchedule;
-
         if (!startDate || !endDate) return null;
 
         const startHour = startDate.getHours();
@@ -73,22 +70,28 @@ export const UserScheduleAppointment = async (req: Request, res: Response) => {
           if (!isTaken) availableHours.push(time);
         }
 
-        // Obtener reseñas de la especialidad
-        const reviews = await prisma.specialtyReview.findMany({
+        // Obtener reseñas directamente del especialista
+        const reviews = await prisma.userReview.findMany({
           where: {
-            specialty_id: specialtyData?.id,
+            reviewed_id: spec.User_idUser,
+            reviewed_cred_id: spec.User_credential_users_idcredential_users,
+            reviewed_rol_id: spec.User_rol_idrol,
           },
         });
 
         const avgRating = reviews.length
-          ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+          ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1))
           : null;
+
+        const totalReviews = reviews.length;
 
         return {
           name: `${spec.User.firstname} ${spec.User.lastname}`,
           specialty: specialtyName,
           price,
+          duration,
           averageRating: avgRating,
+          totalReviews,
           availableHours,
         };
       })
