@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { Calendar, Clock } from 'lucide-react';
-import useAppointmentService from '../../../services/appointmentService';
+import { useAppointmentService } from '../../../services/appointmentService';
 import { useAuth } from '../../../context/AuthContext';
 
 const MyAppointments = () => {

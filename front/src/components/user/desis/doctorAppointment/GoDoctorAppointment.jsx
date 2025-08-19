@@ -2,8 +2,9 @@ import { Calendar, Clock, User, Phone, Mail, MapPin, FileText } from 'lucide-rea
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../../../context/AuthContext';
-import { doctorAppointmentService } from '../../../../services/doctorAppointmentService';
+import { doctorAppointmentService } from '../../../../services/doctorAppointmentService.ts';
 
+  
 const Footer = () => (
   <footer className="bg-gray-50 border-t border-gray-100">
     <div className="max-w-7xl mx-auto px-8 py-8">
@@ -38,7 +39,7 @@ const GoDoctorAppointment = () => {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isStartingConsultation, setIsStartingConsultation] = useState(false);
+  const [, setIsStartingConsultation] = useState(false);
 
   useEffect(() => {
     const fetchAppointmentData = async () => {

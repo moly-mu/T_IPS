@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import { useUserData } from "../../../context/UserDataContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useUserService } from "../../../services/userService";
 import Barral from '../desis/Barral';
 import { Link } from "react-router-dom";
 import NavbarI from '../desis/NavbarI';
@@ -13,6 +13,7 @@ const Pperfil = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { userData, setUserData } = useUserData();
+  const userService = useUserService();
   
   // Estados para la información personal y profesional
   const [formData, setFormData] = useState({
@@ -50,40 +51,19 @@ const Pperfil = () => {
       try {
         console.log("🔄 Iniciando carga de datos...");
         
-        // Obtener datos del usuario principal usando el endpoint correcto para usuarios
-        const userResponse = await axios.get("http://localhost:3000/specialist/appointments/getProfile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log("✅ Usuario principal:", userResponse.data);
+        // Obtener datos del usuario usando el servicio
+        const userResponse = await userService.getProfile();
+        console.log("✅ Usuario principal:", userResponse);
         
-        // El endpoint del especialista devuelve directamente los datos del usuario
-        const userData = userResponse.data;
+        // Extraer los datos del usuario de la respuesta
+        const userData = userResponse.user;
         setUserData(userData);
 
-        // Obtener información profesional adicional del especialista
-        try {
-          const professionalResponse = await axios.get("http://localhost:3000/specialist/settings/dataProfessional", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          console.log("✅ Información profesional:", professionalResponse.data);
-          
-          // Combinar información del perfil con información profesional
-          setFormData({
-            profileInfo: userData,
-            professionalInfo: { ...userData, ...professionalResponse.data }
-          });
-        } catch (profError) {
-          console.log("⚠️ No se pudo obtener información profesional específica:", profError.message);
-          // Si no hay información profesional específica, usar solo los datos del usuario
-          setFormData({
-            profileInfo: userData,
-            professionalInfo: userData
-          });
-        }
+        // Configurar los datos del formulario con la información del usuario
+        setFormData({
+          profileInfo: userData,
+          professionalInfo: userData
+        });
 
         setDataLoaded(true);
         console.log("✅ Datos cargados correctamente");
@@ -106,7 +86,7 @@ const Pperfil = () => {
     } else if (!token) {
       setLoading(false);
     }
-  }, [token, dataLoaded, location.pathname, navigate, setUserData]);
+  }, [token, dataLoaded, location.pathname, navigate, setUserData, userService]);
 
   // Función para renderizar información personal
   const renderPersonalInfo = () => {
@@ -138,8 +118,8 @@ const Pperfil = () => {
         {profileInfo.second_lastname && (
           <p><span className="font-medium text-gray-700">Segundo Apellido:</span> <span className="text-gray-600">{profileInfo.second_lastname}</span></p>
         )}
-        {profileInfo.age && (
-          <p><span className="font-medium text-gray-700">Edad:</span> <span className="text-gray-600">{profileInfo.age} años</span></p>
+        {profileInfo.birthdate && (
+          <p><span className="font-medium text-gray-700">Fecha de Nacimiento:</span> <span className="text-gray-600">{new Date(profileInfo.birthdate).toLocaleDateString('es-ES')}</span></p>
         )}
         {profileInfo.gender && (
           <p><span className="font-medium text-gray-700">Género:</span> <span className="text-gray-600">{profileInfo.gender}</span></p>
@@ -162,11 +142,14 @@ const Pperfil = () => {
         {profileInfo.status && (
           <p><span className="font-medium text-gray-700">Estado:</span> <span className="text-gray-600">{profileInfo.status}</span></p>
         )}
+        {profileInfo.joinDate && (
+          <p><span className="font-medium text-gray-700">Fecha de Registro:</span> <span className="text-gray-600">{new Date(profileInfo.joinDate).toLocaleDateString('es-ES')}</span></p>
+        )}
       </div>
     );
   };
 
-  // Función para renderizar información profesional
+  // Función para renderizar información profesional/médica del paciente
   const renderProfessionalInfo = () => {
     const renderState = {
       loading,
@@ -174,75 +157,63 @@ const Pperfil = () => {
       formData: formData.professionalInfo
     };
     
-    console.log("🔍 Renderizando información profesional:", renderState);
+    console.log("🔍 Renderizando información médica/profesional:", renderState);
 
-    if (loading) return <p className="text-gray-600">Cargando información profesional...</p>;
+    if (loading) return <p className="text-gray-600">Cargando información médica...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
-    if (!formData.professionalInfo) return <p className="text-gray-600">No hay información profesional disponible</p>;
+    if (!formData.professionalInfo) return <p className="text-gray-600">No hay información médica disponible</p>;
 
     const professionalInfo = formData.professionalInfo;
+    const pacienteData = professionalInfo.Paciente?.pac_data;
 
     return (
       <div className="text-left space-y-3">
-        {/* Información básica del especialista */}
+        {/* Información básica del usuario */}
         {professionalInfo.rol?.rol_name && (
           <p><span className="font-medium text-gray-700">Tipo de Usuario:</span> <span className="text-gray-600">{professionalInfo.rol.rol_name}</span></p>
         )}
-        {professionalInfo.status && (
-          <p><span className="font-medium text-gray-700">Estado de la Cuenta:</span> <span className="text-gray-600">{professionalInfo.status}</span></p>
+        
+        {/* Información médica del paciente */}
+        {pacienteData && (
+          <>
+            {pacienteData.Direction && (
+              <p><span className="font-medium text-gray-700">Dirección:</span> <span className="text-gray-600">{pacienteData.Direction}</span></p>
+            )}
+            {pacienteData.bloodType && (
+              <p><span className="font-medium text-gray-700">Tipo de Sangre:</span> <span className="text-gray-600">{pacienteData.bloodType}</span></p>
+            )}
+            {pacienteData.allergies && (
+              <p><span className="font-medium text-gray-700">Alergias:</span> <span className="text-gray-600">{pacienteData.allergies}</span></p>
+            )}
+            {pacienteData.emergency_contact && (
+              <p><span className="font-medium text-gray-700">Contacto de Emergencia:</span> <span className="text-gray-600">{pacienteData.emergency_contact}</span></p>
+            )}
+            {pacienteData.eps_type && (
+              <p><span className="font-medium text-gray-700">EPS:</span> <span className="text-gray-600">{pacienteData.eps_type}</span></p>
+            )}
+            {pacienteData.profession && (
+              <p><span className="font-medium text-gray-700">Profesión:</span> <span className="text-gray-600">{pacienteData.profession}</span></p>
+            )}
+            {pacienteData.ethnicgroup && (
+              <p><span className="font-medium text-gray-700">Grupo Étnico:</span> <span className="text-gray-600">{pacienteData.ethnicgroup}</span></p>
+            )}
+          </>
         )}
         
-        {/* Información profesional específica si está disponible */}
-        {professionalInfo.biography && (
-          <p><span className="font-medium text-gray-700">Especialidad:</span> <span className="text-gray-600">{professionalInfo.biography}</span></p>
-        )}
-        {professionalInfo.exp_lab && (
-          <p><span className="font-medium text-gray-700">Experiencia Laboral:</span> <span className="text-gray-600">{professionalInfo.exp_lab}</span></p>
-        )}
-        {professionalInfo.working_experience && (
-          <p><span className="font-medium text-gray-700">Años de Experiencia:</span> <span className="text-gray-600">{professionalInfo.working_experience}</span></p>
-        )}
-        {professionalInfo.consultations && (
-          <p><span className="font-medium text-gray-700">Consultas Realizadas:</span> <span className="text-gray-600">{professionalInfo.consultations}</span></p>
-        )}
-        
-        {/* Fechas */}
-        {professionalInfo.createdAt && (
-          <p><span className="font-medium text-gray-700">Fecha de Registro:</span> <span className="text-gray-600">{new Date(professionalInfo.createdAt).toLocaleDateString('es-ES')}</span></p>
-        )}
-        {professionalInfo.updatedAt && (
-          <p><span className="font-medium text-gray-700">Última Actualización:</span> <span className="text-gray-600">{new Date(professionalInfo.updatedAt).toLocaleDateString('es-ES')}</span></p>
-        )}
-        
-        {/* Documentos profesionales */}
-        {professionalInfo.degrees && Object.keys(professionalInfo.degrees).length > 0 && (
-          <div>
-            <span className="font-medium text-gray-700">Diplomas:</span>
-            <span className="text-gray-600 ml-2">Documentos disponibles</span>
-          </div>
-        )}
-        {professionalInfo.educational_certificates && Object.keys(professionalInfo.educational_certificates).length > 0 && (
-          <div>
-            <span className="font-medium text-gray-700">Certificados Educativos:</span>
-            <span className="text-gray-600 ml-2">Documentos disponibles</span>
-          </div>
-        )}
-        {professionalInfo.cv && Object.keys(professionalInfo.cv).length > 0 && (
-          <div>
-            <span className="font-medium text-gray-700">Currículum:</span>
-            <span className="text-gray-600 ml-2">Documento disponible</span>
-          </div>
-        )}
-        
-        {/* Información específica de especialista */}
-        <div className="mt-4 p-3 bg-green-50 rounded-lg">
-          <p className="font-medium text-green-700 mb-2">Información del Especialista</p>
-          <p className="text-sm text-green-600">
-            Como especialista registrado, puedes gestionar citas médicas, consultas y brindar servicios de telemedicina.
+        {/* Información específica según el rol */}
+        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+          <p className="font-medium text-blue-700 mb-2">
+            {professionalInfo.rol?.rol_name === 'Paciente' ? 'Información del Paciente' : 'Información del Usuario'}
           </p>
-          {professionalInfo.rol?.rol_name === 'profesional' && (
-            <p className="text-sm text-green-600 mt-1">
-              Tienes acceso completo a las funcionalidades para profesionales de la salud.
+          <p className="text-sm text-blue-600">
+            {professionalInfo.rol?.rol_name === 'Paciente' 
+              ? 'Como paciente registrado, puedes agendar citas médicas, consultar tu historial clínico y acceder a servicios de telemedicina.'
+              : 'Usuario registrado en el sistema de telemedicina.'
+            }
+          </p>
+          {professionalInfo.status === 'Activo' && (
+            <p className="text-sm text-blue-600 mt-1">
+              Tu cuenta está activa y puedes acceder a todos los servicios disponibles.
             </p>
           )}
         </div>
@@ -284,13 +255,12 @@ const Pperfil = () => {
                   <h2 className="text-3xl font-semibold text-gray-800">
                     {formData.profileInfo?.firstname && formData.profileInfo?.lastname 
                       ? `${formData.profileInfo.firstname} ${formData.profileInfo.lastname}` 
-                      : userData?.nombre && userData?.apellido
-                      ? `${userData.nombre} ${userData.apellido}`
+                      : userData?.firstname && userData?.lastname
+                      ? `${userData.firstname} ${userData.lastname}`
                       : "Usuario"}
                   </h2>
                   <p className="text-gray-600 mt-2">
-                    {/* Como estamos en el perfil de especialista, siempre mostrar como Especialista Médico */}
-                    Especialista Médico
+                    {formData.profileInfo?.rol?.rol_name || "Usuario del Sistema"}
                   </p>
                 </div>
               </div>
@@ -307,9 +277,9 @@ const Pperfil = () => {
                   </div>
                 </div>
 
-                {/* informacion profesional */}
+                {/* informacion médica/profesional */}
                 <div className="flex flex-col w-1/2 bg-gray-50 rounded-lg shadow-md p-6">
-                  <h3 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Información Profesional</h3>
+                  <h3 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Información Médica</h3>
                   <div className="flex-1">
                     {renderProfessionalInfo()}
                   </div>

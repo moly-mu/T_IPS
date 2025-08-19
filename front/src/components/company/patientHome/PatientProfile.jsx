@@ -18,6 +18,7 @@ const PatientProfile = () => {
     const { userData, setUserData } = useUserData();
     const { getUserProfile, updateUserProfile } = useUserProfileService();
 
+    
     const [profile, setProfile] = useState({
       nombre: '',
       email: '',
@@ -52,24 +53,35 @@ const PatientProfile = () => {
             }
 
             try {
-                setLoading(false);
+                setLoading(true);
+                console.log('Iniciando carga del perfil...');
+                
                 const response = await getUserProfile();
+                console.log('Respuesta completa del perfil:', response);
+                
+                // La respuesta ya tiene la estructura correcta: { user: { ... } }
+                if (!response || !response.user) {
+                    throw new Error('No se encontraron datos del usuario en la respuesta');
+                }
+                
                 const user = response.user;
+                console.log('Usuario extraído:', user);
                 
                 // Mapear los datos del backend al formato del frontend
                 const mappedProfile = {
-                    nombre: `${user.firstname} ${user.lastname}`,
+                    nombre: `${user.firstname || ''} ${user.lastname || ''}`.trim() || 'Usuario',
                     primerNombre: user.firstname || '',
                     segundoNombre: user.second_firstname || '',
                     primerApellido: user.lastname || '',
                     segundoApellido: user.second_lastname || '',
                     email: user.credential_users?.email || '',
                     telefono: user.phone || '',
-                    fechaNacimiento: user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '',
+                    fechaNacimiento: user.birthdate ? 
+                        new Date(user.birthdate).toISOString().split('T')[0] : '',
                     genero: user.gender || '',
                     sexo: user.sex || '',
                     lenguaje: user.language || '',
-                    numeroDocumento: user.credential_users?.document || '',
+                    numeroDocumento: user.credential_users?.document?.toString() || '',
                     tipoDocumento: user.document_type || '',
                     direccion: user.Paciente?.pac_data?.Direction || '',
                     tipoSangre: user.Paciente?.pac_data?.bloodType || '',
@@ -80,6 +92,7 @@ const PatientProfile = () => {
                     grupoEtnico: user.Paciente?.pac_data?.ethnicgroup || ''
                 };
                 
+                console.log('Perfil mapeado:', mappedProfile);
                 setProfile(mappedProfile);
                 
                 // Actualizar el contexto de userData si es necesario
@@ -88,25 +101,34 @@ const PatientProfile = () => {
                         id: user.id || userData?.id,
                         name: mappedProfile.nombre,
                         email: mappedProfile.email,
-                        role: user.rol || userData?.role
+                        role: user.rol?.rol_name || userData?.role
                     });
                 }
                 
                 setError(null);
             } catch (err) {
-                console.error('Error al cargar el perfil:', err);
-                setError('Error al cargar el perfil del usuario');
+                console.error('Error completo al cargar el perfil:', err);
+                console.error('Stack trace:', err.stack);
                 
-                if (err.message.includes('Sesión expirada')) {
+                let errorMessage = 'Error al cargar el perfil del usuario';
+                
+                if (err.message.includes('Sesión expirada') || err.message.includes('401')) {
+                    errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
                     logout();
+                } else if (err.message.includes('No se encontraron datos')) {
+                    errorMessage = 'No se encontraron datos del usuario. Verifica tu sesión.';
+                } else if (err.message) {
+                    errorMessage = err.message;
                 }
+                
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
         };
 
         loadUserProfile();
-    }, [token, getUserProfile, updateUserProfile, userData, setUserData, logout]);
+    }, [token, getUserProfile, userData, setUserData, logout]);
 
     const handleProfileUpdate = async (updatedProfile) => {
         try {
@@ -166,6 +188,17 @@ const PatientProfile = () => {
         window.location.href = '/';
     };
     
+    if (!loading) {
+        return (
+            <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Cargando perfil...</p>
+                </div>
+            </div>
+        );
+    }
+    
     if (error) {
         return (
             <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
@@ -212,24 +245,24 @@ const PatientProfile = () => {
                     </div>
 
                     <div className='border-b border-gray-200 mb-12'>
-                        <div className='flex gap-12'>
-                            {[
-                                { key: 'perfil', label: 'Mi Perfil', icon: Edit3 },
-                                { key: 'historial', label: 'Historial de consultas', icon: Edit3 },
-                                { key: 'misCitas', label: 'Mis Citas', icon: Calendar },
-                                { key: 'misEncuestas', label: 'Mis Encuestas', icon: Star },
-                                { key: 'wallet', label: 'Billetera', icon: DollarSign }
-                            ].map(({ key, label, icon: Icon}) => (
-                                <button 
-                                key={key}
-                                onClick={() => setActiveTab(key)}
-                                className={`flex items-center gap-2 pb-4 font-light transition-colors ${activeTab === key ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>
-                                <Icon size={16}/>
-                                {label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+    <div className='flex gap-12'>
+        {[
+            { key: 'perfil', label: 'Mi Perfil', icon: Edit3 },
+            { key: 'historial', label: 'Historial de consultas', icon: Edit3 },
+            { key: 'misCitas', label: 'Mis Citas', icon: Calendar },
+            { key: 'misEncuestas', label: 'Mis Encuestas', icon: Star },
+            { key: 'wallet', label: 'Billetera', icon: DollarSign }
+        ].map(({ key, label, icon: Icon}) => (
+            <button 
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={`flex items-center gap-2 pb-4 font-light transition-colors ${activeTab === key ? 'text-gray-900 border-b-2 border-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>
+            <Icon size={16}/>
+            {label}
+            </button>
+        ))}
+    </div>
+</div>
 
                     <div>
                         {activeTab === 'perfil' && <MyProfile profile={profile} onProfileUpdate={handleProfileUpdate} />}

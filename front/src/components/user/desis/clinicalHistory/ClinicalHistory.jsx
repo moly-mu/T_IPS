@@ -4,7 +4,7 @@ import GeneralData from './GeneralData';
 import TreatmentFollowUp from './TreatmentFollowUp';
 import TreatmentMedications from './TreatmentMedications';
 import { html2pdf } from 'html2pdf.js';
-import { medicalHistoryService } from '../../../../services/clinicalHistory/clinicalHistoryService';
+import { useClinicalHistoryService } from '../../../../services/clinicalHistory/clinicalHistoryService';
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -32,7 +32,7 @@ const ClinicalHistory = () => {
   const loadMedicalHistory = async () => {
     try {
       setLoading(true);
-      const response = await medicalHistoryService.getByPatient(patientId);
+      const response = await useClinicalHistoryService.getByPatient(patientId);
       if (response.success) {
         setMedicalHistory(response.data);
         // Actualizar form data con información del paciente
@@ -65,7 +65,7 @@ const ClinicalHistory = () => {
     try {
       setLoading(true);
       if (medicalHistory) {
-        await medicalHistoryService.update(medicalHistory.id, {
+        await useClinicalHistoryService.update(medicalHistory.id, {
           email: formData.email || medicalHistory.email,
           emergency_contact: formData.emergency_contact || medicalHistory.emergency_contact,
           contact_phone: formData.contact_phone || medicalHistory.contact_phone
