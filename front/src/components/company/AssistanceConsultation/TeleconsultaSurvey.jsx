@@ -3,6 +3,7 @@ import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import axios from '../../../api/axios';
 
+const BASE_URL = 'http://localhost:3000/api';
 
   const Navbar = () => {
     return (
@@ -162,7 +163,7 @@ const sections = [
       // Obtener token del localStorage (ajusta según tu implementación de auth)
       
       const response = await axios.post(
-        'http:localhost:3000/api/User/Reviews/PostAppointment', // Usando la ruta relativa ya que axios está configurado con baseURL
+        `${BASE_URL}/User/Reviews/PostAppointment`, // Usando la ruta relativa ya que axios está configurado con baseURL
         reviewData
       );
 

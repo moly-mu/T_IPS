@@ -49,6 +49,8 @@ export const getUserReviews = async (
         .join(" ");
 
       return {
+        id: review.id,
+        appointmentId: review.appointmentId,
         rating: review.rating,
         comment: review.comment,
         createdAt: review.createdAt,
