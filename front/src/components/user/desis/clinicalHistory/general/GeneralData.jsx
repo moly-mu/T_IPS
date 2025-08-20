@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FileText, Plus, Trash2, Edit3, Save, X } from 'lucide-react';
-import { generalDataService } from '../../../../services/clinicalHistory/clinicalHistoryService';
+import { generalDataService } from '../../../../../services/clinicalHistory/clinicalHistoryService';
 import History from './history';
 
 const GeneralData = ({ medicalHistory, patientId }) => {

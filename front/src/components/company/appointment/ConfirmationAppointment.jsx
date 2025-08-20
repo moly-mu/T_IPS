@@ -12,16 +12,46 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
 
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const pdfRef = useRef();
 
-  const api = axios.create({
-    baseURL: 'http://tu-api.com/api', // Reemplaza con tu URL base
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+  // Obtener información del usuario desde el token (si está disponible)
+  const getUserFromToken = () => {
+    if (!token) return null;
+    
+    try {
+      // Verificar que el token tenga el formato correcto (3 partes separadas por puntos)
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) {
+        console.error('Token no tiene el formato JWT válido');
+        return null;
+      }
+
+      // Decodificar el payload del JWT (solo la parte del payload, sin verificar la firma)
+      const payload = JSON.parse(atob(tokenParts[1]));
+      
+      // Verificar si el token ha expirado
+      if (payload.exp && Date.now() >= payload.exp * 1000) {
+        console.error('Token ha expirado');
+        return null;
+      }
+
+      return {
+        id: payload.id || payload.userId || payload.sub,
+        name: payload.name || payload.username || payload.firstName || 'Usuario',
+        email: payload.email || 'usuario@example.com',
+        phone: payload.phone || '+57 300 123 4567'
+      };
+    } catch (error) {
+      console.error('Error decodificando token:', error);
+      return null;
     }
-  });
+  };
+
+  const user = getUserFromToken();
+
+  console.log('Token:', token ? 'Presente' : 'No disponible');
+  console.log('Usuario:', user);
 
   const handleSubmit = async () => {
     if (!hasTechnicalMeans || !acceptTerms || !acceptData) {
@@ -38,6 +68,17 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
       alert('Debes iniciar sesión para agendar una cita.');
       return;
     }
+
+    // Crear la instancia de axios aquí, cuando ya sabemos que tenemos token
+    const api = axios.create({
+      baseURL: 'http://localhost:3000/api',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log('API creada con token:', token ? 'Token presente' : 'Sin token');
 
     setIsCreating(true);
     setError(null);
@@ -57,10 +98,11 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
         hora: hora,
         specialtyId: null, // El backend usará la especialidad del doctor
         duration: 30,
-        patientId: user.id // Asumiendo que el usuario tiene un id
+        patientId: user.id // Usar el ID del usuario del token decodificado
       };
 
-      const response = await api.post('/appointments', appointmentData);
+      console.log('Datos de la cita a enviar:', appointmentData);
+      const response = await api.post('/User/scheduleAppointment', appointmentData);
       
       if (response.data.appointment) {
         const { appointment } = response.data;
@@ -78,7 +120,9 @@ Tu cita aparecerá en "Mis Citas".`);
       }
     } catch (error) {
       console.error('Error al crear la cita:', error);
+      console.error('Respuesta del servidor:', error.response?.data);
       const errorMessage = error.response?.data?.message || 
+                         error.response?.data?.error ||
                          error.message || 
                          'Error al confirmar la teleconsulta. Por favor, intenta nuevamente.';
       setError(errorMessage);
@@ -145,9 +189,9 @@ Tu cita aparecerá en "Mis Citas".`);
 
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-2">Datos del paciente</h2>
-              <p><strong>Nombre completo:</strong> {user?.name || 'Juan Pérez'}</p>
-              <p><strong>Correo electrónico:</strong> {user?.email || 'juan.perez@example.com'}</p>
-              <p><strong>Teléfono de contacto:</strong> {user?.phone || '+57 300 123 4567'}</p>
+              <p><strong>Nombre completo:</strong> {user?.name || 'Nombre no disponible'}</p>
+              <p><strong>Correo electrónico:</strong> {user?.email || 'Email no disponible'}</p>
+              <p><strong>Teléfono de contacto:</strong> {user?.phone || 'Teléfono no disponible'}</p>
             </div>
           </div>
 
