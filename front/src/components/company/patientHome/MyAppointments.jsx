@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Calendar, Clock } from 'lucide-react';
 import { useAppointmentService } from '../../../services/appointmentService';
 import { useAuth } from '../../../context/AuthContext';
-
+//!Texto para hacer commit
 const MyAppointments = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedCita, setSelectedCita] = useState(null);
