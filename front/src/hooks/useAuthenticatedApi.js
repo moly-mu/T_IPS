@@ -31,7 +31,7 @@ const useAuthenticatedApi = () => {
           response = await axios.put(url, data, defaultConfig);
           break;
         case 'delete':
-          response = await axios.delete(url, defaultConfig);
+          response = await axios.delete(url, { ...defaultConfig, data });
           break;
         default:
           throw new Error(`Método HTTP no soportado: ${method}`);
@@ -50,7 +50,7 @@ const useAuthenticatedApi = () => {
     get: (url, config) => apiCall('get', url, null, config),
     post: (url, data, config) => apiCall('post', url, data, config),
     put: (url, data, config) => apiCall('put', url, data, config),
-    delete: (url, config) => apiCall('delete', url, null, config),
+    delete: (url, data, config) => apiCall('delete', url, data, config),
   };
 };
 

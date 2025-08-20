@@ -12,7 +12,7 @@ const MyAppointments = () => {
   const [citas, setCitas] = useState([]);
 
   const { token } = useAuth();
-  const { getUserAppointments, cancelAppointment } = useAppointmentService();
+  const { getAppointments, cancelAppointment } = useAppointmentService();
 
   // Cargar citas del usuario al montar el componente
   useEffect(() => {
@@ -23,7 +23,7 @@ const MyAppointments = () => {
       }
 
       try {
-        const response = await getUserAppointments();
+        const response = await getAppointments();
         
         // Formatear las fechas para el frontend
         const formattedAppointments = response.appointments.map(appointment => ({
@@ -45,7 +45,7 @@ const MyAppointments = () => {
     };
 
     loadUserAppointments();
-  }, [token, getUserAppointments]);
+  }, [token, getAppointments]);
 
   const openCancelModal = (cita) => {
     setSelectedCita(cita);
