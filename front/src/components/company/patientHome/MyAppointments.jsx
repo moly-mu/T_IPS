@@ -132,12 +132,12 @@ const MyAppointments = () => {
                     </div>
                     <span
                       className={`px-2 py-1 text-xs rounded-full ${
-                        cita.estado === 'confirmada'
+                        cita.estado === 'completada'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-yellow-100 text-yellow-800'
                       }`}
                     >
-                      {cita.estado === 'confirmada' ? 'CONFIRMADA' : 'PENDIENTE'}
+                      {cita.estado === 'completada' ? 'COMPLETADA' : 'PENDIENTE'}
                     </span>
                   </div>
                   <h3 className="font-medium text-gray-900 mb-1">{cita.doctor}</h3>
