@@ -10,6 +10,7 @@ const useAuthenticatedApi = () => {
     }
 
     const defaultConfig = {
+      timeout: 10000, // 10 segundos por defecto
       ...config,
       headers: {
         'Content-Type': 'application/json',

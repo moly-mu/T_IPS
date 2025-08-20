@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import axios from '../../../api/axios';
 
 
   const Navbar = () => {
@@ -31,9 +32,15 @@ import { Link } from 'react-router-dom';
 
 
 const TeleconsultaSurvey = () => {
+  const location = useLocation();
+  const appointmentId = location.state?.appointmentId || 1; // Usar el ID desde el state o valor por defecto
+  
   const [currentSection, setCurrentSection] = useState(0);
   const [ratings, setRatings] = useState({});
   const [hoverRatings, setHoverRatings] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [comment, setComment] = useState('');
 
 
 const sections = [
@@ -137,9 +144,48 @@ const sections = [
   };
 
 
-  const handleSubmit = () => {
-    console.log('Calificaciones enviadas:', ratings);
-    alert('¡Gracias por su evaluación!');
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      setSubmitMessage('');
+
+      // Preparar los datos según las 4 secciones
+      const reviewData = {
+        appointmentId,
+        q1: ratings.specialist || 0,
+        q2: ratings.diagnosis || 0,
+        q3: ratings.technical || 0,
+        q4: ratings.overall || 0,
+        comment: comment || null
+      };
+
+      // Obtener token del localStorage (ajusta según tu implementación de auth)
+      
+      const response = await axios.post(
+        'http:localhost:3000/api/User/Reviews/PostAppointment', // Usando la ruta relativa ya que axios está configurado con baseURL
+        reviewData
+      );
+
+      if (response.status === 201) {
+        setSubmitMessage('¡Reseña enviada exitosamente!');
+        console.log('Respuesta del servidor:', response.data);
+        
+        // Opcional: redirigir o mostrar mensaje de éxito
+        setTimeout(() => {
+          // Aquí puedes agregar lógica para redirigir o cerrar el modal
+          window.history.back(); // O usar navigate si tienes react-router
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error al enviar la reseña:', error);
+      if (error.response) {
+        setSubmitMessage(`Error: ${error.response.data.error || 'No se pudo enviar la reseña'}`);
+      } else {
+        setSubmitMessage('Error de conexión. Inténtalo de nuevo.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
 
@@ -200,6 +246,37 @@ const sections = [
         <span className="text-[#00a512]">Muy satisfecho</span>
       </div>
 
+      {/* Campo de comentario en la última sección */}
+      {currentSection === sections.length - 1 && (
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Comentarios adicionales (opcional)
+          </label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+            rows={4}
+            placeholder="Comparte tu experiencia y sugerencias..."
+            maxLength={500}
+          />
+          <div className="text-right text-xs text-gray-500 mt-1">
+            {comment.length}/500 caracteres
+          </div>
+        </div>
+      )}
+
+      {/* Mensaje de estado */}
+      {submitMessage && (
+        <div className={`mb-4 p-3 rounded-lg text-center ${
+          submitMessage.includes('Error') 
+            ? 'bg-red-100 text-red-700 border border-red-300' 
+            : 'bg-green-100 text-green-700 border border-green-300'
+        }`}>
+          {submitMessage}
+        </div>
+      )}
+
 
       {/* Navegacion */}
       <div className="flex justify-between items-center">
@@ -238,14 +315,14 @@ const sections = [
         ) : (
           <button
             onClick={handleSubmit}
-            disabled={!allSectionsRated}
+            disabled={!allSectionsRated || isSubmitting}
             className={`px-6 py-2 rounded-lg font-semibold transition-colors duration-200 ${
-              !allSectionsRated
+              !allSectionsRated || isSubmitting
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-gray-900 text-white hover:bg-gray-700'
             }`}
           >
-            Finalizar
+            {isSubmitting ? 'Enviando...' : 'Finalizar'}
           </button>
         )}
       </div>

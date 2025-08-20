@@ -1,25 +1,73 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Clock, CheckCircle, Calendar, MapPin, User, FileText, AlertCircle, ArrowRight, Lock } from 'lucide-react';
 import { Link, useNavigate  } from "react-router-dom";
+import { AuthContext } from '../../../context/AuthContext';
+import axios from '../../../api/axios';
 
+const BASE_URL = 'http://localhost:3000';
 
 const MedicalAppointmentSection = () => {
   const [isReady, setIsReady] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
-  const [appointmentData] = useState({
-    date: "2025-07-15",
-    time: "10:00",
+  const [appointmentData, setAppointmentData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { token } = useContext(AuthContext);
+  
+  // Datos por defecto para cuando no hay citas o hay error
+  const defaultAppointment = {
+    id: null,
+    fecha: "2025-07-15",
+    hora: "10:00",
     doctor: "Dr. María González",
-    specialty: "Medicina General",
-    location: "Colombia",
-  });
+    especialidad: "Medicina General",
+    linkZoom: null,
+    estado: "programada"
+  };
 
+  // Función para obtener las citas del usuario
+  const fetchUserAppointments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
+      const response = await axios.get(`${BASE_URL}/api/User/appointments`);
+
+      if (response.data && response.data.appointments && response.data.appointments.length > 0) {
+        // Obtener la próxima cita (la primera en la lista ordenada)
+        const nextAppointment = response.data.appointments[0];
+        setAppointmentData(nextAppointment);
+      } else {
+        // Si no hay citas, usar datos por defecto
+        setAppointmentData(defaultAppointment);
+      }
+    } catch (error) {
+      console.error('Error al obtener las citas:', error);
+      setError('No se pudieron cargar las citas');
+      setAppointmentData(defaultAppointment);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar las citas cuando el componente se monta
   useEffect(() => {
-    const appointmentDateTime = new Date(`${appointmentData.date} ${appointmentData.time}`);
+    if (token) {
+      fetchUserAppointments();
+    } else {
+      setAppointmentData(defaultAppointment);
+      setLoading(false);
+    }
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  // Calcular tiempo restante basado en los datos reales de la cita
+  useEffect(() => {
+    if (!appointmentData) return;
+
+    const appointmentDateTime = new Date(`${appointmentData.fecha} ${appointmentData.hora}`);
     const now = new Date();
     const timeDiff = appointmentDateTime - now;
-
 
     if (timeDiff > 0) {
       const hours = Math.floor(timeDiff / (1000 * 60 * 60));
@@ -28,7 +76,7 @@ const MedicalAppointmentSection = () => {
     } else {
       setTimeRemaining("Hora de la cita");
     }
-  }, [appointmentData.date, appointmentData.time]);
+  }, [appointmentData]);
 
 
   const handleReadyCheck = () => {
@@ -45,10 +93,19 @@ const MedicalAppointmentSection = () => {
 
 
   const handleViewLocation = () => {
-    alert('Dirigiendo a consulta...');
-    setTimeout(() => {
-    navigate('/EncuestaSatisfaccion');
-  }, 1000);
+    if (appointmentData && appointmentData.linkZoom) {
+      // Abrir el link de Zoom en una nueva ventana
+      window.open(appointmentData.linkZoom, '_blank');
+      
+      // Después de un tiempo, redirigir a la encuesta de satisfacción con el ID de la cita
+      setTimeout(() => {
+        navigate('/EncuestaSatisfaccion', { 
+          state: { appointmentId: appointmentData.id } 
+        });
+      }, 3000); // 3 segundos para que el usuario pueda unirse al Zoom
+    } else {
+      alert('No hay link de Zoom disponible para esta cita.');
+    }
   };
 
 
@@ -93,47 +150,77 @@ const MedicalAppointmentSection = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-10">
             <h2 className="text-xl font-semibold text-blue-900 mb-4 flex items-center">
               Próxima cita médica
+              {loading && <span className="ml-2 text-sm text-gray-500">(Cargando...)</span>}
+              {error && <span className="ml-2 text-sm text-red-500">({error})</span>}
             </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div className="flex items-center text-gray-700">
-                  <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                  <span className="font-medium">Fecha:</span>
-                  <span className="ml-2">15 de Julio, 2025</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                  <span className="font-medium">Hora:</span>
-                  <span className="ml-2">10:00 AM</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <User className="w-4 h-4 mr-2 text-blue-600" />
-                  <span className="font-medium">Doctor:</span>
-                  <span className="ml-2">{appointmentData.doctor}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <FileText className="w-4 h-4 mr-2 text-blue-600" />
-                  <span className="font-medium">Especialidad:</span>
-                  <span className="ml-2">{appointmentData.specialty}</span>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-2 text-blue-600" />
-                  <span className="font-medium">Ubicación:</span>
-                  <span className="ml-2">{appointmentData.location}</span>
-                </div>
-                <div className="text-gray-600 text-sm ml-6">
-                  {appointmentData.address}
-                </div>
-                {timeRemaining && (
-                  <div className="flex items-center text-orange-600 font-medium">
-                    <AlertCircle className="w-4 h-4 mr-2" />
-                    <span>Tiempo restante: {timeRemaining}</span>
+            
+            {appointmentData ? (
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-700">
+                    <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+                    <span className="font-medium">Fecha:</span>
+                    <span className="ml-2">
+                      {new Date(appointmentData.fecha).toLocaleDateString('es-ES', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </span>
                   </div>
-                )}
+                  <div className="flex items-center text-gray-700">
+                    <Clock className="w-4 h-4 mr-2 text-blue-600" />
+                    <span className="font-medium">Hora:</span>
+                    <span className="ml-2">{appointmentData.hora}</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <User className="w-4 h-4 mr-2 text-blue-600" />
+                    <span className="font-medium">Doctor:</span>
+                    <span className="ml-2">{appointmentData.doctor}</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <FileText className="w-4 h-4 mr-2 text-blue-600" />
+                    <span className="font-medium">Especialidad:</span>
+                    <span className="ml-2">{appointmentData.especialidad}</span>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-700">
+                    <MapPin className="w-4 h-4 mr-2 text-blue-600" />
+                    <span className="font-medium">Modalidad:</span>
+                    <span className="ml-2">Teleconsulta</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <span className="font-medium">Estado:</span>
+                    <span className={`ml-2 px-2 py-1 rounded text-xs uppercase ${
+                      appointmentData.estado === 'programada' 
+                        ? 'bg-green-100 text-green-800' 
+                        : appointmentData.estado === 'completada'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {appointmentData.estado}
+                    </span>
+                  </div>
+                  {timeRemaining && (
+                    <div className="flex items-center text-orange-600 font-medium">
+                      <AlertCircle className="w-4 h-4 mr-2" />
+                      <span>Tiempo restante: {timeRemaining}</span>
+                    </div>
+                  )}
+                  {appointmentData.linkZoom && (
+                    <div className="flex items-center text-blue-600 font-medium">
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      <span>Link de Zoom disponible</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="text-center py-4 text-gray-500">
+                No hay información de cita disponible
+              </div>
+            )}
           </div>
 
 
@@ -191,19 +278,27 @@ const MedicalAppointmentSection = () => {
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             <button
               onClick={handleDiagnosticRedirect}
-              className="bg-[#00102D] text-white px-6 py-4 rounded-lg hover:bg-[#003366] transition-colors duration-200 flex items-center justify-center space-x-2 font-medium"
+              disabled={loading}
+              className="bg-[#00102D] text-white px-6 py-4 rounded-lg hover:bg-[#003366] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center space-x-2 font-medium"
             >
               <FileText className="w-5 h-5" />
               <span>Realizar diagnóstico previo</span>
             </button>
 
-
             <button
               onClick={handleViewLocation}
-              className="bg-gray-600 text-white px-6 py-4 rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center justify-center space-x-2 font-medium"
+              disabled={loading || !appointmentData?.linkZoom}
+              className={`px-6 py-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 font-medium ${
+                appointmentData?.linkZoom && !loading
+                  ? 'bg-green-600 text-white hover:bg-green-700' 
+                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              }`}
+              title={!appointmentData?.linkZoom ? 'Link de Zoom no disponible' : 'Unirse a la consulta'}
             >
               <ArrowRight className="w-5 h-5" />
-              <span>Ir a la cita</span>
+              <span>
+                {loading ? 'Cargando...' : appointmentData?.linkZoom ? 'Ir a la cita' : 'Link no disponible'}
+              </span>
             </button>
           </div>
         </div>

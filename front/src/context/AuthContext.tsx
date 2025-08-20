@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 interface AuthContextType {
   token: string | null;
@@ -13,7 +13,15 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Inicializar el token desde localStorage solo una vez
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+    setIsInitialized(true);
+  }, []);
 
   const login = (newToken: string) => {
     setToken(newToken);
@@ -24,6 +32,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
     localStorage.removeItem("token");
   };
+
+  // No renderizar hasta que el token esté inicializado
+  if (!isInitialized) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <AuthContext.Provider value={{ token, login, logout }}>

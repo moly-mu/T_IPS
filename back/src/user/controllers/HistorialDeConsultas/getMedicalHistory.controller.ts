@@ -50,7 +50,40 @@ export const getMedicalConsultations = async (
       return res.status(404).json({ error: "No se encontró historial médico." });
     }
 
-    return res.status(200).json({ consultations: medicalHistory.consultations });
+    // Obtener un especialista por defecto
+    const defaultSpecialist = await prisma.specialist.findFirst({
+      include: {
+        User: true,
+        SpecialistHasSpecialty: {
+          include: {
+            Specialty: true,
+          },
+        },
+      },
+    });
+
+    // Agregar información del doctor a cada consulta
+    const consultationsWithDoctors = medicalHistory.consultations.map((consultation) => {
+      let doctorName = "Dr. Pendiente";
+      let specialtyName = "Consulta General";
+
+      if (defaultSpecialist) {
+        doctorName = `Dr. ${defaultSpecialist.User.firstname} ${defaultSpecialist.User.lastname}`;
+        if (defaultSpecialist.SpecialistHasSpecialty.length > 0) {
+          specialtyName = defaultSpecialist.SpecialistHasSpecialty[0].Specialty.name;
+        }
+      }
+
+      return {
+        ...consultation,
+        doctorName,
+        specialtyName,
+      };
+    });
+
+    console.log(`📋 Enviando ${consultationsWithDoctors.length} consulta(s) con doctor: ${consultationsWithDoctors[0]?.doctorName || 'N/A'}`);
+
+    return res.status(200).json({ consultations: consultationsWithDoctors });
   } catch (error: any) {
     console.error("Error al obtener historial de consultas:", error);
     return res.status(500).json({

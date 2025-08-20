@@ -1,10 +1,81 @@
-import { useState } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Search, Download } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 
 const MedicalHistory = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [historiaClinica, setHistoriaClinica] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [historiaClinica] = useState([
+  const { token } = useAuth();
+
+  // Cargar historial médico al montar el componente
+  useEffect(() => {
+    // Función que se ejecuta solo dentro del useEffect
+    const loadMedicalHistory = async () => {
+      if (!token) {
+        setError('No hay sesión activa');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        
+        const response = await fetch('http://localhost:3000/api/User/Medicalhistory', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          signal: AbortSignal.timeout(10000) // Timeout de 10 segundos
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('🔍 FRONTEND - Datos recibidos del backend:', JSON.stringify(data, null, 2));
+        
+        // Formatear los datos para el frontend
+        const formattedConsultations = data.consultations.map(consultation => ({
+          id: consultation.id,
+          fecha: new Date(consultation.startTime).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }).toUpperCase(),
+          doctor: consultation.doctorName,
+          especialidad: consultation.specialtyName || consultation.consultationMode || 'Consulta General',
+          diagnostico: consultation.reason || 'Sin diagnóstico registrado',
+          tratamiento: consultation.medicalNote || 'Sin tratamiento registrado',
+          summary: consultation.summary,
+          vitalSigns: consultation.vitalSigns,
+          location: consultation.location,
+          endTime: consultation.endTime
+        }));
+        
+        console.log('🎨 FRONTEND - Datos formateados:', JSON.stringify(formattedConsultations, null, 2));
+        
+        setHistoriaClinica(formattedConsultations);
+        setError(null);
+      } catch (err) {
+        console.error('❌ Error al cargar el historial médico:', err);
+        setError('Error al cargar el historial médico: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Ejecutar la función solo si hay token
+    if (token) {
+      loadMedicalHistory();
+    }
+  }, [token]); // Solo token como dependencia
+
+  const [historiaClinicaStatic] = useState([
     {
       id: 1,
       fecha: '15 DIC 2024',
@@ -23,8 +94,11 @@ const MedicalHistory = () => {
     }
   ]);
 
+  // Usar datos del backend si están disponibles, sino usar datos estáticos como fallback
+  const dataToUse = historiaClinica.length > 0 ? historiaClinica : historiaClinicaStatic;
+
   // Filtrar la lista
-  const filteredConsultas = historiaClinica.filter((consulta) => {
+  const filteredConsultas = dataToUse.filter((consulta) => {
     const query = searchQuery.toLowerCase();
     return (
       consulta.fecha.toLowerCase().includes(query) ||
@@ -34,6 +108,35 @@ const MedicalHistory = () => {
       consulta.tratamiento.toLowerCase().includes(query)
     );
   });
+
+  // Mostrar loading
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando historial médico...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar error
+  if (error) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Intentar nuevamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
@@ -81,6 +184,24 @@ const MedicalHistory = () => {
                   <p className="text-sm font-medium text-gray-600 mb-1">Tratamiento</p>
                   <p className="text-gray-900">{consulta.tratamiento}</p>
                 </div>
+                {consulta.summary && (
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Resumen</p>
+                    <p className="text-gray-900">{consulta.summary}</p>
+                  </div>
+                )}
+                {consulta.vitalSigns && (
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Signos Vitales</p>
+                    <p className="text-gray-900">{consulta.vitalSigns}</p>
+                  </div>
+                )}
+                {consulta.location && (
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Ubicación</p>
+                    <p className="text-gray-900">{consulta.location}</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -90,4 +211,4 @@ const MedicalHistory = () => {
   );
 };
 
-export default MedicalHistory;
+export default memo(MedicalHistory);
