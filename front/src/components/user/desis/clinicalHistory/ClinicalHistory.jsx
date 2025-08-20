@@ -165,102 +165,40 @@ const ClinicalHistory = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-8 bg-gray-50 min-h-screen">
-      <div className="border border-black-200 mb-8 bg-white rounded-lg shadow-sm">
-        <div className="border-b border-teal-100 p-8 bg-[#00102D] rounded-t-lg">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-12">
-              <div className="w-20 h-20 flex items-center justify-center overflow-hidden rounded">
-                <img 
-                src="/src/assets/logoIPS.png" 
-                alt="IPS" />
+      <div id="historia-clinica" className="border border-black-200 mb-8 bg-white rounded-lg shadow-sm">
+        <div className="border-b border-black p-8 bg-white rounded-t-lg">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-8">
+              <div className="w-32 h-32 flex items-center justify-center overflow-hidden rounded">
+                <a href="https://link-to-your-image.com" target="_blank" rel="noopener noreferrer">
+                  <img 
+                    src="/src/assets/ipsBlack.png" 
+                    alt="Logo IPS" 
+                    className="object-contain w-full h-full"
+                  />
+                </a>
               </div>
               
-              <div>
-                <h1 className="text-xl font-medium text-white mb-4">TELECONSULTAS IPS UNIVERSITARIA DE COLOMBIA</h1>
-                <div className="space-y-1 text-sm text-gray-300">
-                  <div>NIT: 000.000.000-0</div>
+              <div className="text-center border-black px-8">
+                <h1 className="text-xl font-medium text-[#00102D] mb-2">TELECONSULTAS IPS UNIVERSITARIA DE COLOMBIA</h1>
+                <div className="space-y-1 text-sm text-[#00102D]">
+                  <div className='font-semibold'>NIT. 00.00000</div>
                   <div>Teléfono: (+57) 310-8731876</div>
                   <div>Dirección: Calle 34 5 89, Bogotá</div>
                   <div>Email: ips@entidad.com</div>
+                  <h2 className="text-2xl font-medium text-[#00102D] mb-2">HISTORIA CLÍNICA</h2>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-[#00102D] text-sm"></p>
+                <div className="mt-2 text-[#00102D] px-3 py-1 rounded text-xs font-medium border">
+                  10746583
                 </div>
               </div>
             </div>
-            
-            <div className="text-right">
-              <h2 className="text-2xl font-light text-gray-300 mb-2">HISTORIA CLÍNICA</h2>
-              <p className="text-white text-sm">Sistema Integrado de Salud</p>
-              <div className="mt-2 text-white px-3 py-1 rounded text-xs font-medium">
-                10746583
-              </div>
-            </div>
           </div>
         </div>
-
-        <div className="p-6">
-          <div className="grid grid-cols-6 gap-6">
-            <div>
-              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Ingreso</label>
-              <input
-                type="text"
-                value={formData.ingreso}
-                onChange={(e) => handleInputChange('ingreso', e.target.value)}
-                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
-                placeholder="N° Ingreso"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Fecha de Impresión</label>
-              <input
-                type="date"
-                value={formData.fechaImpresion}
-                onChange={(e) => handleInputChange('fechaImpresion', e.target.value)}
-                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Página</label>
-              <div className="text-sm font-medium text-blue-800 pb-2 border-b border-[#00102D] bg-blue-50 px-2 py-1 rounded-t">
-                1 / 3
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Identificación</label>
-              <input
-                type="text"
-                value={formData.identificacion}
-                onChange={(e) => handleInputChange('identificacion', e.target.value)}
-                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
-                placeholder="N° Documento"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Nombres</label>
-              <input
-                type="text"
-                value={formData.nombre}
-                onChange={(e) => handleInputChange('nombre', e.target.value)}
-                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
-                placeholder="Nombres"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-xs font-medium text-[#00102D] mb-2 uppercase tracking-wider">Apellidos</label>
-              <input
-                type="text"
-                value={formData.apellidos}
-                onChange={(e) => handleInputChange('apellidos', e.target.value)}
-                className="w-full border-b border-[#00102D] pb-2 text-sm focus:border-teal-500 focus:outline-none transition-colors"
-                placeholder="Apellidos"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
         <div className="border-b border-gray-200">
@@ -278,14 +216,13 @@ const ClinicalHistory = () => {
                       ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-500'
                       : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }
-                  `}
-                >
+                  `}>
                   <div className="flex items-center justify-center space-x-2">
                     <Icon className="h-4 w-4" />
                     <span className="truncate">{tab.label}</span>
                   </div>
                   {activeTab === tab.id && (
-                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
+                    <div className="absolute bottom-0 left-1/4 w-1/8 h-0.5 bg-blue-500"></div>
                   )}
                 </button>
               );
@@ -331,6 +268,7 @@ const ClinicalHistory = () => {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };

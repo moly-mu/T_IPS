@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { User, FileText, Plus, Trash2, Edit3, Save, X } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { FileText, Plus, Trash2, Edit3, Save, X } from 'lucide-react';
 import { generalDataService } from '../../../../services/clinicalHistory/clinicalHistoryService';
+import History from './history';
 
 const GeneralData = ({ medicalHistory, patientId }) => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -30,28 +31,26 @@ const GeneralData = ({ medicalHistory, patientId }) => {
     grupoEtnico: 'N/A',
   });
 
-  const [medicalBackgrounds, setMedicalBackgrounds] = useState([
-    {
-      id: null,
-      medicalHistoryId: '',
-      type: '',
-      description: ''
-    }
-  ]);
+  const [medicalBackgrounds, setMedicalBackgrounds] = useState([]);
+
+  const handleEpsChange = (e) => {
+    const value = e.target.value;
+    setFormData({ ...formData, eps: value});
+  }
 
   useEffect(() => {
     if (patientId) {
       loadPatientData();
     }
-  }, [patientId]);
+  }, [patientId, loadPatientData]);
 
   useEffect(() => {
     if (medicalHistory?.id) {
       loadMedicalBackgrounds();
     }
-  }, [medicalHistory]);
+  }, [medicalHistory?.id, loadMedicalBackgrounds]);
 
-  const loadPatientData = async () => {
+  const loadPatientData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await generalDataService.getPatientData(patientId);
@@ -87,9 +86,9 @@ const GeneralData = ({ medicalHistory, patientId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [patientId]);
 
-  const loadMedicalBackgrounds = async () => {
+  const loadMedicalBackgrounds = useCallback(async () => {
     try {
       const response = await generalDataService.getBackgroundsByHistory(medicalHistory.id);
       if (response.success) {
@@ -98,7 +97,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
     } catch (error) {
       console.error('Error loading medical backgrounds:', error);
     }
-  };
+  }, [medicalHistory?.id]);
 
   const handleSaveProfile = async () => {
     try {
@@ -112,10 +111,6 @@ const GeneralData = ({ medicalHistory, patientId }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleMedicalBackgroundChange = (index, field, value) => {
@@ -219,7 +214,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="text"
                 value={formData.primerApellido}
-                onChange={(e) => setProfile({...formData, primerApellido: e.target.value})}
+                onChange={(e) => setFormData({...formData, primerApellido: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -233,7 +228,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="date"
                 value={formData.fechaNacimiento}
-                onChange={(e) => setProfile({...formData, fechaNacimiento: e.target.value})}
+                onChange={(e) => setFormData({...formData, fechaNacimiento: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -246,7 +241,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <select
                 value={formData.sexo}
-                onChange={(e) => setProfile({...formData, sexo: e.target.value})}
+                onChange={(e) => setFormData({...formData, sexo: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               >
                 <option value="M">Masculino</option>
@@ -262,7 +257,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <select
                 value={formData.tipoDocumento}
-                onChange={(e) => setProfile({...formData, tipoDocumento: e.target.value})}
+                onChange={(e) => setFormData({...formData, tipoDocumento: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               >
                 <option value="CC">CC - Cédula de ciudadania</option>
@@ -283,7 +278,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="tel"
                 value={formData.telefono}
-                onChange={(e) => setProfile({...formData, telefono: e.target.value})}
+                onChange={(e) => setFormData({...formData, telefono: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -297,7 +292,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setProfile({...formData, email: e.target.value})}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -310,7 +305,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <textarea
                 value={formData.alergias}
-                onChange={(e) => setProfile({...formData, alergias: e.target.value})}
+                onChange={(e) => setFormData({...formData, alergias: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent resize-none"
                 rows="2"
               />
@@ -360,7 +355,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="text"
                 value={formData.estadoCivil}
-                onChange={(e) => setProfile({...formData, estadoCivil: e.target.value})}
+                onChange={(e) => setFormData({...formData, estadoCivil: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -378,7 +373,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="text"
                 value={formData.segundoNombre}
-                onChange={(e) => setProfile({...formData, segundoNombre: e.target.value})}
+                onChange={(e) => setFormData({...formData, segundoNombre: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -392,7 +387,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="text"
                 value={formData.segundoApellido}
-                onChange={(e) => setProfile({...formData, segundoApellido: e.target.value})}
+                onChange={(e) => setFormData({...formData, segundoApellido: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -405,7 +400,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <select
                 value={formData.genero}
-                onChange={(e) => setProfile({...formData, genero: e.target.value})}
+                onChange={(e) => setFormData({...formData, genero: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               >
                 <option value="M">Masculino</option>
@@ -422,7 +417,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <select
                 value={formData.lenguaje}
-                onChange={(e) => setProfile({...formData, lenguaje: e.target.value})}
+                onChange={(e) => setFormData({...formData, lenguaje: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               >
                 <option value="Español">Español</option>
@@ -442,7 +437,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="text"
                 value={formData.numeroDocumento}
-                onChange={(e) => setProfile({...formData, numeroDocumento: e.target.value})}
+                onChange={(e) => setFormData({...formData, numeroDocumento: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -456,7 +451,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="text"
                 value={formData.contactoEmergencia}
-                onChange={(e) => setProfile({...formData, contactoEmergencia: e.target.value})}
+                onChange={(e) => setFormData({...formData, contactoEmergencia: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -469,7 +464,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <textarea
                 value={formData.direccion}
-                onChange={(e) => setProfile({...formData, direccion: e.target.value})}
+                onChange={(e) => setFormData({...formData, direccion: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent resize-none"
                 rows="2"
               />
@@ -483,7 +478,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <select
                 value={formData.tipoSangre}
-                onChange={(e) => setProfile({...formData, tipoSangre: e.target.value})}
+                onChange={(e) => setFormData({...formData, tipoSangre: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent">
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
@@ -505,7 +500,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
               <input
                 type="text"
                 value={formData.profesion}
-                onChange={(e) => setProfile({...formData, profesion: e.target.value})}
+                onChange={(e) => setFormData({...formData, profesion: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent"
               />
             ) : (
@@ -518,7 +513,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
             {isEditingProfile ? (
               <select
                 value={formData.grupoEtnico}
-                onChange={(e) => setProfile({...formData, grupoEtnico: e.target.value})}
+                onChange={(e) => setFormData({...formData, grupoEtnico: e.target.value})}
                 className="w-full p-3 border-b border-gray-200 focus:border-gray-400 focus:outline-none bg-transparent">
                 <option value="noSabe">N/A</option>
                 <option value="otro">Otro</option>
@@ -611,6 +606,7 @@ const GeneralData = ({ medicalHistory, patientId }) => {
           ))}
         </div>
       </div>
+    <History/>
     </div>
   );
 };
