@@ -25,8 +25,12 @@ export const UserScheduleAppointmentCreate = async (
   }
 
   try {
+    //Configuracion para manejar zona horaria UTC
+    const [year, month, day] = fecha.split("-").map(Number);
+    const [hours, minutes] = hora.split(":").map(Number);
+
     // Crear fecha y hora de inicio y fin
-    const fechaHoraInicio = new Date(`${fecha}T${hora}:00`);
+    const fechaHoraInicio = new Date(Date.UTC(year, month - 1, day, hours, minutes));
     const fechaHoraFin = new Date(fechaHoraInicio.getTime() + duration * 60 * 1000);
 
     // Verificar si ya existe una cita en ese horario para el especialista

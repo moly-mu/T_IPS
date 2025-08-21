@@ -9,7 +9,7 @@ const Calendar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useContext(AuthContext);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())));
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -145,10 +145,10 @@ const Calendar = () => {
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+    const firstDay = new Date(Date.UTC(year, month, 1));
+    const lastDay = new Date(Date.UTC(year, month + 1, 0));
+    const daysInMonth = lastDay.getUTCDate();
+    const startingDayOfWeek = firstDay.getUTCDay();
 
     const days = [];
     
@@ -164,15 +164,14 @@ const Calendar = () => {
   };
 
   const getWeekDays = (date) => {
-    const start = new Date(date);
-    const day = start.getDay();
-    const diff = start.getDate() - day;
-    start.setDate(diff);
+    const start = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const day = start.getUTCDay();
+    const diff = start.getUTCDate() - day;
+    start.setUTCDate(diff);
     
     const week = [];
     for (let i = 0; i < 7; i++) {
-      const day = new Date(start);
-      day.setDate(start.getDate() + i);
+      const day = new Date(Date.UTC(start.getFullYear(), start.getMonth(), start.getUTCDate() + i));
       week.push(day);
     }
     return week;
@@ -183,7 +182,7 @@ const Calendar = () => {
   };
 
   const formatDateFromDate = (date) => {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
   };
 
   const getEventsForDate = (dateString) => {
@@ -202,28 +201,24 @@ const Calendar = () => {
 
   const handlePrevious = () => {
     if (view === 'month') {
-      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+      setCurrentDate(new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)));
     } else if (view === 'week') {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() - 7);
+      const newDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getUTCDate() - 7));
       setCurrentDate(newDate);
     } else if (view === 'day') {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() - 1);
+      const newDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getUTCDate() - 1));
       setCurrentDate(newDate);
     }
   };
 
   const handleNext = () => {
     if (view === 'month') {
-      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+      setCurrentDate(new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)));
     } else if (view === 'week') {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() + 7);
+      const newDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getUTCDate() + 7));
       setCurrentDate(newDate);
     } else if (view === 'day') {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() + 1);
+      const newDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getUTCDate() + 1));
       setCurrentDate(newDate);
     }
   };
@@ -235,9 +230,9 @@ const Calendar = () => {
       const weekDays = getWeekDays(currentDate);
       const start = weekDays[0];
       const end = weekDays[6];
-      return `${monthNames[start.getMonth()].substring(0, 3)} ${start.getDate()} – ${end.getDate()}, ${start.getFullYear()}`;
+      return `${monthNames[start.getMonth()].substring(0, 3)} ${start.getUTCDate()} – ${end.getUTCDate()}, ${start.getFullYear()}`;
     } else if (view === 'day') {
-      return `${monthNames[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`;
+      return `${monthNames[currentDate.getMonth()]} ${currentDate.getUTCDate()}, ${currentDate.getFullYear()}`;
     }
   };
 
@@ -355,11 +350,12 @@ const Calendar = () => {
   const renderMonthView = () => {
     const days = getDaysInMonth(currentDate);
     const today = new Date();
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
     const isToday = (day) => {
       return day && 
-             currentDate.getFullYear() === today.getFullYear() &&
-             currentDate.getMonth() === today.getMonth() &&
-             day === today.getDate();
+             currentDate.getFullYear() === todayUTC.getFullYear() &&
+             currentDate.getMonth() === todayUTC.getMonth() &&
+             day === todayUTC.getUTCDate();
     };
 
     return (
@@ -404,7 +400,8 @@ const Calendar = () => {
                                 <span className="text-xs text-gray-500 block">
                                   {new Date(event.startTime).toLocaleTimeString('es-ES', { 
                                     hour: '2-digit', 
-                                    minute: '2-digit' 
+                                    minute: '2-digit',
+                                    timeZone: 'UTC'
                                   })}
                                 </span>
                               )}
@@ -463,7 +460,7 @@ const Calendar = () => {
                 {dayNames[index]}
               </div>
               <div className="text-lg font-bold text-gray-900 mt-1">
-                {day.getDate()}
+                {day.getUTCDate()}
               </div>
             </div>
           ))}
@@ -488,7 +485,7 @@ const Calendar = () => {
                   // Para citas médicas, verificar si el horario está dentro del slot
                   if (event.type === 'appointment' && event.startTime) {
                     const eventDate = new Date(event.startTime);
-                    const eventHour = eventDate.getHours();
+                    const eventHour = eventDate.getUTCHours();
                     
                     // Convertir el slot de tiempo a hora
                     let slotHour = 0;
@@ -553,7 +550,7 @@ const Calendar = () => {
 
   const renderDayView = () => {
     const dateString = formatDateFromDate(currentDate);
-    const dayName = fullDayNames[currentDate.getDay()];
+    const dayName = fullDayNames[currentDate.getUTCDay()];
     const dayEvents = getEventsForDate(dateString);
     const dayAppointments = dayEvents.filter(event => event.type === 'appointment');
     const dayPersonalEvents = dayEvents.filter(event => event.type !== 'appointment');
@@ -563,7 +560,7 @@ const Calendar = () => {
         <div className="p-6 border-b border-gray-200 bg-gray-50">
           <h2 className="text-lg font-semibold text-gray-700">{dayName.toUpperCase()}</h2>
           <p className="text-sm text-gray-500 mt-1">
-            {currentDate.getDate()} {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+            {currentDate.getUTCDate()} {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </p>
           
           {/* Resumen del día */}
@@ -591,7 +588,7 @@ const Calendar = () => {
               // Para citas médicas, verificar si el horario está dentro del slot
               if (event.type === 'appointment' && event.startTime) {
                 const eventDate = new Date(event.startTime);
-                const eventHour = eventDate.getHours();
+                const eventHour = eventDate.getUTCHours();
                 
                 // Convertir el slot de tiempo a hora
                 let slotHour = 0;
@@ -637,10 +634,12 @@ const Calendar = () => {
                               {event.startTime && (
                                 <div><strong>Hora:</strong> {new Date(event.startTime).toLocaleTimeString('es-ES', { 
                                   hour: '2-digit', 
-                                  minute: '2-digit' 
+                                  minute: '2-digit',
+                                  timeZone: 'UTC'
                                 })} - {new Date(event.endTime).toLocaleTimeString('es-ES', { 
                                   hour: '2-digit', 
-                                  minute: '2-digit' 
+                                  minute: '2-digit',
+                                  timeZone: 'UTC'
                                 })}</div>
                               )}
                               {event.linkZoom && (
