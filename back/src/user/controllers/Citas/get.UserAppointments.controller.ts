@@ -55,8 +55,7 @@ export const getUserAppointments = async (
 
       return {
         id: appointment.id,
-        fecha: appointment.appoint_init.toISOString().split('T')[0], // YYYY-MM-DD
-        hora: appointment.appoint_init.toTimeString().slice(0, 5), // HH:MM
+        fecha: appointment.appoint_init, // Enviar la fecha completa sin formatear
         doctor: `${specialist.User.firstname} ${specialist.User.lastname}`,
         especialidad: specialty?.name || 'Sin especialidad',
         estado: appointment.state.toLowerCase(),

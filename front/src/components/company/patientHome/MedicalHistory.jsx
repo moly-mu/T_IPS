@@ -47,14 +47,15 @@ const MedicalHistory = () => {
             month: 'short',
             year: 'numeric'
           }).toUpperCase(),
-          doctor: consultation.doctorName,
+          doctor: consultation.doctorName || 'Dr. Sin asignar',
           especialidad: consultation.specialtyName || consultation.consultationMode || 'Consulta General',
           diagnostico: consultation.reason || 'Sin diagnóstico registrado',
           tratamiento: consultation.medicalNote || 'Sin tratamiento registrado',
           summary: consultation.summary,
           vitalSigns: consultation.vitalSigns,
           location: consultation.location,
-          endTime: consultation.endTime
+          endTime: consultation.endTime,
+          hasSpecialist: consultation.doctorName && consultation.doctorName !== 'Dr. Sin asignar'
         }));
         
         console.log('🎨 FRONTEND - Datos formateados:', JSON.stringify(formattedConsultations, null, 2));
@@ -166,8 +167,15 @@ const MedicalHistory = () => {
                     <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                       {consulta.fecha}
                     </span>
+                    {!consulta.hasSpecialist && (
+                      <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+                        Sin especialista asignado
+                      </span>
+                    )}
                   </div>
-                  <h3 className="font-medium text-gray-900 mb-1">{consulta.doctor}</h3>
+                  <h3 className={`font-medium mb-1 ${consulta.hasSpecialist ? 'text-gray-900' : 'text-gray-500'}`}>
+                    {consulta.doctor}
+                  </h3>
                   <p className="text-sm text-gray-500">{consulta.especialidad}</p>
                 </div>
                 <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors">

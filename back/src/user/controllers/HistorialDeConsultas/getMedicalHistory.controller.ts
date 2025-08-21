@@ -23,7 +23,7 @@ export const getMedicalConsultations = async (
       return res.status(404).json({ error: "No se encontró información del paciente." });
     }
 
-    // Buscar historia médica del paciente
+    // Buscar historia médica del paciente con especialistas
     const medicalHistory = await prisma.medicalHistory.findFirst({
       where: {
         patient_idPaciente: patient.id,
@@ -31,16 +31,26 @@ export const getMedicalConsultations = async (
       include: {
         consultations: {
           orderBy: { startTime: "desc" },
-          select: {
-            id: true,
-            startTime: true,
-            endTime: true,
-            reason: true,
-            medicalNote: true,
-            vitalSigns: true,
-            consultationMode: true,
-            location: true,
-            summary: true,
+          include: {
+            specialist: {
+              include: {
+                User: {
+                  select: {
+                    firstname: true,
+                    lastname: true,
+                  },
+                },
+                SpecialistHasSpecialty: {
+                  include: {
+                    Specialty: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -50,32 +60,30 @@ export const getMedicalConsultations = async (
       return res.status(404).json({ error: "No se encontró historial médico." });
     }
 
-    // Obtener un especialista por defecto
-    const defaultSpecialist = await prisma.specialist.findFirst({
-      include: {
-        User: true,
-        SpecialistHasSpecialty: {
-          include: {
-            Specialty: true,
-          },
-        },
-      },
-    });
-
-    // Agregar información del doctor a cada consulta
+    // Formatear los datos con información real del especialista
     const consultationsWithDoctors = medicalHistory.consultations.map((consultation) => {
-      let doctorName = "Dr. Pendiente";
+      let doctorName = "Dr. Sin asignar";
       let specialtyName = "Consulta General";
 
-      if (defaultSpecialist) {
-        doctorName = `Dr. ${defaultSpecialist.User.firstname} ${defaultSpecialist.User.lastname}`;
-        if (defaultSpecialist.SpecialistHasSpecialty.length > 0) {
-          specialtyName = defaultSpecialist.SpecialistHasSpecialty[0].Specialty.name;
+      if (consultation.specialist) {
+        const { User, SpecialistHasSpecialty } = consultation.specialist;
+        doctorName = `Dr. ${User.firstname} ${User.lastname}`;
+        
+        if (SpecialistHasSpecialty.length > 0) {
+          specialtyName = SpecialistHasSpecialty[0].Specialty.name;
         }
       }
 
       return {
-        ...consultation,
+        id: consultation.id,
+        startTime: consultation.startTime,
+        endTime: consultation.endTime,
+        reason: consultation.reason,
+        medicalNote: consultation.medicalNote,
+        vitalSigns: consultation.vitalSigns,
+        consultationMode: consultation.consultationMode,
+        location: consultation.location,
+        summary: consultation.summary,
         doctorName,
         specialtyName,
       };

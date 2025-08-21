@@ -26,15 +26,26 @@ const MyAppointments = () => {
         const response = await getAppointments();
         
         // Formatear las fechas para el frontend
-        const formattedAppointments = response.appointments.map(appointment => ({
-          ...appointment,
-          fecha: new Date(appointment.fecha).toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-          }).toUpperCase(),
-          fechaOriginal: appointment.fecha // Guardamos la fecha original para operaciones
-        }));
+        const formattedAppointments = response.appointments.map(appointment => {
+          // Parsear la fecha directamente sin conversión UTC adicional
+          const appointmentDate = new Date(appointment.fecha);
+          
+          return {
+            ...appointment,
+            fecha: appointmentDate.toLocaleDateString('es-ES', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            }).toUpperCase(),
+            hora: appointmentDate.toLocaleTimeString('es-ES', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            }),
+            fechaOriginal: appointment.fecha, // Guardamos la fecha original para operaciones
+            fechaHoraInicio: appointmentDate // Guardamos la fecha procesada
+          };
+        });
         
         setCitas(formattedAppointments);
         setError(null);
