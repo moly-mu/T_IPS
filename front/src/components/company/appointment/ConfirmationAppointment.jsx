@@ -53,6 +53,41 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
   console.log('Token:', token ? 'Presente' : 'No disponible');
   console.log('Usuario:', user);
 
+  // Crear la fecha de mañana para mostrar en la confirmación
+  const getAppointmentDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Convertir la hora seleccionada y crear fecha completa
+    const hora = convertTimeFormat(selectedTime);
+    const [hours, minutes] = hora.split(':');
+    tomorrow.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    
+    return tomorrow;
+  };
+
+  // Función para convertir formato de hora de "2:30 PM" a "14:30"
+  const convertTimeFormat = (timeString) => {
+    if (!timeString) return "14:30";
+    
+    try {
+      const [time, period] = timeString.split(' ');
+      let [hours, minutes] = time.split(':');
+      hours = parseInt(hours);
+      
+      if (period === 'PM' && hours !== 12) {
+        hours += 12;
+      } else if (period === 'AM' && hours === 12) {
+        hours = 0;
+      }
+      
+      return `${hours.toString().padStart(2, '0')}:${minutes || '00'}`;
+    } catch (error) {
+      console.error('Error convirtiendo la hora:', error);
+      return "14:30";
+    }
+  };
+
   const handleSubmit = async () => {
     if (!hasTechnicalMeans || !acceptTerms || !acceptData) {
       alert('Debes aceptar todos los requisitos antes de confirmar.');
@@ -92,6 +127,11 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
       // Convertir la hora del formato "2:30 PM" a "14:30"
       const hora = convertTimeFormat(selectedTime);
 
+      // Crear objeto Date completo para la cita (fecha de mañana + hora seleccionada)
+      const [hours, minutes] = hora.split(':');
+      const appointmentDateTime = new Date(tomorrow);
+      appointmentDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
       const appointmentData = {
         specialistId: selectedDoctor.id,
         fecha: fecha,
@@ -111,8 +151,8 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
 Detalles de tu cita:
 • Doctor: ${appointment.especialista}
 • Especialidad: ${appointment.especialidad}
-• Fecha: ${new Date(appointment.fecha).toLocaleDateString('es-ES')}
-• Hora: ${appointment.hora}
+• Fecha: ${appointmentDateTime.toLocaleDateString('es-ES')}
+• Hora: ${appointmentDateTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })}
 • Estado: ${appointment.estado}
 
 Tu cita aparecerá en "Mis Citas".`);
@@ -128,28 +168,6 @@ Tu cita aparecerá en "Mis Citas".`);
       setError(errorMessage);
     } finally {
       setIsCreating(false);
-    }
-  };
-
-  // Función para convertir formato de hora de "2:30 PM" a "14:30"
-  const convertTimeFormat = (timeString) => {
-    if (!timeString) return "14:30";
-    
-    try {
-      const [time, period] = timeString.split(' ');
-      let [hours, minutes] = time.split(':');
-      hours = parseInt(hours);
-      
-      if (period === 'PM' && hours !== 12) {
-        hours += 12;
-      } else if (period === 'AM' && hours === 12) {
-        hours = 0;
-      }
-      
-      return `${hours.toString().padStart(2, '0')}:${minutes || '00'}`;
-    } catch (error) {
-      console.error('Error convirtiendo la hora:', error);
-      return "14:30";
     }
   };
 
@@ -182,7 +200,7 @@ Tu cita aparecerá en "Mis Citas".`);
               <h2 className="text-lg font-semibold text-gray-800 mb-2">Información de la consulta</h2>
               <p><strong>Especialidad:</strong> {selectedDoctor?.specialty || 'Consulta de Dermatología'}</p>
               <p><strong>Profesional:</strong> {selectedDoctor?.name || 'Dra. María González'} - {selectedDoctor?.specialty || 'Dermatóloga'}</p>
-              <p><strong>Fecha y hora:</strong> {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {selectedTime}</p>
+              <p><strong>Fecha y hora:</strong> {getAppointmentDate().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {selectedTime}</p>
               <p><strong>Duración estimada:</strong> 30 minutos</p>
               <p><strong>Modalidad:</strong> Videollamada</p>
             </div>
