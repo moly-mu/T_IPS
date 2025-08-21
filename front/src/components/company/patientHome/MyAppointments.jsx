@@ -14,6 +14,18 @@ const MyAppointments = () => {
   const { token } = useAuth();
   const { getAppointments, cancelAppointment } = useAppointmentService();
 
+  // Función para manejar fechas sin problemas de zona horaria
+  const parseAppointmentDate = (dateString) => {
+    // Si es un string ISO, extraer fecha y hora por separado
+    if (typeof dateString === 'string') {
+      const date = new Date(dateString);
+      // Ajustar por la diferencia de zona horaria para evitar desfase
+      const timezoneOffset = date.getTimezoneOffset() * 60000;
+      return new Date(date.getTime() + timezoneOffset);
+    }
+    return new Date(dateString);
+  };
+
   // Cargar citas del usuario al montar el componente
   useEffect(() => {
     const loadUserAppointments = async () => {
@@ -27,8 +39,8 @@ const MyAppointments = () => {
         
         // Formatear las fechas para el frontend
         const formattedAppointments = response.appointments.map(appointment => {
-          // Parsear la fecha directamente sin conversión UTC adicional
-          const appointmentDate = new Date(appointment.fecha);
+          // Usar la función personalizada para parsear la fecha sin problemas de zona horaria
+          const appointmentDate = parseAppointmentDate(appointment.fecha);
           
           return {
             ...appointment,
