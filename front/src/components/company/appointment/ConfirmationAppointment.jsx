@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
 
-export default function ConfirmationAppointment({ onClose = () => {}, selectedTime = "14:30", selectedDoctor = null }) {
+export default function ConfirmationAppointment({ onClose = () => {}, selectedTime = "14:30", selectedDoctor = null, selectedDate = null }) {
   const [hasTechnicalMeans, setHasTechnicalMeans] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptData, setAcceptData] = useState(false);
@@ -53,17 +53,25 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
   console.log('Token:', token ? 'Presente' : 'No disponible');
   console.log('Usuario:', user);
 
-  // Crear la fecha de mañana para mostrar en la confirmación
+  // Crear la fecha de la cita usando selectedDate del calendario o mañana por defecto
   const getAppointmentDate = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    let appointmentDate;
+    
+    if (selectedDate) {
+      // Usar la fecha seleccionada del calendario
+      appointmentDate = new Date(selectedDate + 'T00:00:00');
+    } else {
+      // Fallback: usar mañana
+      appointmentDate = new Date();
+      appointmentDate.setDate(appointmentDate.getDate() + 1);
+    }
     
     // Convertir la hora seleccionada y crear fecha completa
     const hora = convertTimeFormat(selectedTime);
     const [hours, minutes] = hora.split(':');
-    tomorrow.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    appointmentDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     
-    return tomorrow;
+    return appointmentDate;
   };
 
   // Función para convertir formato de hora de "2:30 PM" a "14:30"
@@ -119,18 +127,27 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
     setError(null);
 
     try {
-      // Crear la fecha de la cita (mañana por defecto)
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const fecha = tomorrow.toISOString().split('T')[0]; // YYYY-MM-DD
+      // Usar la fecha seleccionada del calendario o crear fecha de mañana
+      let appointmentDate;
+      
+      if (selectedDate) {
+        // Usar la fecha seleccionada del calendario en formato YYYY-MM-DD
+        appointmentDate = new Date(selectedDate + 'T00:00:00');
+      } else {
+        // Fallback: usar mañana
+        appointmentDate = new Date();
+        appointmentDate.setDate(appointmentDate.getDate() + 1);
+      }
+      
+      const fecha = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD
 
       // Convertir la hora del formato "2:30 PM" a "14:30"
       const hora = convertTimeFormat(selectedTime);
 
-      // Crear objeto Date completo para la cita (fecha de mañana + hora seleccionada)
+      // Crear objeto Date completo para la cita con UTC
       const [hours, minutes] = hora.split(':');
-      const appointmentDateTime = new Date(tomorrow);
-      appointmentDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      const appointmentDateTime = new Date(appointmentDate);
+      appointmentDateTime.setUTCHours(parseInt(hours), parseInt(minutes), 0, 0);
 
       const appointmentData = {
         specialistId: selectedDoctor.id,
@@ -142,6 +159,11 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
       };
 
       console.log('Datos de la cita a enviar:', appointmentData);
+      console.log('ID del doctor seleccionado:', selectedDoctor.id);
+      console.log('Tipo del ID del doctor:', typeof selectedDoctor.id);
+      console.log('Doctor completo:', selectedDoctor);
+      console.log('selectedDoctor.id convertido a número:', parseInt(selectedDoctor.id));
+      
       const response = await api.post('/User/scheduleAppointment', appointmentData);
       
       if (response.data.appointment) {
@@ -302,6 +324,7 @@ Tu cita aparecerá en "Mis Citas".`);
 ConfirmationAppointment.propTypes = {
   onClose: PropTypes.func,
   selectedTime: PropTypes.string,
+  selectedDate: PropTypes.string,
   selectedDoctor: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string,

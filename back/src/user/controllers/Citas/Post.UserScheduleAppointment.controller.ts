@@ -1,7 +1,7 @@
 //Controlador para crear una nueva cita
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-
+import  createZoomMeeting  from "../../../admin/utils/createMeetZoom";
 const prisma = new PrismaClient();
 
 export const UserScheduleAppointmentCreate = async (
@@ -25,6 +25,9 @@ export const UserScheduleAppointmentCreate = async (
   }
 
   try {
+    // Log para debug del specialistId recibido
+    console.log('specialistId recibido:', specialistId, 'tipo:', typeof specialistId);
+    
     //Configuracion para manejar zona horaria UTC
     const [year, month, day] = fecha.split("-").map(Number);
     const [hours, minutes] = hora.split(":").map(Number);
@@ -36,7 +39,7 @@ export const UserScheduleAppointmentCreate = async (
     // Verificar si ya existe una cita en ese horario para el especialista
     const existingAppointment = await prisma.appointment.findFirst({
       where: {
-        Specialist_idEspecialista: specialistId,
+        Specialist_idEspecialista: parseInt(specialistId),
         appoint_init: fechaHoraInicio,
       },
     });
@@ -45,9 +48,12 @@ export const UserScheduleAppointmentCreate = async (
       return res.status(409).json({ error: "Ese horario ya está reservado." });
     }
 
+    // Log antes de buscar especialista
+    console.log('Buscando especialista con ID:', parseInt(specialistId));
+
     // Obtener información del especialista para validar
     const specialist = await prisma.specialist.findUnique({
-      where: { id: specialistId },
+      where: { id: parseInt(specialistId) },
       include: {
         User: true,
         spec_data: true,
@@ -59,8 +65,23 @@ export const UserScheduleAppointmentCreate = async (
       },
     });
 
+    console.log('Resultado de búsqueda de especialista:', specialist ? 'Encontrado' : 'No encontrado');
+
     if (!specialist) {
-      return res.status(404).json({ error: "Especialista no encontrado." });
+      // Buscar todos los especialistas para debug
+      const allSpecialists = await prisma.specialist.findMany({
+        select: { id: true },
+        take: 10
+      });
+      console.log('IDs de especialistas disponibles:', allSpecialists.map(s => s.id));
+      return res.status(404).json({ 
+        error: "Especialista no encontrado.",
+        debug: {
+          specialistIdReceived: specialistId,
+          specialistIdParsed: parseInt(specialistId),
+          availableIds: allSpecialists.map(s => s.id)
+        }
+      });
     }
 
     // Obtener información del paciente
@@ -93,7 +114,7 @@ export const UserScheduleAppointmentCreate = async (
         appoint_specialtyId: specialty.id,
         appoint_init: fechaHoraInicio,
         appoint_finish: fechaHoraFin,
-        linkZoom: `https://zoom.us/j/${Date.now()}`, // Generar link único
+        linkZoom: await createZoomMeeting(),
         // Datos del paciente
         Paciente_idPaciente: patient.id,
         Paciente_pac_data_idpac_data: patient.pac_data_idpac_data,

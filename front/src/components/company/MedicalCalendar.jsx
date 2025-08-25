@@ -24,51 +24,51 @@ const MedicalCalendar = () => {
 
   const doctors = [
     {
-      id: 1,
-      name: 'Dr. Juan Pérez',
-      specialty: 'Medicina General',
-      rating: 4.5,
-      reviews: 128,
-      availableNow: true,
-      price: '$80.000',
-      consultationTypes: ['videollamada'],
-      location: 'Médico general con 10 años de experiencia en atención primaria.',
-      disponible: 'Disponible ahora'
-    },
-    {
-      id: 2,
+      id: 1, // ID real del especialista en la base de datos (María Gómez - primer especialista del seed)
       name: 'Dra. María Gómez',
-      specialty: 'Psicología',
+      specialty: 'Cardiología',
       rating: 4.8,
       reviews: 95,
       availableNow: true,
       price: '$120.000',
-      consultationTypes: ['llamada'],
-      location: 'Especialista en terapia cognitivo-conductual con enfoque en ansiedad y...',
+      consultationTypes: ['videollamada'],
+      location: 'Especialista en cardiología con enfoque en medicina preventiva.',
       disponible: 'Disponible ahora'
     },
     {
-      id: 3,
-      name: 'Dr. Carlos Martínez',
-      specialty: 'Cardiología',
+      id: 2, // ID real del especialista en la base de datos (Roberto García)
+      name: 'Dr. Roberto García',
+      specialty: 'Dermatología',
+      rating: 4.5,
+      reviews: 128,
+      availableNow: true,
+      price: '$90.000',
+      consultationTypes: ['videollamada'],
+      location: 'Dermatólogo con amplia experiencia en dermatología clínica.',
+      disponible: 'Disponible ahora'
+    },
+    {
+      id: 3, // ID real del especialista en la base de datos (Elena Morales)
+      name: 'Dra. Elena Morales',
+      specialty: 'Pediatría',
       rating: 4.7,
       reviews: 89,
       availableNow: false,
-      price: '$150.000',
+      price: '$80.000',
       consultationTypes: ['videollamada', 'presencial'],
-      location: 'Cardiólogo especialista en hipertensión y enfermedades cardiovasculares.',
+      location: 'Pediatra especialista en crecimiento y desarrollo infantil.',
       disponible: 'No disponible'
     },
     {
-      id: 4,
-      name: 'Dra. Ana Rodríguez',
-      specialty: 'Pediatría',
+      id: 4, // ID real del especialista en la base de datos (Fernando Jiménez)
+      name: 'Dr. Fernando Jiménez',
+      specialty: 'Neurología',
       rating: 4.9,
       reviews: 156,
       availableNow: true,
-      price: '$90.000',
+      price: '$150.000',
       consultationTypes: ['videollamada', 'presencial'],
-      location: 'Pediatra con especialización en desarrollo infantil y vacunación.',
+      location: 'Neurólogo especialista en trastornos neurológicos y epilepsia.',
       disponible: 'Disponible ahora'
     }
   ];
@@ -310,6 +310,7 @@ const MedicalCalendar = () => {
             <ConfirmationAppointment
               selectedDoctor={selectedDoctor}
               selectedTime={selectedTime}
+              selectedDate={selectedDate}
               onClose={() => setIsModalOpen(false)}
             />
           )}
@@ -394,9 +395,11 @@ const MedicalCalendar = () => {
 
             {isModalOpen && (
               <ConfirmationAppointment
-              selectedTime={selectedTime}
-              selectedDoctor={selectedDoctor}
-              onClose={() => setIsModalOpen(false)} />
+                selectedTime={selectedTime}
+                selectedDoctor={selectedDoctor}
+                selectedDate={selectedDate}
+                onClose={() => setIsModalOpen(false)} 
+              />
             )}
           </div>
         )}
