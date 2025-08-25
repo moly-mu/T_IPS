@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, CalendarDays, Zap, Phone, Video, MapPin } from 'lucide-react';
 import ConfirmationAppointment from './appointment/ConfirmationAppointment';
+import axios from 'axios';
 
 const MedicalCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -9,6 +10,102 @@ const MedicalCalendar = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Cargar especialistas desde la base de datos
+  useEffect(() => {
+    const fetchSpecialists = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('http://localhost:3000/admin/profesional');
+        
+        // Transformar los datos para que coincidan con el formato esperado del componente
+        const transformedDoctors = response.data.map(specialist => {
+          const specialty = specialist.specialties[0]; // Tomar la primera especialidad
+          
+          return {
+            id: specialist.id,
+            name: specialist.name,
+            specialty: specialty?.name || 'Consulta General',
+            rating: specialist.rating || 4.5,
+            reviews: Math.floor(Math.random() * 200) + 50, // Reviews simulados por ahora
+            availableNow: specialist.status === 'Activo',
+            price: `$${specialty?.price?.toLocaleString() || '80.000'}`,
+            consultationTypes: ['videollamada'],
+            location: specialist.biography || 'Especialista médico profesional',
+            disponible: specialist.status === 'Activo' ? 'Disponible ahora' : 'No disponible',
+            workSchedule: specialist.schedule,
+            timeSlots: generateTimeSlots(specialist.schedule?.start, specialist.schedule?.end)
+          };
+        });
+        
+        setDoctors(transformedDoctors);
+        setError(null);
+      } catch (err) {
+        console.error('Error al cargar especialistas:', err);
+        setError('Error al cargar especialistas. Usando datos de ejemplo.');
+        // Fallback a datos de ejemplo si falla la API
+        setDoctors([
+          {
+            id: 1,
+            name: 'Dra. María Gómez',
+            specialty: 'Cardiología',
+            rating: 4.8,
+            reviews: 95,
+            availableNow: true,
+            price: '$120.000',
+            consultationTypes: ['videollamada'],
+            location: 'Especialista en cardiología con enfoque en medicina preventiva.',
+            disponible: 'Disponible ahora',
+            timeSlots: ['8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM']
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSpecialists();
+  }, []);
+
+  // Función para generar slots de tiempo basados en el horario de trabajo
+  const generateTimeSlots = (startTime, endTime) => {
+    if (!startTime || !endTime) {
+      // Horario por defecto si no hay horario definido
+      return [
+        '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
+        '11:00 AM', '11:30 AM', '12:00 PM', '2:00 PM', '2:30 PM', '3:00 PM',
+        '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM', '6:00 PM'
+      ];
+    }
+
+    const slots = [];
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const current = new Date(start);
+    
+    while (current < end) {
+      const hours = current.getHours();
+      const minutes = current.getMinutes();
+      
+      // Formato 12 horas
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const hour12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+      const timeString = `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+      
+      slots.push(timeString);
+      
+      // Incrementar 30 minutos
+      current.setMinutes(current.getMinutes() + 30);
+    }
+    
+    return slots.length > 0 ? slots : [
+      '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
+      '11:00 AM', '11:30 AM', '12:00 PM', '2:00 PM', '2:30 PM', '3:00 PM'
+    ];
+  };
   
   //Agregar Filtro por lenguage 
   //Agregar Filtro por especialidad
@@ -21,63 +118,6 @@ const MedicalCalendar = () => {
   ];
 
   const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
-
-  const doctors = [
-    {
-      id: 1, // ID real del especialista en la base de datos (María Gómez - primer especialista del seed)
-      name: 'Dra. María Gómez',
-      specialty: 'Cardiología',
-      rating: 4.8,
-      reviews: 95,
-      availableNow: true,
-      price: '$120.000',
-      consultationTypes: ['videollamada'],
-      location: 'Especialista en cardiología con enfoque en medicina preventiva.',
-      disponible: 'Disponible ahora'
-    },
-    {
-      id: 2, // ID real del especialista en la base de datos (Roberto García)
-      name: 'Dr. Roberto García',
-      specialty: 'Dermatología',
-      rating: 4.5,
-      reviews: 128,
-      availableNow: true,
-      price: '$90.000',
-      consultationTypes: ['videollamada'],
-      location: 'Dermatólogo con amplia experiencia en dermatología clínica.',
-      disponible: 'Disponible ahora'
-    },
-    {
-      id: 3, // ID real del especialista en la base de datos (Elena Morales)
-      name: 'Dra. Elena Morales',
-      specialty: 'Pediatría',
-      rating: 4.7,
-      reviews: 89,
-      availableNow: false,
-      price: '$80.000',
-      consultationTypes: ['videollamada', 'presencial'],
-      location: 'Pediatra especialista en crecimiento y desarrollo infantil.',
-      disponible: 'No disponible'
-    },
-    {
-      id: 4, // ID real del especialista en la base de datos (Fernando Jiménez)
-      name: 'Dr. Fernando Jiménez',
-      specialty: 'Neurología',
-      rating: 4.9,
-      reviews: 156,
-      availableNow: true,
-      price: '$150.000',
-      consultationTypes: ['videollamada', 'presencial'],
-      location: 'Neurólogo especialista en trastornos neurológicos y epilepsia.',
-      disponible: 'Disponible ahora'
-    }
-  ];
-
-  const timeSlots = [
-    '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
-    '11:00 AM', '11:30 AM', '12:00 PM', '2:00 PM', '2:30 PM', '3:00 PM',
-    '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM', '6:00 PM'
-  ];
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -370,7 +410,7 @@ const MedicalCalendar = () => {
           <div className="border-t border-gray-200 pt-6">
             <h4 className="font-medium text-black mb-4">Horarios disponibles</h4>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6">
-              {timeSlots.map(time => (
+              {selectedDoctor.timeSlots?.map(time => (
                 <button
                   key={time}
                   onClick={() => setSelectedTime(time)}
@@ -448,7 +488,22 @@ const MedicalCalendar = () => {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
             {/* Main Content - Takes 3/4 of the space */}
             <div className="xl:col-span-3 mt-11">
-              {selectedDate ? (
+              {loading ? (
+                <div className="bg-gray-50 border border-gray-200 p-8 text-center">
+                  <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-500 text-lg">Cargando especialistas...</p>
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 border border-red-200 p-8 text-center">
+                  <p className="text-red-600 text-lg mb-4">{error}</p>
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Reintentar
+                  </button>
+                </div>
+              ) : selectedDate ? (
                 renderDoctorsList()
               ) : (
                 <div className="bg-gray-50 border border-gray-200 p-8 text-center">

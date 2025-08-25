@@ -88,15 +88,55 @@ export const UserScheduleAppointmentCreate = async (
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
       include: {
-        Paciente: true
+        Paciente: true,
+        rol: true,
+        credential_users: true
       },
     });
 
-    if (!user || !user.Paciente || user.Paciente.length === 0) {
-      return res.status(404).json({ error: "Paciente no encontrado." });
+    console.log('Usuario encontrado:', user ? 'Sí' : 'No');
+    console.log('ID del usuario:', req.userId);
+    console.log('Rol del usuario:', user?.rol?.rol_name);
+    console.log('Pacientes asociados:', user?.Paciente?.length || 0);
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado." });
     }
 
-    const patient = user.Paciente[0];
+    // Si el usuario no tiene un paciente asociado, crearlo
+    let patient;
+    if (!user.Paciente || user.Paciente.length === 0) {
+      console.log('Creando registro de paciente para el usuario...');
+      
+      // Primero crear PacData por defecto
+      const pacData = await prisma.pacData.create({
+        data: {
+          medical_history: Buffer.from('Historia médica inicial'),
+          Direction: 'Dirección pendiente de actualizar',
+          bloodType: 'O_POS', // Valor por defecto
+          allergies: null,
+          emergency_contact: null,
+          eps_type: 'Ninguna',
+          profession: null,
+          ethnicgroup: null
+        }
+      });
+
+      // Crear el registro de paciente
+      patient = await prisma.patient.create({
+        data: {
+          pac_data_idpac_data: pacData.id,
+          User_idUser: user.id,
+          User_credential_users_idcredential_users: user.credential_users_idcredential_users,
+          User_rol_idrol: user.rol_idrol,
+        },
+      });
+
+      console.log('Paciente creado con ID:', patient.id);
+    } else {
+      patient = user.Paciente[0];
+      console.log('Paciente existente con ID:', patient.id);
+    }
 
     // Obtener la especialidad (usar la proporcionada o la primera del especialista)
     const specialty = specialtyId 
