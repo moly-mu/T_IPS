@@ -30,6 +30,16 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Correo o contraseña incorrectos." });
     }
 
+    // Verificar si el email está verificado
+    if (!credential.emailVerified) {
+      return res.status(403).json({ 
+        error: "Cuenta no verificada. Por favor verifica tu email antes de iniciar sesión.",
+        emailVerified: false,
+        email: credential.email,
+        requiresVerification: true
+      });
+    }
+
     const user = credential.User[0];
     if (!user) {
       return res.status(404).json({ error: "No se encontró el perfil de usuario asociado." });
