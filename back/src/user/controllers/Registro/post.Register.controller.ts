@@ -2,12 +2,6 @@ import { PrismaClient, Gender, Language, DocumentType, Sex, BloodType, Eps } fro
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
-import { 
-  generateVerificationCode, 
-  generateVerificationToken, 
-  sendVerificationCode, 
-  sendVerificationToken 
-} from "../../../shared/services/emailService";
 
 const prisma = new PrismaClient();
 
@@ -27,7 +21,6 @@ export const registerUser = async (req: Request, res: Response) => {
     password,
     birthdate,
     BloodType: bloodType,
-    verificationType = 'code' // 'code' para código de 6 dígitos, 'token' para enlace
   } = req.body || {};
 
   const errors: string[] = [];
@@ -94,30 +87,12 @@ for (const { value, valid, name } of enums as { value: any, valid: string[], nam
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generar datos de verificación según el tipo seleccionado
-    let verificationData: {
-      verificationCode?: string;
-      verificationToken?: string;
-      codeExpiresAt?: Date;
-      tokenExpiresAt?: Date;
-    } = {};
-
-    if (verificationType === 'code') {
-      verificationData.verificationCode = generateVerificationCode();
-      verificationData.codeExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
-    } else {
-      verificationData.verificationToken = generateVerificationToken();
-      verificationData.tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
-    }
-
     const result = await prisma.$transaction(async (tx) => {
       const credentials = await tx.credentialUser.create({
         data: {
           email,
           password: hashedPassword,
           document: Number(document),
-          emailVerified: false, // Por defecto no verificado
-          ...verificationData
         },
       });
 
@@ -164,41 +139,15 @@ for (const { value, valid, name } of enums as { value: any, valid: string[], nam
         },
       });
 
-      return { user, credentials };
+      return { user };
     });
 
-    // Enviar email de verificación según el tipo seleccionado
-    const fullName = `${firstname} ${lastname}`;
-    let emailSent = false;
-
-    try {
-      if (verificationType === 'code' && verificationData.verificationCode) {
-        emailSent = await sendVerificationCode(email, verificationData.verificationCode, fullName);
-      } else if (verificationType === 'token' && verificationData.verificationToken) {
-        emailSent = await sendVerificationToken(email, verificationData.verificationToken, fullName);
-      }
-    } catch (emailError) {
-      console.error('Error al enviar email de verificación:', emailError);
-    }
-
-    // No generar token JWT hasta que la cuenta esté verificada
-    console.log("Usuario registrado (pendiente de verificación):", result.user);
-
-    return res.status(201).json({ 
-      message: "Usuario registrado exitosamente. Por favor verifica tu email para activar tu cuenta.",
-      user: {
-        id: result.user.id,
-        email: email,
-        firstname: firstname,
-        lastname: lastname,
-        emailVerified: false
-      },
-      verificationType,
-      emailSent,
-      nextStep: verificationType === 'code' 
-        ? "Ingresa el código de 6 dígitos que enviamos a tu email" 
-        : "Revisa tu email y haz clic en el enlace de verificación"
+    const token = jwt.sign({ id: result.user.id }, process.env.JWT_SECRET || "secret", {
+      expiresIn: "1d",
     });
+    console.log("Usuario registrado:", result.user);
+
+    return res.status(201).json({ token, user: result.user });
   } catch (err: any) {
     console.error("ERROR EN REGISTER:", err);
     return res.status(500).json({

@@ -10,7 +10,6 @@ import { getUserAppointments } from "../controllers/Citas/get.UserAppointments.c
 import { getUserReviews } from "../controllers/Encuentas/getUserReviews.controller";
 import { createUserReview} from "../controllers/Encuentas/postCreateUserReview.controller";
 import { createUserReviewPostAppointment } from "../controllers/Encuentas/postCreateUserReviewPostAppoinment.controller";
-import { verifyCode, verifyToken, resendCode } from "../controllers/Verificacion/emailVerification.controller";
 import express from "express";
 
 const router = express.Router();
@@ -19,10 +18,6 @@ const router = express.Router();
 router.post("/register", registerUser);
 // *Ruta iniciar sesión del usuario
 router.post("/login", loginUser);
-//* Rutas de verificación de email
-router.post("/verify-code", verifyCode);
-router.get("/verify-token", verifyToken);
-router.post("/resend-verification", resendCode);
 // *Ruta para obtener el perfil del usuario
 router.get("/User/Profile", validateToken,UserProfile);
 //* Ruta para actualizar el perfil del usuario

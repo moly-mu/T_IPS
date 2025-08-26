@@ -16,16 +16,11 @@ model Admin {
 }
 
 model CredentialUser {
-  id               Int      @id @default(autoincrement()) @map("idcredential_users")
-  document         Int      @unique
-  email            String   @unique @db.VarChar(100)
-  password         String   @db.VarChar(100)
-  emailVerified    Boolean  @default(false)
-  verificationCode String?  @db.VarChar(6)
-  verificationToken String? @db.VarChar(255)
-  codeExpiresAt    DateTime?
-  tokenExpiresAt   DateTime?
-  User             User[]
+  id       Int    @id @default(autoincrement()) @map("idcredential_users")
+  document Int    @unique
+  email    String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
+  User     User[]
 
   @@map("credential_users")
 }

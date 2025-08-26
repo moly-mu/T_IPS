@@ -59,17 +59,17 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
     
     if (selectedDate) {
       // Usar la fecha seleccionada del calendario
-      appointmentDate = new Date(selectedDate + 'T00:00:00');
+      appointmentDate = new Date(selectedDate + 'T00:00:00Z');
     } else {
       // Fallback: usar mañana
       appointmentDate = new Date();
-      appointmentDate.setDate(appointmentDate.getDate() + 1);
+      appointmentDate.setUTCDate(appointmentDate.getUTCDate() + 1);
     }
     
     // Convertir la hora seleccionada y crear fecha completa
     const hora = convertTimeFormat(selectedTime);
     const [hours, minutes] = hora.split(':');
-    appointmentDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    appointmentDate.setUTCHours(parseInt(hours), parseInt(minutes), 0, 0);
     
     return appointmentDate;
   };
@@ -132,11 +132,11 @@ export default function ConfirmationAppointment({ onClose = () => {}, selectedTi
       
       if (selectedDate) {
         // Usar la fecha seleccionada del calendario en formato YYYY-MM-DD
-        appointmentDate = new Date(selectedDate + 'T00:00:00');
+        appointmentDate = new Date(selectedDate + 'T00:00:00Z');
       } else {
         // Fallback: usar mañana
         appointmentDate = new Date();
-        appointmentDate.setDate(appointmentDate.getDate() + 1);
+        appointmentDate.setUTCDate(appointmentDate.getUTCDate() + 1);
       }
       
       const fecha = appointmentDate.toISOString().split('T')[0]; // YYYY-MM-DD
@@ -174,7 +174,7 @@ Detalles de tu cita:
 • Doctor: ${appointment.especialista}
 • Especialidad: ${appointment.especialidad}
 • Fecha: ${appointmentDateTime.toLocaleDateString('es-ES')}
-• Hora: ${appointmentDateTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })}
+• Hora: ${appointmentDateTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' })}
 • Estado: ${appointment.estado}
 
 Tu cita aparecerá en "Mis Citas".`);
@@ -222,7 +222,10 @@ Tu cita aparecerá en "Mis Citas".`);
               <h2 className="text-lg font-semibold text-gray-800 mb-2">Información de la consulta</h2>
               <p><strong>Especialidad:</strong> {selectedDoctor?.specialty || 'Consulta de Dermatología'}</p>
               <p><strong>Profesional:</strong> {selectedDoctor?.name || 'Dra. María González'} - {selectedDoctor?.specialty || 'Dermatóloga'}</p>
-              <p><strong>Fecha y hora:</strong> {getAppointmentDate().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}, {selectedTime}</p>
+              <p><strong>Fecha y hora:</strong> {(() => {
+                const date = getAppointmentDate();
+                return `${date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })}, ${selectedTime}`;
+              })()}</p>
               <p><strong>Duración estimada:</strong> 30 minutos</p>
               <p><strong>Modalidad:</strong> Videollamada</p>
             </div>
