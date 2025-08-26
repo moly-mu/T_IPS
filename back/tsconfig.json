@@ -19,7 +19,7 @@
       "@specialistInfraestructure/": ["specialist/infraestructure"],
       "@specialistPresentation/": ["specialist/Presentation"],
       "@specialistShared/":["specialist/shared"],
-      "@prisma":["prisma/client.ts"],
+      "@prisma":["shared/client.ts"],
       "@adminSpecialties/*": ["admin/specialties/*"],
       "@constants" : ["shared/constants/"]
     }
