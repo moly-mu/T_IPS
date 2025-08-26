@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient}from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+
 export const getDashboardStats = async (_req: Request, res: Response) => {
   try {
+
+    await prisma.$connect();
+
     // Usuarios activos (Pacientes)
     const totalUsuariosActivos = await prisma.user.count({
       where: {
@@ -125,8 +129,8 @@ export const getIncomeBySpecialty = async (_req: Request, res: Response) => {
     console.log("🔍 Iniciando getIncomeBySpecialty...");
     
     // Primero verificar la conexión a la base de datos
-    await prisma.$connect();
-    console.log("✅ Conexión a la base de datos establecida");
+    // await prisma.$connect();
+    // console.log("✅ Conexión a la base de datos establecida");
     
     // Obtener todas las especialidades
     let specialties;
@@ -382,12 +386,12 @@ export const getIncomeBySpecialty = async (_req: Request, res: Response) => {
         trend: "Error en conexión",
       }
     ]);
-  } finally {
-    // Desconectar de la base de datos
-    try {
-      await prisma.$disconnect();
-    } catch (disconnectError) {
-      console.error("❌ Error al desconectar:", disconnectError);
-    }
-  }
+  // } finally {
+  //   // Desconectar de la base de datos
+  //   try {
+  //     await prisma.$disconnect();
+  //   } catch (disconnectError) {
+  //     console.error("❌ Error al desconectar:", disconnectError);
+  //   }
+   }
 };
