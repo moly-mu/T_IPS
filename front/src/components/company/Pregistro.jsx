@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Alert, Snackbar, AlertTitle } from "@mui/material";
-import axios from 'axios';
+import axios from '../../api/axios';
 
 const Pregistro = () => {
   // Estados para manejar las alertas
@@ -101,7 +101,7 @@ const Pregistro = () => {
   showAlert('info', 'Procesando tu registro, por favor espera...', 'Creando cuenta');
 
   try {
-    const response = await axios.post('http://localhost:3000/api/register', {
+    const response = await axios.post('specialist/auth/register', {
       email: formData.correo,
       document: formData.numeroDocumento,
       firstname: formData.primerNombre,
@@ -272,7 +272,7 @@ const Pregistro = () => {
                     <option value="">
                     Selecciona un tipo de documento
                     </option>
-                    <option value="cc" className="text-black bg-white">
+                    <option value="CC" className="text-black bg-white">
                     Cédula de Ciudadanía
                     </option>
                     <option value="ti" className="text-black bg-white">
