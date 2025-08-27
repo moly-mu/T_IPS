@@ -18,7 +18,7 @@ export class LoginSpecialistPrismaRepository implements SpecialistRepository {
                   spec_data: true,
                 }
               },
-              rol: true,
+              rol: true
             },
           },
         },

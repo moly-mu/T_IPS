@@ -346,13 +346,13 @@ const Pregistro = () => {
                 </button>
               </Link>
 
-              <Link to="/Pins">
+              
               <button
                 type="submit"
                 className="w-full shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#99B3C6] hover:bg-[#7A9BB8] focus:outline-none">
                 Registrarme
               </button>
-              </Link>
+              
             </div>
           </form>
         </div>

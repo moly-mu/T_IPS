@@ -105,7 +105,7 @@ export const registerUser = async (req: Request, res: Response) => {
         },
       });
 
-      const rol = await tx.rol.findFirst({ where: { rol_name: "Paciente" } });
+      const rol = await tx.rol.findFirst({ where: { rol_name: "Especialista" } });
       if (!rol) throw new Error("Rol 'Paciente' no encontrado.");
 
       const user = await tx.user.create({
