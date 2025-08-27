@@ -44,13 +44,13 @@ model User {
   second_firstname                    String?             @db.VarChar(45)
   lastname                            String              @db.VarChar(45)
   second_lastname                     String?             @db.VarChar(45)
-  birthdate                           DateTime
-  gender                              Gender
-  sex                                 Sex
-  language                            Language
+  birthdate                           DateTime?
+  gender                              Gender?
+  sex                                 Sex?
+  language                            Language?
   document_type                       DocumentType
   phone                               String              @default("0000000000") @db.VarChar(20)
-  credential_users_idcredential_users Int
+  credential_users_idcredential_users Int 
   rol_idrol                           Int        @default(1)
   status                              UserStatus @default(Pendiente)
   joinDate                            DateTime   @default(now()) @db.Timestamp(0)
@@ -72,7 +72,7 @@ model PacData {
   id                Int       @id @default(autoincrement()) @map("idpac_data")
   medical_history   Bytes
   Direction         String    @db.VarChar(100)
-  bloodType         BloodType
+  bloodType         BloodType?
   allergies         String?
   emergency_contact String?   @db.VarChar(100)
   eps_type          Eps       @default(Ninguna)

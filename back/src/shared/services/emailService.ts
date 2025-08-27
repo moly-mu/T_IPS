@@ -3,7 +3,7 @@ import crypto from 'crypto';
 
 // Configuración del transportador de email
 const createTransporter = () => {
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
     secure: false, // true para puerto 465, false para otros puertos
