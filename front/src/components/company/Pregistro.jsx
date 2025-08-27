@@ -337,20 +337,22 @@ const Pregistro = () => {
             </div>
 
             {/* Botones de acción */}
-            <div className="mt-8 flex gap-4">
-              <Link to="/">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+              <Link to="/Pins">
                 <button
                   type="button"
-                  className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none">
+                  className="w-full shadow-md py-3 px-5 text-base tracking-wide rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none">
                   Cancelar
                 </button>
               </Link>
 
+              <Link to="/Pins">
               <button
                 type="submit"
-                className="flex-1 shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#99B3C6] hover:bg-[#7A9BB8] focus:outline-none">
+                className="w-full shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#99B3C6] hover:bg-[#7A9BB8] focus:outline-none">
                 Registrarme
               </button>
+              </Link>
             </div>
           </form>
         </div>
