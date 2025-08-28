@@ -56,14 +56,6 @@ const Sregistro = () => {
             <form>
               <div className="mb-6 text-center">
                 <h3 className="text-white text-3xl font-extrabold">Registrarse</h3>
-                <p className="text-sm mt-4 text-gray-300">
-                  ¿Ya tienes cuenta?{" "}
-                  <Link
-                    to="/Sins"
-                    className="text-[#FFCB00] font-semibold hover:underline ml-1">
-                    Iniciar sesión aquí
-                  </Link>
-                </p>
               </div>
   
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
