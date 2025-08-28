@@ -44,10 +44,10 @@ model User {
   second_firstname                    String?             @db.VarChar(45)
   lastname                            String              @db.VarChar(45)
   second_lastname                     String?             @db.VarChar(45)
-  birthdate                           DateTime?
-  gender                              Gender?
-  sex                                 Sex?
-  language                            Language?
+  birthdate                           DateTime
+  gender                              Gender
+  sex                                 Sex
+  language                            Language
   document_type                       DocumentType
   phone                               String              @default("0000000000") @db.VarChar(20)
   credential_users_idcredential_users Int 

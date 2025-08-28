@@ -106,7 +106,7 @@ export const registerUser = async (req: Request, res: Response) => {
       });
 
       const rol = await tx.rol.findFirst({ where: { rol_name: "Especialista" } });
-      if (!rol) throw new Error("Rol 'Paciente' no encontrado.");
+      if (!rol) throw new Error("Rol 'Especialista' no encontrado.");
 
       const user = await tx.user.create({
         data: {
@@ -118,28 +118,33 @@ export const registerUser = async (req: Request, res: Response) => {
           phone,
           credential_users_idcredential_users: credentials.id,
           rol_idrol: rol.id,
+          birthdate: new Date(),
+          gender: "Otro",
+          sex: "Otro",
+          language: "Espanol"
         },
       });
 
-      const pacData = await tx.pacData.create({
+      // Crear registro en spec_data (puedes ajustar los campos según tu lógica de negocio)
+      const specData = await tx.specData.create({
         data: {
-          medical_history: Buffer.from(""),
-          Direction: "",
-          allergies: "",
-          emergency_contact: "",
-          eps_type: Eps.Ninguna,
-          profession: "",
-          ethnicgroup: "",
+          biography: "",
+          picture: Buffer.from(""),
+          cv: Buffer.from(""),
+          exp_lab: "",
+          educational_certificates: Buffer.from(""),
+          degrees: Buffer.from(""),
+          working_experience: "",
         },
       });
 
-      await tx.patient.create({
+      // Crear registro en especialista
+      await tx.specialist.create({
         data: {
-          id: pacData.id,
+          spec_data_idspec_data: specData.id,
           User_idUser: user.id,
           User_credential_users_idcredential_users: credentials.id,
           User_rol_idrol: rol.id,
-          pac_data_idpac_data: pacData.id,
         },
       });
 

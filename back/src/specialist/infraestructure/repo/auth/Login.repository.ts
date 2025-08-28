@@ -31,16 +31,17 @@ export class LoginSpecialistPrismaRepository implements SpecialistRepository {
         return null;
       }
 
-      if (!credential.User || credential.User.length === 0) {
+      if (!credential.User || (Array.isArray(credential.User) && credential.User.length === 0)) {
         console.log('No user found for credential:', email);
         return null;
       }
 
-      const user = credential.User[0];
+      // Prisma genera User como un array si la relación es 1:N, pero en tu modelo parece ser 1:1, así que puede ser objeto
+      const user = Array.isArray(credential.User) ? credential.User[0] : credential.User;
 
       // Verificar que el usuario tenga rol de "Especialista"
-      if (user.rol.rol_name !== "Especialista") {
-        console.log('User does not have Especialista role:', user.rol.rol_name);
+      if (!user.rol || user.rol.rol_name !== "Especialista") {
+        console.log('User does not have Especialista role:', user.rol?.rol_name);
         return null;
       }
 
