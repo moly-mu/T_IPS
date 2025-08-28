@@ -22,7 +22,7 @@ export const registerUser = async (req: Request, res: Response) => {
     document,
     email,
     password,
-    verificationType = 'code' // 'code' para código de 6 dígitos, 'token' para enlace
+    verificationType = 'token' // 'code' para código de 6 dígitos, 'token' para enlace
   } = req.body || {};
 
   const errors: string[] = [];

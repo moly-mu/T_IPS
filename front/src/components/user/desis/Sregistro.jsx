@@ -67,6 +67,7 @@ const Sregistro = () => {
 
     try {
       const response = await axios.post("/api/register", registrationData);
+      console.log("Respuesta del servidor:", response.data);
 
       // El endpoint devuelve información de verificación, no un token directo
       if (response.data && response.data.user) {
@@ -544,15 +545,13 @@ const Sregistro = () => {
                 </button>
               </Link>
 
-              <Link to="/Sins">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#FFCB00] hover:bg-[#FFC107] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? "Registrando..." : "Registrarme"}
-                </button>
-              </Link>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full shadow-md py-3 px-5 text-base tracking-wide rounded-md text-[#00102D] bg-[#FFCB00] hover:bg-[#FFC107] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? "Registrando..." : "Registrarme"}
+              </button>
             </div>
           </form>
         </div>
