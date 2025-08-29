@@ -41,6 +41,80 @@ const GeneralData = ({ medicalHistory, patientId }) => {
   useEffect(() => {
     if (patientId) {
       loadPatientData();
+  //antecedentes
+  const [antecedentes, setAntecedentes] = useState ([
+    {
+      idAntecedente: 1,
+      antecedente: 'Ingreso Hospitalario por Apendicitis Aguda',
+      tipo: 'Hospitalario',
+      descripcion: ' El paciente fue ingresado en el Hospital XYZ el 15 de marzo de 2019 debido a un cuadro de dolor abdominal intenso en el lado derecho. Tras realizar los exámenes pertinentes, se diagnosticó apendicitis aguda. Fue sometido a una apendicectomía laparoscópica, que fue exitosa. No se presentaron complicaciones postoperatorias y fue dado de alta al segundo día.s'
+    }
+  ]);
+
+    const [antecedenteData, setAntecedenteData] = useState({
+    idAntecedente: '',
+    antecedenteP: '',
+    tipo: '',
+    descripcion: ''
+  })
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
+    const handleInputChange = (field, value) => {
+    antecedenteData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleAdd = () => {
+    setIsEditing(true);
+    setEditingId(null);
+    setAntecedenteData({
+      idAntecedente: '',
+      antecedente: '',
+      tipo: '',
+      descripcion: ''
+    });
+  };
+
+  const handleEdit = (antecedentes) => {
+    setIsEditing(true);
+    setEditingId(antecedentes.idAntecedente);
+    setAntecedenteData(antecedentes);
+  };
+
+  const handleSave = () => {
+    if(editingId) {
+      setAntecedentes(prev => prev.map(item =>
+        item.idAntecedente === editingId ? { ...antecedenteData, idAntecedente: editingId } : item
+      ));
+    } else {
+      const newId = Math.max(...antecedentes.map(r => r.idAntecedente), 0) + 1;
+      setAntecedentes(prev => [...prev, { ...antecedenteData, idAntecedente: newId }]);
+    }
+    setIsEditing(false);
+    setEditingId(null);
+  };
+
+  const handleCancel = () => {
+    setEditingId(false);
+    setEditingId(null);
+  }
+
+  const handleDelete = () => {
+    if (window.confirm('¿Está seguro de eliminar este antecedente?')) {
+      setAntecedentes(prev => prev.filter(item => item.idAntecedente !== id));
+    }
+  };
+
+  const [medicalHistory, setMedicalHistory] = useState([
+    {
+      idantecedente: '',
+      medicalHistoryId: '',
+      type: '',
+      description: ''
     }
   }, [patientId, loadPatientData]);
 

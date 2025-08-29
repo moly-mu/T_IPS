@@ -140,6 +140,41 @@ const ClinicalHistory = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando historia clínica...</p>
+  return (
+    <div className="max-w-6xl mx-auto p-8 bg-gray-50 min-h-screen">
+      <div id="historia-clinica" className="border border-black-200 mb-8 bg-white rounded-lg shadow-sm">
+        <div className="border-b border-black p-8 bg-white rounded-t-lg">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-8">
+              <div className="w-32 h-32 flex items-center justify-center overflow-hidden rounded">
+                <a href="https://link-to-your-image.com" target="_blank" rel="noopener noreferrer">
+                  <img 
+                    src="/src/assets/ipsBlack.png" 
+                    alt="Logo IPS" 
+                    className="object-contain w-full h-full"
+                  />
+                </a>
+              </div>
+              
+              <div className="text-center border-black px-8">
+                <h1 className="text-xl font-medium text-[#00102D] mb-2">TELECONSULTAS IPS UNIVERSITARIA DE COLOMBIA</h1>
+                <div className="space-y-1 text-sm text-[#00102D]">
+                  <div className='font-semibold'>NIT. 00.00000</div>
+                  <div>Teléfono: (+57) 310-8731876</div>
+                  <div>Dirección: Calle 34 5 89, Bogotá</div>
+                  <div>Email: ips@entidad.com</div>
+                  <h2 className="text-2xl font-medium text-[#00102D] mb-2">HISTORIA CLÍNICA</h2>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-[#00102D] text-sm"></p>
+                <div className="mt-2 text-[#00102D] px-3 py-1 rounded text-xs font-medium border">
+                  10746583
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

@@ -1,5 +1,5 @@
 
-import { Profile2User, Calendar, Setting2, Chart  } from "iconsax-react";
+import { Profile2User, Calendar, Setting2, Chart, Graph  } from "iconsax-react";
 
 const Barral = () => {
 
@@ -44,6 +44,11 @@ const Barral = () => {
           <a href="/ajus" className="flex hover:bg-gray-100 px-6 py-2 items-center gap-2">
             <Setting2 size={16} />
             Configuración
+          </a>
+
+          <a href="/" className="flex hover:bg-gray-100 px-6 py-2 items-center gap-2">
+            <Graph  size={16} />
+            Analitica
           </a>
         </div>
 

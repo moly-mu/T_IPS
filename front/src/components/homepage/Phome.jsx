@@ -4,7 +4,6 @@ import ServicesSection from './sections/ServicesSection';
 import AdditionalServices from './sections/AdditionalServices';
 import PaymentMethods from './sections/PaymentMethods';
 import MedicalProfiles from './sections/MedicalProfiles';
-import homeImage from '../../assets/home.png';
 import MedicalProfilesSection from './sections/MedicalProfilesSection';
 import { Link } from 'react-router-dom';
 ;

@@ -5,7 +5,6 @@ import Pins from "../company/Pins";
 import Sinsesion from "../user/desis/Sinsesion";
 import Sregistro from "../user/desis/Sregistro";
 import PinSesion from "../company/Pinsesion";
-import Pregistro from "../company/Pregistro";
 import Tinsesion from "../admin/Tinsesion";
 import Pin from "../admin/Pin";
 import Pperfil from "../user/desis/Pperfil";
@@ -76,7 +75,6 @@ const AppRoutes = () => {
         
         {/* usuario*/}
         <Route path="/Pins" element={<PinSesion />} />
-        <Route path="/Preg" element={<Pregistro />} />
         <Route path="/pagempresa" element={<Pins />} />
         <Route path="/perfilPaciente" element={<PatientProfile/>} />
         <Route path="/perfilDoctor" element={<DoctorProfile/>} />

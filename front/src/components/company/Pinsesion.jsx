@@ -117,7 +117,7 @@ const PinSesion = () => {
             <a href="/Sins" className="text-sm font-light text-gray-600 hover:text-gray-900 transition-colors tracking-wide">
               PACIENTE
             </a>
-            <a href="/Preg" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
+            <a href="/Sreg" className="text-sm font-medium text-gray-900 border-b border-gray-900 pb-1 tracking-wide">
               REGISTRARME
             </a>
           </div>
@@ -155,7 +155,7 @@ const PinSesion = () => {
                 <p className="text-sm mt-4 text-gray-800">
                   ¿No tienes cuenta?{" "}
                   <Link
-                    to="/Preg"
+                    to="/Sreg"
                     className="text-[#003366] font-semibold hover:underline ml-1 whitespace-nowrap">
                     Registrarme aquí
                   </Link>
